@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs Lean, fetches Mathlib's compiled files, and runs `lake build`;
+      # any warning fails the build.
+      - uses: leanprover/lean-action@v1
+        with:
+          build-args: "--wfail"
+
+      # Every main theorem must depend only on propext, Classical.choice and Quot.sound.
+      - name: Check the axiom ledger
+        run: |
+          lake env lean RegisterGravity/Ledger.lean | tee ledger.txt
+          expected=$(grep -c '^#print axioms' RegisterGravity/Ledger.lean)
+          clean=$(grep -c 'depends on axioms: \[propext, Classical.choice, Quot.sound\]' ledger.txt)
+          echo "$clean of $expected main theorems depend only on propext, Classical.choice, Quot.sound"
+          test "$clean" -eq "$expected"
