@@ -1,11 +1,11 @@
 import RegisterGravity.Horizon
-import RegisterGravity.Configuration
+import Mathlib.Combinatorics.Configuration
 
 /-!
-# The horizon is a finite projective plane of order `L/2 − 1`
+# The register is a finite projective plane of order `L/2 − 1`
 
-Sec. II of the paper: "Taking a cell with its opposite as a point and a largest ring as a line,
-the horizon is a finite projective plane of order `L/2 − 1`, with `R` points and `R` lines."
+Sec. II of the paper: "With a cell and its opposite taken as a point and a largest ring as a line,
+the register is a finite projective plane of order `L/2 − 1`, with `R` points and `R` lines."
 
 Points are the opposite pairs, `Horizon.Pt`, a quotient of the cells; lines are the largest rings.
 We build the `Configuration.ProjectivePlane` instance of Mathlib from the fields of `Horizon` (this
@@ -15,8 +15,8 @@ theorems then return `R = order² + order + 1` for both points and lines, which 
 direct count of `Horizon.counts`.
 
 Which orders a finite projective plane can have is the question the paper cites Bruck and Ryser
-for: their theorem excludes orders `1` or `2` modulo `4` that are not sums of two squares.  It is
-not in Mathlib, and it is not used here.
+for: their theorem excludes orders `1` or `2` modulo `4` that are not sums of two squares.  It is a
+citation, and no derivation uses it.
 -/
 
 open Finset Configuration
@@ -67,23 +67,6 @@ instance : Membership H.Pt H.Loop :=
     · rw [h]; exact propext (H.opp_mem_iff l x).symm)⟩
 
 lemma pt_mem_iff (x : H.Cell) (l : H.Loop) : H.pt x ∈ l ↔ x ∈ H.cells l := Iff.rfl
-
-/-- A cell outside a given largest ring (needs `4 ≤ L`). -/
-lemma exists_cell_not_mem (hL : 4 ≤ L) (l : H.Loop) : ∃ x : H.Cell, x ∉ H.cells l := by
-  obtain ⟨l₁, l₂, hne⟩ := H.two_loops
-  -- one of the two rings differs from `l`
-  have : ∃ m : H.Loop, m ≠ l := by
-    by_cases h : l₁ = l
-    · exact ⟨l₂, fun h₂ => hne (h.trans h₂.symm)⟩
-    · exact ⟨l₁, h⟩
-  obtain ⟨m, hm⟩ := this
-  obtain ⟨x, hx⟩ := H.inter_eq_pair hm
-  obtain ⟨y, hym, hyx, hyx'⟩ := H.exists_mem_notMem_pair hL m x (H.opp x)
-  refine ⟨y, fun hyl => ?_⟩
-  have : y ∈ H.cells m ∩ H.cells l := mem_inter.2 ⟨hym, hyl⟩
-  rw [hx] at this
-  simp only [mem_insert, mem_singleton] at this
-  tauto
 
 lemma exists_line_of_ne {p q : H.Pt} (h : p ≠ q) : ∃ l : H.Loop, p ∈ l ∧ q ∈ l := by
   revert h
