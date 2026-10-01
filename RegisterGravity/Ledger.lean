@@ -3,7 +3,8 @@ import RegisterGravity
 /-! # The axiom ledger
 
 For every main theorem, the axioms its proof depends on.  A physical input is never an axiom
-here: it is a named hypothesis in the statement of the theorem that uses it (see `Chain.lean`).
+here: a thermodynamic or elastic input is a named hypothesis in the statement of the theorem that
+uses it, and the symmetry of space enters through definitions and the solution (see `Chain.lean`).
 The expected output for every line is `[propext, Classical.choice, Quot.sound]`, the
 logical minimum of classical mathematics in Lean; an unfinished proof would show up as an extra axiom. -/
 
@@ -93,13 +94,16 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Reg.string_share
 #print axioms Register.Reg.Sin_share
 #print axioms Register.Reg.Sin_eq
+#print axioms Register.Reg.Sin_general
 #print axioms Register.Reg.crossing
 #print axioms Register.Reg.V0_eq
 #print axioms Register.Reg.VM_linear
-#print axioms Register.Reg.differentiate_equality
+#print axioms Register.Reg.saturated_no_equality
+#print axioms Register.Reg.mean_tendsto
 #print axioms Register.Reg.elastic
 #print axioms Register.Reg.deep_bound
 #print axioms Register.Reg.deep_regime_upper_bound
+#print axioms Register.Reg.deep_regime_equality
 #print axioms Register.Reg.aM_values
 #print axioms Register.Reg.apparent_mass
 #print axioms Register.Reg.tully_fisher
@@ -114,6 +118,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 -- Secs. IV.D and V, the ring and the pins
 #print axioms Register.Reg.L_from_horizon
 #print axioms Register.Reg.G_Lambda
+#print axioms Register.Reg.black_hole_quarter
 #print axioms Register.Reg.EΛ_eq
 #print axioms Register.Reg.ρΛ_eq
 #print axioms Register.Reg.vacuum_ratio
@@ -156,6 +161,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.ceiling_cos
 #print axioms Register.Numerics.nmax_cos
 #print axioms Register.Numerics.ceiling_margins
+#print axioms Register.Numerics.ceiling_entropy_range
 #print axioms Register.Numerics.soft_ceilings
 #print axioms Register.Numerics.average_block
 #print axioms Register.Numerics.missing_fraction
@@ -183,6 +189,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.log2_Lgal
 #print axioms Register.Numerics.pins_agree
 #print axioms Register.Numerics.temperature_led_numbers
+#print axioms Register.Numerics.rar_transition
 #print axioms Register.Numerics.EΛ_val
 #print axioms Register.Numerics.ρΛ_val
 #print axioms Register.Numerics.GΛ_val

@@ -34,6 +34,24 @@ theorem G_Lambda (G Λ : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
   unfold RL
   constructor <;> (field_simp; ring)
 
+/-- **A black hole's horizon by the area law** (Sec. IV.D, the remark on the throat circles): its
+great circles have `L' = 4πGM/c²ℓ_c` cells, and `(L'²/4) ln 2 = πr_s²/ℓ_P² = A/4ℓ_P²` with
+`r_s = 2GM/c²` and `A = 4πr_s²`, the quarter per Planck area again, by Eq. (cell) alone. -/
+theorem black_hole_quarter (G M : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η)) :
+    (4 * R.pi * G * M / (R.c ^ 2 * R.ℓc)) ^ 2 / 4 * R.ln2
+      = R.pi * (2 * G * M / R.c ^ 2) ^ 2 / R.ℓP G ^ 2 ∧
+    R.pi * (2 * G * M / R.c ^ 2) ^ 2 / R.ℓP G ^ 2
+      = 4 * R.pi * (2 * G * M / R.c ^ 2) ^ 2 / (4 * R.ℓP G ^ 2) := by
+  reg_facts R
+  have hℓP : R.ℓP G ^ 2 = R.ℓc ^ 2 / (R.pi * R.ln2) := by
+    have h := (R.cell_from_G G hJ).2
+    have hs : Real.sqrt (R.pi * R.ln2) ^ 2 = R.pi * R.ln2 := Real.sq_sqrt (by positivity)
+    have : R.ℓc ^ 2 = R.pi * R.ln2 * R.ℓP G ^ 2 := by rw [h, mul_pow, hs]
+    rw [this]; field_simp
+  constructor
+  · rw [hℓP]; field_simp; ring
+  · field_simp
+
 /-- the energy of the ring: entropy times temperature, `E_Λ = (L²/4) ln 2 · (E_c/L)`, one Landauer
 energy for each string -/
 noncomputable def EΛ : ℝ := R.Shor * (R.Ec / R.L)

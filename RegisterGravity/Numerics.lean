@@ -29,8 +29,9 @@ of `L`, `10⁶⁴` to `10¹⁰⁹`, and Davies' `10¹²²`.
 
 `π` and `ln 2` are Mathlib's `Real.pi` and `Real.log 2`, and they enter through Mathlib's bounds
 `3.141592 < π < 3.141593` (`Real.pi_gt_d6`, `Real.pi_lt_d6`) and
-`0.6931471803 < ln 2 < 0.6931471808` (`Real.log_two_gt_d9`, `Real.log_two_lt_d9`); `e` enters one
-number, through `Real.exp_one_gt_d9` and `Real.exp_one_lt_d9`.  Nothing else is assumed.
+`0.6931471803 < ln 2 < 0.6931471808` (`Real.log_two_gt_d9`, `Real.log_two_lt_d9`); `e` enters two
+numbers, through `Real.exp_one_gt_d9`, `Real.exp_one_lt_d9`, `Real.sum_le_exp_of_nonneg` and
+`Real.exp_bound'`.  Nothing else is assumed.
 
 ## Bridge to the chain
 
@@ -518,6 +519,50 @@ theorem ceiling_margins :
     calc ((2 : ℝ) ^ 205) ^ 2 < 1.18 ^ 2 * (1.4435 * (2 : ℝ) ^ 409) := by norm_num
       _ < 1.18 ^ 2 * Lcos ^ 2 := by gcongr
       _ = (1.18 * Lcos) ^ 2 := by ring
+
+/-- **The ceiling across the entropy per ring** (Sec. V, Appendix A).  With `s` bits of entropy
+per ring in place of one, Eq. (cell) carries `s ln 2`, `ℓ_c = √(πs ln 2) ℓ_P` and `L = L_cos/√s`,
+so `2²⁰⁴ ≤ L < 2²⁰⁵` exactly when `(L_cos/2²⁰⁵)² < s ≤ (L_cos/2²⁰⁴)²`; the two bounds are `0.7218`
+and `2.887`, certified as `0.7217 < (L_cos/2²⁰⁵)² < 0.7218` and `2.8869 < (L_cos/2²⁰⁴)² < 2.8872`.
+One bit (`s = 1`), one nat (`s = 1/ln 2 = 1.44`) and two bits all give `204`. -/
+theorem ceiling_entropy_range :
+    (0.7217 < (Lcos / 2 ^ 205) ^ 2 ∧ (Lcos / 2 ^ 205) ^ 2 < 0.7218) ∧
+    (2.8869 < (Lcos / 2 ^ 204) ^ 2 ∧ (Lcos / 2 ^ 204) ^ 2 < 2.8872) ∧
+    ∀ s : ℝ, 0 < s →
+      (((2 : ℝ) ^ 204 ≤ Lcos / Real.sqrt s ↔ s ≤ (Lcos / 2 ^ 204) ^ 2) ∧
+       (Lcos / Real.sqrt s < 2 ^ 205 ↔ (Lcos / 2 ^ 205) ^ 2 < s)) := by
+  obtain ⟨t1, t2⟩ := Lcos_tight
+  have hL := Lcos_pos
+  have q1 : (4.3686e61 : ℝ) ^ 2 < Lcos ^ 2 := pow_lt_pow_left₀ t1 (by norm_num) (by norm_num)
+  have q2 : Lcos ^ 2 < (4.3687e61 : ℝ) ^ 2 := pow_lt_pow_left₀ t2 hL.le (by norm_num)
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
+  · rw [div_pow, lt_div_iff₀ (by positivity)]
+    calc (0.7217 : ℝ) * ((2 : ℝ) ^ 205) ^ 2 < (4.3686e61 : ℝ) ^ 2 := by norm_num
+      _ < Lcos ^ 2 := q1
+  · rw [div_pow, div_lt_iff₀ (by positivity)]
+    calc Lcos ^ 2 < (4.3687e61 : ℝ) ^ 2 := q2
+      _ < 0.7218 * ((2 : ℝ) ^ 205) ^ 2 := by norm_num
+  · rw [div_pow, lt_div_iff₀ (by positivity)]
+    calc (2.8869 : ℝ) * ((2 : ℝ) ^ 204) ^ 2 < (4.3686e61 : ℝ) ^ 2 := by norm_num
+      _ < Lcos ^ 2 := q1
+  · rw [div_pow, div_lt_iff₀ (by positivity)]
+    calc Lcos ^ 2 < (4.3687e61 : ℝ) ^ 2 := q2
+      _ < 2.8872 * ((2 : ℝ) ^ 204) ^ 2 := by norm_num
+  · intro s hs
+    have hsq : 0 < Real.sqrt s := Real.sqrt_pos.2 hs
+    constructor
+    · have key : (2 : ℝ) ^ 204 * Real.sqrt s ≤ Lcos ↔
+          ((2 : ℝ) ^ 204 * Real.sqrt s) ^ 2 ≤ Lcos ^ 2 :=
+        (pow_le_pow_iff_left₀ (by positivity) hL.le two_ne_zero).symm
+      rw [le_div_iff₀ hsq, key, mul_pow, Real.sq_sqrt hs.le, div_pow,
+        le_div_iff₀ (by positivity)]
+      constructor <;> intro h <;> linarith
+    · have key : Lcos < (2 : ℝ) ^ 205 * Real.sqrt s ↔
+          Lcos ^ 2 < ((2 : ℝ) ^ 205 * Real.sqrt s) ^ 2 :=
+        (pow_lt_pow_iff_left₀ hL.le (by positivity) two_ne_zero).symm
+      rw [div_lt_iff₀ hsq, key, mul_pow, Real.sq_sqrt hs.le, div_pow,
+        div_lt_iff₀ (by positivity)]
+      constructor <;> intro h <;> linarith
 
 /-- `L` from the horizon for a Hubble rate `H` and a dark-energy fraction `Ω`: `2πR_Λ/ℓ_c` with
 `R_Λ = c/(H√Ω)`. `Lof H₀ ΩΛ₀` is `L_cos`. -/
@@ -1224,6 +1269,46 @@ theorem temperature_led_numbers :
   · rw [hrar, lt_div_iff₀ (by linarith)]; nlinarith
   · rw [hrar, div_lt_iff₀ (by linarith)]; nlinarith
 
+/-- **The transition in the radial acceleration relation** (Sec. IV.C, Appendix A).  The fitted
+relation `g_obs = g_N/(1 − e^{−√(g_N/a₀)})` [McGaugh 2016] exceeds `g_N` by the fraction
+`1/(e^{√(g_N/a₀)} − 1)`: at the crossing, `g_N = c²/πR_Λ = 1.44a₀` (certified
+`1.435 < c²/(πR_Λa₀) < 1.445`, and `1.725×10⁻¹⁰ < c²/πR_Λ < 1.726×10⁻¹⁰ m s⁻²`, every point of which
+rounds to the paper's `1.73`), the fraction at `g_N = 1.44a₀`, `√1.44 = 1.2`, is `0.43` (certified
+`0.4305 < 1/(e^{6/5} − 1) < 0.4315`); at `g_N = 10a₀` it is `0.044`
+(`temperature_led_numbers`).  `e^{1/5}` enters through five terms of its series,
+`Real.sum_le_exp_of_nonneg` below and `Real.exp_bound'` above. -/
+theorem rar_transition :
+    (1.435 < c₀ ^ 2 / (π * RL * a₀) ∧ c₀ ^ 2 / (π * RL * a₀) < 1.445) ∧
+    (1.725e-10 < c₀ ^ 2 / (π * RL) ∧ c₀ ^ 2 / (π * RL) < 1.726e-10) ∧
+    (0.4305 < 1 / (Real.exp (6 / 5) - 1) ∧ 1 / (Real.exp (6 / 5) - 1) < 0.4315) := by
+  have hR := RL_pos; have hH := Hinf_pos
+  obtain ⟨j1, j2⟩ := Hinf_tight
+  have e2 : c₀ ^ 2 / (π * RL) = c₀ * Hinf / π := by unfold RL; field_simp
+  have e1 : c₀ ^ 2 / (π * RL * a₀) = c₀ * Hinf / (π * a₀) := by unfold RL; field_simp
+  -- `e^{1/5}` lies between `1.22139` and `1.22141`
+  have hlo := Real.sum_le_exp_of_nonneg (x := (1 / 5 : ℝ)) (by norm_num) 5
+  have hhi := Real.exp_bound' (x := (1 / 5 : ℝ)) (by norm_num) (by norm_num) (n := 5) (by norm_num)
+  norm_num [Finset.sum_range_succ, Nat.factorial] at hlo hhi
+  have h02 : (1.22139 : ℝ) < Real.exp (1 / 5) ∧ Real.exp (1 / 5) < 1.22141 := by
+    constructor <;> linarith
+  have h12 : Real.exp (6 / 5) = Real.exp 1 * Real.exp (1 / 5) := by
+    rw [← Real.exp_add]; norm_num
+  have hE1 : (3.32 : ℝ) < Real.exp (6 / 5) := by
+    rw [h12]
+    have := Real.exp_one_gt_d9
+    nlinarith [h02.1, Real.exp_pos 1, Real.exp_pos (1 / 5)]
+  have hE2 : Real.exp (6 / 5) < 3.3202 := by
+    rw [h12]
+    have := Real.exp_one_lt_d9
+    nlinarith [h02.2, Real.exp_pos 1, Real.exp_pos (1 / 5)]
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
+  · rw [e1, lt_div_iff₀ (by positivity)]; nlinarith [Real.pi_lt_d6, Real.pi_gt_d6]
+  · rw [e1, div_lt_iff₀ (by positivity)]; nlinarith [Real.pi_lt_d6, Real.pi_gt_d6]
+  · rw [e2, lt_div_iff₀ (by positivity)]; nlinarith [Real.pi_lt_d6, Real.pi_gt_d6]
+  · rw [e2, div_lt_iff₀ (by positivity)]; nlinarith [Real.pi_lt_d6, Real.pi_gt_d6]
+  · rw [lt_div_iff₀ (by linarith)]; nlinarith
+  · rw [div_lt_iff₀ (by linarith)]; nlinarith
+
 /-! ## The cosmological scale (Sec. IV.D, Table I, Appendix A) -/
 
 /-- **Eq. (EL)**: the chain's `E_Λ = (LE_c/4) ln 2 = c⁴R_Λ/2G` for these inputs is
@@ -1379,16 +1464,19 @@ theorem redshift_one :
 
 /-- **The equation of state** (Sec. VI, Appendix A): the drift bounded is that of the term `Λc²/3`
 of the expansion rate, `|Λ̇/Λ| = |Ġ/G| ≲ 10⁻¹³ yr⁻¹`, so with `H₀ = 6.89×10⁻¹¹ yr⁻¹`,
-`|1 + w₀| ≲ 10⁻¹³/3H₀ = 4.8×10⁻⁴` (`5×10⁻⁴` to one figure); the drift a Hubble-radius horizon would
+`|1 + w₀| ≲ 10⁻¹³/3H₀ = 4.8×10⁻⁴` (`5×10⁻⁴` to one figure), and twice that, `9.7×10⁻⁴`, if the drift
+is referred to the density `Λc⁴/8πG`, which carries `G` as well, `ρ̇_Λ/ρ_Λ = 2Λ̇/Λ`
+(`constancy_of_Lambda`); the drift a Hubble-radius horizon would
 give, `Ġ/G = 2H(1+q) ≈ 6×10⁻¹¹ yr⁻¹` at `q = −0.53` (`Reg.G_drift`), is six hundred times the
 lunar-laser-ranging bound `10⁻¹³ yr⁻¹`. -/
 theorem constancy_numbers :
     (6.885e-11 < H₀ * yr₀ ∧ H₀ * yr₀ < 6.895e-11) ∧
     (4.8e-4 < 1e-13 / (3 * (H₀ * yr₀)) ∧ 1e-13 / (3 * (H₀ * yr₀)) < 4.85e-4) ∧
+    (9.65e-4 < 2e-13 / (3 * (H₀ * yr₀)) ∧ 2e-13 / (3 * (H₀ * yr₀)) < 9.75e-4) ∧
     (5.5e-11 < 2 * (H₀ * yr₀) * (1 - 0.53) ∧ 2 * (H₀ * yr₀) * (1 - 0.53) < 6.5e-11) ∧
     (550 < 2 * (H₀ * yr₀) * (1 - 0.53) / 1e-13 ∧ 2 * (H₀ * yr₀) * (1 - 0.53) / 1e-13 < 650) := by
   refine ⟨⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩,
-    ⟨by norm_num, by norm_num⟩⟩
+    ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩⟩
 
 end Numerics
 end Register

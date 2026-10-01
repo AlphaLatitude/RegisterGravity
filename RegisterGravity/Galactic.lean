@@ -7,12 +7,13 @@ import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 The shift of the horizon and the area deficit, both from the solution about a mass; the entropy a
 mass removes, from the horizon and within a sphere; the temperature floor; the entropy inside a
-sphere, with the fraction `4n/L` that `RouteB.lean` counts and `Bridge.lean` joins to it; the
-crossing; Verlinde's elastic
-response with the register's counts, with equality and as a bound on the deep regime; the
-deep-regime law; and why the temperature cannot lead.  The inputs are the named hypotheses of each
-theorem (see `Chain.lean`).  The proper distance to the horizon and the outer horizon with a mass
-are in `DeSitter.lean`.
+sphere, with the fraction `4n/L` that `RouteB.lean` counts and `Bridge.lean` joins to it, and its
+general form by ring distance and area, which returns the horizon's entropy at the horizon; the
+crossing; Verlinde's elastic response with the register's counts, as a bound on the deep regime and
+with his equality reached in the limit (with the response absent inside the crossing the equality
+cannot hold at every radius, `saturated_no_equality`); the deep-regime law; and why the
+temperature cannot lead.  The inputs are the named hypotheses of each theorem (see `Chain.lean`).
+The proper distance to the horizon and the outer horizon with a mass are in `DeSitter.lean`.
 -/
 
 open Real Filter Topology
@@ -289,6 +290,31 @@ theorem Sin_eq (κ r : ℝ) : R.Sin κ r = κ * R.pi ^ 2 * R.n r ^ 3 * R.ln2 / R
   rw [(R.bulk_counts r).2]
   field_simp
 
+/-- the entropy a sphere's strings hold inside it in general (Sec. IV.C, after Eq. (volume)): the
+share by ring distance `s`, `s` over the quarter lap `Lℓ_c/4`, times the strings by area, the
+sphere's area `A` over a ring's share, times one bit -/
+noncomputable def SinGen (s A : ℝ) : ℝ := (s / (R.L * R.ℓc / 4)) * (A / R.ringShare) * R.ln2
+
+/-- **The general form of Eq. (volume), and the horizon check** (Sec. IV.C).  For a sphere of
+areal radius `r` at ring distance `r`, the case `r ≪ R_Λ` where the two distances agree, `SinGen`
+is `Sin 4 r`, Eq. (volume).  At the horizon itself, ring distance `Lℓ_c/4` and area `4πR_Λ²`, it
+is `S_hor = (L²/4) ln 2`: the inside halves of all `L²/4` strings lie within it, and the readings
+`Sin` (the even spread) and `Ns` (the area law) agree on the horizon's entropy. -/
+theorem Sin_general (r : ℝ) :
+    R.SinGen r (4 * R.pi * r ^ 2) = R.Sin 4 r ∧
+    R.SinGen (R.L * R.ℓc / 4) R.Ahor = R.Shor := by
+  reg_facts R
+  have hA := R.Ahor_pos.ne'
+  have hRh : R.Rhor ≠ 0 := by unfold Rhor; positivity
+  constructor
+  · unfold SinGen Sin n
+    rw [← (R.ratio_of_areas r).2.2]
+    field_simp
+  · unfold SinGen ringShare Shor
+    have h1 : R.L * R.ℓc / 4 / (R.L * R.ℓc / 4) = 1 := div_self (by positivity)
+    have h2 : R.Ahor / (R.Ahor / R.Rhor) = R.Rhor := by field_simp
+    rw [h1, h2, one_mul]
+
 /-- **The crossing**, Eq. (criterion): `S_M(r) = S_in(r)` (with `κ = 4`) exactly when
 `n² = Lα/(2π ln 2)`; there `N_s = πLα/(2 ln 2)` and `g_N = GM/r² = c²/πR_Λ`. -/
 theorem crossing (G M r : ℝ) (hr : 0 < r) (hM : 0 < M)
@@ -368,26 +394,94 @@ theorem VM_linear (κ M r : ℝ) (hκ : κ ≠ 0) (hr : 0 < r) :
   unfold n
   field_simp; ring
 
-/-- **Differentiating at fixed `M`** (Sec. IV.C): with equality in `I5`, the cumulative strain
-`F(r) = ∫₀^r ε²A dr′` equals `V_M(r) = (dV_M/dr) r` (`VM_linear`) for every `r > 0`, and its
-derivative, `ε²A`, is then `dV_M/dr`, the form of `I5` that `elastic` uses. -/
-theorem differentiate_equality (F f : ℝ → ℝ) (k r : ℝ) (hr : 0 < r) (hF : HasDerivAt F (f r) r)
-    (heq : ∀ s, 0 < s → F s = k * s) : f r = k := by
-  have hlin : HasDerivAt (fun s => k * s) k r := by
-    simpa using (hasDerivAt_id r).const_mul k
-  have hev : F =ᶠ[𝓝 r] fun s => k * s := by
-    filter_upwards [lt_mem_nhds hr] with s hs
-    exact heq s hs
-  exact (hF.congr_of_eventuallyEq hev.symm).unique hlin
+/-- **The equality cannot hold at every radius** (Sec. IV.C).  Let `F(r) = ∫₀^r ε²A dr'` be the
+cumulative strain, `F(0) = 0`.  With the response absent inside the crossing `r_c`, the strain
+vanishes there and `F` has derivative `0` on `(0, r_c)`, so `F = 0` up to the crossing, while
+`V_M(r) = k r` grows from `r = 0` (`VM_linear`): Verlinde's equality `F(r) = V_M(r)` fails at
+every `r` up to the crossing, and can hold only in the limit (`deep_regime_equality`). -/
+theorem saturated_no_equality (F : ℝ → ℝ) (k rc : ℝ) (hk : 0 < k) (hF0 : F 0 = 0)
+    (hcont : ContinuousOn F (Set.Icc 0 rc))
+    (hzero : ∀ s ∈ Set.Ioo 0 rc, HasDerivAt F 0 s) :
+    ∀ r ∈ Set.Ioc 0 rc, F r ≠ k * r := by
+  intro r hr
+  have hcont' : ContinuousOn F (Set.Icc 0 r) := hcont.mono (Set.Icc_subset_Icc le_rfl hr.2)
+  obtain ⟨ξ, -, hslope⟩ := exists_hasDerivAt_eq_slope F (fun _ => (0 : ℝ)) hr.1 hcont'
+    (fun s hs => hzero s ⟨hs.1, lt_of_lt_of_le hs.2 hr.2⟩)
+  have h : (0 : ℝ) = (F r - F 0) / (r - 0) := hslope
+  rw [hF0, sub_zero, sub_zero] at h
+  have hFr : F r = 0 := by
+    rcases div_eq_zero_iff.1 h.symm with h1 | h1
+    · exact h1
+    · exact absurd h1 hr.1.ne'
+  rw [hFr]
+  exact (mul_pos hk hr.1).ne
 
-/-- **Eq. (aM), with equality**: from `I5` with equality, differentiated at fixed `M`
-(`ε²A = dV_M/dr`, under the principal-strain assumption), and `I6` (`Σ_D = (a_Λ/8πG) ε`, with
+/-- **The mean of a function that tends to a limit tends to the same limit.**  If `F` has
+derivative `f` on `(0, ∞)` and `f(r) → f∞`, then `F(r)/r → f∞`: for `r` far out, by the mean
+value theorem, `F(r) = F(s₁) + f(ξ)(r − s₁)` with `f(ξ)` within `ε/2` of `f∞`, and `F(s₁)/r` is
+small.  It is the step that joins the limit of `ε²A` to the limit of the cumulative strain over
+`r` (`deep_regime_equality`). -/
+theorem mean_tendsto (F f : ℝ → ℝ) (finf : ℝ)
+    (hF : ∀ r, 0 < r → HasDerivAt F (f r) r)
+    (hflat : Tendsto f atTop (𝓝 finf)) :
+    Tendsto (fun r => F r / r) atTop (𝓝 finf) := by
+  rw [Metric.tendsto_atTop] at hflat ⊢
+  intro ε hε
+  have hε' : ε ≠ 0 := hε.ne'
+  obtain ⟨s₀, hs₀⟩ := hflat (ε / 2) (by positivity)
+  set s₁ := max s₀ 1 with hs₁
+  have hs₁pos : 0 < s₁ := lt_of_lt_of_le one_pos (le_max_right _ _)
+  refine ⟨max (s₁ + 1) (2 * |F s₁ - finf * s₁| / ε + 1), ?_⟩
+  intro r hr
+  have hr1 : s₁ + 1 ≤ r := le_trans (le_max_left _ _) hr
+  have hr2 : 2 * |F s₁ - finf * s₁| / ε + 1 ≤ r := le_trans (le_max_right _ _) hr
+  have hs₁r : s₁ < r := by linarith
+  have hrpos : 0 < r := by linarith
+  -- the mean value theorem on `[s₁, r]`
+  have hcont : ContinuousOn F (Set.Icc s₁ r) := fun s hs =>
+    (hF s (lt_of_lt_of_le hs₁pos hs.1)).continuousAt.continuousWithinAt
+  obtain ⟨ξ, hξ, hslope⟩ := exists_hasDerivAt_eq_slope F f hs₁r hcont
+    (fun s hs => hF s (lt_trans hs₁pos hs.1))
+  have hfξ : dist (f ξ) finf < ε / 2 := hs₀ ξ (le_trans (le_max_left _ _) hξ.1.le)
+  rw [Real.dist_eq] at hfξ
+  have hgrow : F r - F s₁ = f ξ * (r - s₁) := by
+    rw [hslope]; field_simp [(sub_pos.2 hs₁r).ne']
+  -- `F(r)/r − f∞ = ((F(s₁) − f∞ s₁) + (f(ξ) − f∞)(r − s₁))/r`
+  have e1 : F r / r * r = F r := div_mul_cancel₀ _ hrpos.ne'
+  have key : F r / r - finf = ((F s₁ - finf * s₁) + (f ξ - finf) * (r - s₁)) / r := by
+    rw [eq_div_iff hrpos.ne']
+    linear_combination hgrow + e1
+  rw [Real.dist_eq, key, abs_div, abs_of_pos hrpos, div_lt_iff₀ hrpos]
+  -- the first term is below `ε r/2`, since `r > 2|F(s₁) − f∞ s₁|/ε`
+  have hεr₀ : ε * (2 * |F s₁ - finf * s₁| / ε + 1) = 2 * |F s₁ - finf * s₁| + ε := by
+    have h := div_mul_cancel₀ (2 * |F s₁ - finf * s₁|) hε'
+    linear_combination h
+  have hmul : ε * (2 * |F s₁ - finf * s₁| / ε + 1) ≤ ε * r :=
+    mul_le_mul_of_nonneg_left hr2 hε.le
+  have h1 : |F s₁ - finf * s₁| < ε / 2 * r := by linarith
+  -- the second is below `ε r/2`, since `|f(ξ) − f∞| < ε/2` and `0 ≤ r − s₁ ≤ r`
+  have h2 : |(f ξ - finf) * (r - s₁)| ≤ ε / 2 * r := by
+    rw [abs_mul, abs_of_pos (sub_pos.2 hs₁r)]
+    have h3 : |f ξ - finf| * (r - s₁) ≤ ε / 2 * (r - s₁) :=
+      mul_le_mul_of_nonneg_right hfξ.le (sub_pos.2 hs₁r).le
+    have h4 : ε / 2 * (r - s₁) ≤ ε / 2 * r :=
+      mul_le_mul_of_nonneg_left (show r - s₁ ≤ r by linarith) (by positivity)
+    linarith
+  calc |(F s₁ - finf * s₁) + (f ξ - finf) * (r - s₁)|
+      ≤ |F s₁ - finf * s₁| + |(f ξ - finf) * (r - s₁)| := abs_add_le _ _
+    _ < ε / 2 * r + ε / 2 * r := by linarith
+    _ = ε * r := by ring
+
+/-- **Eq. (aM), where the bound is reached**: at a radius where `ε²A = dV_M/dr` (`hsat`, the
+value Verlinde's equality `I5` gives under the principal-strain assumption; with the response
+absent inside the crossing it is reached only in the limit of large `r`, `deep_regime_equality`,
+and this theorem is the algebra at such a radius), with `I6` (`Σ_D = (a_Λ/8πG) ε`, with
 `Σ_D = M_D/4πr²` the apparent mass `M_D` per unit area of the sphere), the field `g_D` of the
 apparent mass satisfies, by Gauss's law (`gauss`), `g_D² = a_M g_N`, with `g_N` the field of the
 mass and `a_M = πc²/(3κR_Λ)`: the `ln 2` of the count cancels. -/
 theorem elastic (κ G M MD r ε : ℝ) (hκ : 0 < κ) (hr : 0 < r) (hM : 0 < M)
     (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
-    (I5 : ε ^ 2 * (4 * R.pi * r ^ 2) = R.slope κ M)
+    (hsat : ε ^ 2 * (4 * R.pi * r ^ 2) = R.slope κ M)
     (I6 : MD / (4 * R.pi * r ^ 2) = (R.aΛ / (8 * R.pi * G)) * ε) :
     R.gSdS G MD 0 r ^ 2 = R.aM κ * R.gSdS G M 0 r := by
   reg_facts R
@@ -401,7 +495,7 @@ theorem elastic (κ G M MD r ε : ℝ) (hκ : 0 < κ) (hr : 0 < r) (hM : 0 < M)
       rw [R.gauss G MD r hr hG0]; field_simp
     rw [h1, I6]; field_simp; ring
   have hε2 : ε ^ 2 = R.slope κ M / (4 * R.pi * r ^ 2) := by
-    rw [eq_div_iff (by positivity)]; exact I5
+    rw [eq_div_iff (by positivity)]; exact hsat
   rw [hgD, R.gSdS_mass G M r hr', div_pow, mul_pow, hε2, hG]
   unfold aΛ aM slope α mc RL
   field_simp; ring
@@ -462,7 +556,7 @@ strain, with `ε(r)` the strain and `A = 4πr²`, and let `M_D(r)` be the appare
 By `I6` and Gauss's law (`gauss`), the field of the apparent mass is `g_D = a_Λε/2`, so
 `ε²A = 16π(r g_D)²/a_Λ²`.  If the rotation curve is flat, `r g_D → v_c²`, and `deep_bound` with
 `I5` and `k = dV_M/dr` gives `v_c⁴ ≤ a_M GM`: the coefficient of the deep regime is at most `a_M`,
-with equality under the principal-strain assumption (`elastic`, `tully_fisher`). -/
+and it is `a_M` when the equality is reached in the limit (`deep_regime_equality`). -/
 theorem deep_regime_upper_bound (κ G M vc2 : ℝ) (F ε MD : ℝ → ℝ) (hκ : 0 < κ) (hM : 0 < M)
     (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
     (hF : ∀ r, 0 < r → HasDerivAt F (ε r ^ 2 * (4 * R.pi * r ^ 2)) r)
@@ -501,6 +595,61 @@ theorem deep_regime_upper_bound (κ G M vc2 : ℝ) (F ε MD : ℝ → ℝ) (hκ 
   rw [div_le_iff₀ (by positivity)] at hb
   nlinarith
 
+/-- **Eq. (btfr) when the equality is reached in the limit** (Sec. IV.C).  With the cumulative
+strain `F`, `ε` and `M_D` as in `deep_regime_upper_bound`, suppose Verlinde's equality holds in the
+limit, `F(r)/V_M(r) → 1` (`hsat`), and the rotation curve is flat, `r g_D → v_c²`.  Then
+`ε²A → 16πv_c⁴/a_Λ²`, so by `mean_tendsto` `F(r)/r` tends to the same limit; by `hsat` and
+`VM_linear` it tends to `dV_M/dr`; so the two are equal, and `v_c⁴ = a_M GM`.  Nothing is assumed
+about the strain at any finite radius, where `saturated_no_equality` forbids the equality. -/
+theorem deep_regime_equality (κ G M vc2 : ℝ) (F ε MD : ℝ → ℝ) (hκ : 0 < κ) (hM : 0 < M)
+    (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
+    (hF : ∀ r, 0 < r → HasDerivAt F (ε r ^ 2 * (4 * R.pi * r ^ 2)) r)
+    (hsat : Tendsto (fun r => F r / R.VM κ M r) atTop (𝓝 1))
+    (I6 : ∀ r, 0 < r → MD r / (4 * R.pi * r ^ 2) = (R.aΛ / (8 * R.pi * G)) * ε r)
+    (hflat : Tendsto (fun r => r * R.gSdS G (MD r) 0 r) atTop (𝓝 vc2)) :
+    vc2 ^ 2 = R.aM κ * G * M := by
+  reg_facts R
+  have hRL := R.RL_pos
+  have hG := (R.G_eq G hJ).1
+  have hGpos : 0 < G := by rw [hG]; positivity
+  have hG0 : G ≠ 0 := hGpos.ne'
+  have haΛ : 0 < R.aΛ := by unfold aΛ; positivity
+  have haΛ' : R.aΛ ≠ 0 := haΛ.ne'
+  have hκ' : κ ≠ 0 := hκ.ne'
+  -- the strain from `I6` and Gauss's law: `ε²A = 16π(r g_D)²/a_Λ²`
+  have hstrain : ∀ r, 0 < r → ε r ^ 2 * (4 * R.pi * r ^ 2)
+      = 16 * R.pi * (r * R.gSdS G (MD r) 0 r) ^ 2 / R.aΛ ^ 2 := by
+    intro r hr
+    have hgD : R.gSdS G (MD r) 0 r = R.aΛ * ε r / 2 := by
+      have h1 : R.gSdS G (MD r) 0 r = 4 * R.pi * G * (MD r / (4 * R.pi * r ^ 2)) := by
+        rw [R.gauss G (MD r) r hr hG0]; field_simp
+      rw [h1, I6 r hr]; field_simp; ring
+    rw [hgD]; field_simp; ring
+  have hlim0 : Tendsto (fun r => 16 * R.pi * (r * R.gSdS G (MD r) 0 r) ^ 2 / R.aΛ ^ 2) atTop
+      (𝓝 (16 * R.pi * vc2 ^ 2 / R.aΛ ^ 2)) :=
+    ((hflat.pow 2).const_mul (16 * R.pi)).div_const _
+  have hlim : Tendsto (fun r => ε r ^ 2 * (4 * R.pi * r ^ 2)) atTop
+      (𝓝 (16 * R.pi * vc2 ^ 2 / R.aΛ ^ 2)) := by
+    refine hlim0.congr' ?_
+    filter_upwards [eventually_gt_atTop 0] with r hr
+    exact (hstrain r hr).symm
+  -- the mean `F(r)/r` tends to the limit of `ε²A` ...
+  have hmean := mean_tendsto F _ _ hF hlim
+  -- ... and, by the equality in the limit, to `dV_M/dr`
+  have hslope : R.slope κ M ≠ 0 := by unfold slope α mc; positivity
+  have hmean' : Tendsto (fun r => F r / r) atTop (𝓝 (R.slope κ M)) := by
+    have h := hsat.mul_const (R.slope κ M)
+    rw [one_mul] at h
+    refine h.congr' ?_
+    filter_upwards [eventually_gt_atTop 0] with r hr
+    rw [R.VM_linear κ M r hκ' hr, div_mul_eq_mul_div, mul_comm (F r) (R.slope κ M),
+      mul_div_mul_left _ _ hslope]
+  have heq := tendsto_nhds_unique hmean hmean'
+  have e : R.aM κ * G * M = R.aΛ ^ 2 * R.slope κ M / (16 * R.pi) := by
+    rw [hG]; unfold aM aΛ slope α mc RL; field_simp; ring
+  rw [e, ← heq]
+  field_simp
+
 /-- The two normalizations: the register's quarter lap, `κ = 4`, gives `a_M = πc²/12R_Λ`, which
 is `(π²/6)c²/Lℓ_c` in the cell; Verlinde's flat ball, `κ = 2π`, gives `c²/6R_Λ`; the register's
 is `π/2` larger. -/
@@ -517,12 +666,12 @@ theorem aM_values :
   · unfold aM; field_simp; ring
   · unfold aM; field_simp; ring
 
-/-- **The apparent dark mass**: with the register's `κ = 4`, the apparent mass of `elastic`
-satisfies `M_D² = M²n²·π³ ln 2/(6Lα)`, so `M_D = Mn√(π³ ln 2/6Lα)` grows by a fixed amount per cell
-of distance. -/
+/-- **The apparent dark mass** (Sec. IV.C, the deep regime): with the register's `κ = 4`, where
+the bound is reached the apparent mass of `elastic` satisfies `M_D² = M²n²·π³ ln 2/(6Lα)`, so
+`M_D = Mn√(π³ ln 2/6Lα)` grows by a fixed amount per cell of distance. -/
 theorem apparent_mass (G M MD r ε : ℝ) (hr : 0 < r) (hM : 0 < M)
     (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
-    (I5 : ε ^ 2 * (4 * R.pi * r ^ 2) = R.slope 4 M)
+    (hsat : ε ^ 2 * (4 * R.pi * r ^ 2) = R.slope 4 M)
     (I6 : MD / (4 * R.pi * r ^ 2) = (R.aΛ / (8 * R.pi * G)) * ε) :
     MD ^ 2 = M ^ 2 * R.n r ^ 2 * (R.pi ^ 3 * R.ln2 / (6 * R.L * R.α M)) := by
   reg_facts R
@@ -531,7 +680,7 @@ theorem apparent_mass (G M MD r ε : ℝ) (hr : 0 < r) (hM : 0 < M)
   have hG0 : G ≠ 0 := hGpos.ne'
   have hr' : r ≠ 0 := hr.ne'
   have hRL := R.RL_pos.ne'
-  have hdeep := R.elastic 4 G M MD r ε (by norm_num) hr hM hJ I5 I6
+  have hdeep := R.elastic 4 G M MD r ε (by norm_num) hr hM hJ hsat I6
   rw [R.gSdS_mass G MD r hr', R.gSdS_mass G M r hr'] at hdeep
   have hMD : MD ^ 2 = R.aM 4 * M * r ^ 2 / G := by
     rw [div_pow, mul_pow] at hdeep
@@ -542,16 +691,17 @@ theorem apparent_mass (G M MD r ε : ℝ) (hr : 0 < r) (hM : 0 < M)
   unfold aM n α mc RL
   field_simp; ring
 
-/-- **Eq. (btfr)**: in the deep regime, where the field of the apparent mass dominates, the field is
-`g_D = √(a_M g_N)` (`elastic`), so a circular orbit, `v_c² = g_D r`, has `v_c⁴ = a_M GM`, the
-baryonic Tully–Fisher relation. -/
+/-- **Eq. (btfr)** at a radius where the bound is reached: in the deep regime, where the field
+of the apparent mass dominates, the field is `g_D = √(a_M g_N)` (`elastic`), so a circular orbit,
+`v_c² = g_D r`, has `v_c⁴ = a_M GM`, the baryonic Tully–Fisher relation; `deep_regime_equality`
+gives the same from the equality in the limit alone. -/
 theorem tully_fisher (κ G M MD r ε : ℝ) (hκ : 0 < κ) (hr : 0 < r) (hM : 0 < M)
     (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
-    (I5 : ε ^ 2 * (4 * R.pi * r ^ 2) = R.slope κ M)
+    (hsat : ε ^ 2 * (4 * R.pi * r ^ 2) = R.slope κ M)
     (I6 : MD / (4 * R.pi * r ^ 2) = (R.aΛ / (8 * R.pi * G)) * ε) :
     (R.gSdS G MD 0 r * r) ^ 2 = R.aM κ * G * M := by
   have hr' : r ≠ 0 := hr.ne'
-  rw [mul_pow, R.elastic κ G M MD r ε hκ hr hM hJ I5 I6, R.gSdS_mass G M r hr']
+  rw [mul_pow, R.elastic κ G M MD r ε hκ hr hM hJ hsat I6, R.gSdS_mass G M r hr']
   field_simp
 
 /-- **The galactic pin**, Eq. (Lgal): `a_M = a_0` exactly when `L = (π²/6) c²/(a_0 ℓ_c)`. -/

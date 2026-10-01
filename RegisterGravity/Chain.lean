@@ -27,8 +27,9 @@ Beyond the two postulates the paper takes, as Sec. III lists, the symmetry of sp
 thermodynamics (Sec. III), Verlinde's elastic response (Sec. IV.C), and the first law for the
 cosmic fluid (Sec. VI), none of them a number, and it reads the postulates in five places
 (Secs. II, IV.A and IV.C).  In the files the symmetry of space is folded into `ringShare` and `Ns` (a
-ring's share of area the same everywhere) and into the solution taken as known.  Here the inputs
-are hypotheses, and the readings are definitions, the fifth a function.
+ring's share of area the same everywhere) and into the solution taken as known.  Here the
+thermodynamic and elastic inputs are hypotheses, and the readings are definitions, the fifth a
+function.
 
 Thermodynamics:
 * `I1` (a horizon is thermal): a horizon whose imaginary-time period is `τ` has `k_B T = ℏ/τ`
@@ -46,10 +47,13 @@ Thermodynamics:
 
 Elasticity, in the galactic law only (`Galactic.lean`):
 * `I5`, `I6` (Verlinde's elastic response): `∫₀^r ε²A dr' ≤ V_M(r)`, with equality under his
-  assumption on the principal strain, and `Σ_D = (a_Λ/8πG) ε`.  Hypotheses `I5`, `I6`.
+  assumption on the principal strain, and `Σ_D = (a_Λ/8πG) ε`.  Hypotheses `I5`, `I6`; with the
+  response absent inside the crossing the equality cannot hold at every radius
+  (`Galactic.saturated_no_equality`), and it enters as reached at a radius or in the limit,
+  hypothesis `hsat` (`Galactic.elastic`, `Galactic.deep_regime_equality`).
 
-The five readings (Sec. II, "The horizon's area", after the postulates and "Counting in the
-bulk", Sec. IV.A, and Sec. IV.C):
+The five readings (Table II of the paper; Sec. II, "The horizon's area", after the postulates
+and "Counting in the bulk", Sec. IV.A, and Sec. IV.C), definitions here, not theorems:
 * `Ahor` and `ringShare`, the count identified with the horizon's area: the register is not drawn
   on the horizon (it cannot be, `Horizon.lean`); what the count and the sphere share is a number,
   `R` rings for the area `4πR_Λ²`, each ring worth `A_hor/R = 4ℓ_c²/π` of it to leading order in
