@@ -12,10 +12,10 @@ import Mathlib.Tactic.Positivity
 
 Formal counterpart of the paragraphs of Sec. IV.C that give the fraction `4n/L`.  The largest
 rings carry their cyclic order: each ring's cells sit at the positions `0, …, L − 1` of `ZMod L`,
-one step per cell (Postulate 1: the shift moves a bit to the next cell), and the opposite of a cell
-lies halfway round, `L/2` steps on (Postulate 2).  Postulate 2 then gives every cell not opposite
-the body's cell `B` a distance from it: the number of steps along the one largest ring through
-both, the shorter way round.
+one step per cell (Postulate 1: the shift moves every bit of a string one cell along its ring per
+tick), and the opposite of a cell lies halfway round, `L/2` steps on (Postulate 2).  Postulate 2 then gives
+every cell not opposite the body's cell `B` a distance from it: the number of steps along the one
+largest ring through both, the shorter way round.
 
 What is proved, for `L ≥ 4`:
 
@@ -65,8 +65,9 @@ lemma exists_loop_through (hL : 4 ≤ L) (B X : H.Cell) : ∃ l, B ∈ H.cells l
     · exact H.exists_loop B X h1 h2
 
 /-- **The cyclic order of the largest rings.**  Each ring's cells carry positions in `ZMod L`,
-distinct on the ring (Postulate 1: the shift moves a bit to the next cell), and the opposite of a
-cell lies `L/2` steps on (Postulate 2: the cell halfway around every largest ring through it). -/
+distinct on the ring (Postulate 1: the shift moves every bit of a string one cell along its ring
+per tick), and the opposite of a cell lies `L/2` steps on (Postulate 2: the cell halfway around
+every largest ring through it). -/
 structure Positions (H : Horizon L) where
   /-- the position of a cell on a largest ring through it -/
   pos : H.Loop → H.Cell → ZMod L

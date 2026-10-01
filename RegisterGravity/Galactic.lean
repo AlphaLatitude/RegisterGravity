@@ -52,8 +52,12 @@ theorem shift_in_cells (G M : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η)
   unfold α mc
   field_simp
 
-/-- **The entropy a mass removes**, Eq. (SM).  The circumference loses `2α/ln 2` cells; the entropy
-is `(ln 2)/4` times the square of the circumference in cells, so the loss is
+/-- **The entropy a mass removes**, Eq. (SM).  The circumference of the horizon with the mass inside
+is `L_M = L − 2α/ln 2` cells, and the area law, one bit per ring's share of area, gives it
+`L_M²/4` bits, the number Eq. (counts) would give with `L_M` in place of `L` (the closed geodesics
+at its throat, of `L_M` cells, are the shorter rings Postulate 1 allows; Sec. IV.C, IV.D), so the
+entropy is `(ln 2)/4` times the square
+of the circumference in cells and the loss is
 `(L/2)·(2α/ln 2)·ln 2 = Lα` to first order (exactly `Lα − α²/ln 2`); and
 `Lα = Mc²/k_B T_dS = 2πMcR_Λ/ℏ` with `I1` for `T_dS`. -/
 theorem entropy_removed (G M T : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
@@ -71,11 +75,12 @@ theorem entropy_removed (G M T : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.
   · rw [h]; unfold α mc RL; field_simp
   · unfold α mc RL; field_simp
 
-/-- **The temperature floor** (Sec. IV.C).  No ring has more than `L` cells, so by `I1` no horizon
-is colder than `E_c/L`: a ring of `L_h ≤ L` cells has `k_BT = E_c/L_h ≥ E_c/L`.  And in de Sitter
-space an observer held at acceleration `a` sees the two horizons combined in quadrature (`hDL`,
+/-- **The temperature floor** (Sec. IV.C).  By `I1` a horizon whose period is `L_h ≤ L` ticks,
+at most the lap of the largest ring, has `k_BT = E_c/L_h ≥ E_c/L`.  And in de Sitter space an
+observer held at acceleration `a` sees the two horizons combined in quadrature (`hDL`,
 Deser–Levin), `k_BT = (ℏ/2πc)√(a² + a_Λ²)` with `a_Λ = c²/R_Λ`, never below `E_c/L`, whatever `a`
-is. -/
+is: no horizon is colder than the cosmological one, as in the register no ring has more than `L`
+cells. -/
 theorem temperature_floor (Lh T a T' : ℝ) (hLh : 0 < Lh) (hLL : Lh ≤ R.L)
     (I1 : R.kB * T = R.ℏ / (Lh * R.tc))
     (hDL : R.kB * T' = R.ℏ / (2 * R.pi * R.c) * Real.sqrt (a ^ 2 + (R.c ^ 2 / R.RL) ^ 2)) :
@@ -249,10 +254,13 @@ theorem shortfall_removes (G M b r : ℝ) (ρ D : ℝ → ℝ) (hbr : b < r)
           field_simp
   · unfold SM; ring
 
-/-- **The string's share** (Sec. IV.C), from Postulate 1.  Which way a string moves is its entropy,
-and every bit carries that alike, so the string's one bit is spread evenly over its cells inside
-the horizon.  Of `m` cells numbered `1, …, m` from the body, the first `n` hold the share
-`n/m`; `RouteB.route_B_fraction` counts them over the rings through a cell of the sphere. -/
+/-- **The string's share** (Sec. IV.C), a reading of Postulate 1.  Which way a string moves is its
+entropy, and every bit carries that alike, so the string's one bit is spread evenly over its cells
+inside the horizon, since every cell is read alike: the arrangement of the bits is no part of the
+state, so no law picks a cell by its bit, and exchanging a `1` and a `−1` between two cells, or two
+positions across strings measured jointly, must leave every prediction unchanged (Sec. IV.A).  Of `m` cells numbered `1, …, m` from
+the body, the first `n` hold the share `n/m`; `RouteB.route_B_fraction` counts them over the rings
+through a cell of the sphere. -/
 theorem string_share (m n : ℕ) (hn : n ≤ m) :
     (((Finset.Icc 1 m).filter (fun k => k ≤ n)).card : ℝ) / ((Finset.Icc 1 m).card : ℝ)
       = (n : ℝ) / m := by

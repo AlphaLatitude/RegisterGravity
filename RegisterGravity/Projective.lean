@@ -5,7 +5,8 @@ import Mathlib.Combinatorics.Configuration
 # The register is a finite projective plane of order `L/2 − 1`
 
 Sec. II of the paper: "With a cell and its opposite taken as a point and a largest ring as a line,
-the register is a finite projective plane of order `L/2 − 1`, with `R` points and `R` lines."
+the register is a finite projective plane of order `L/2 − 1` (for `L ≥ 6`), with `R` points and
+`R` lines."
 
 Points are the opposite pairs, `Horizon.Pt`, a quotient of the cells; lines are the largest rings.
 We build the `Configuration.ProjectivePlane` instance of Mathlib from the fields of `Horizon` (this

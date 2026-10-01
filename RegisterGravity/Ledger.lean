@@ -18,10 +18,6 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Horizon.fano
 #print axioms Horizon.fano_counts
 #print axioms Horizon.fano_order
--- Sec. II, the dimension of space from the incidence of the rings
-#print axioms Register.Dimension.planes_meet
-#print axioms Register.Dimension.disjoint_planes_exist
-#print axioms Register.Dimension.dimension_three
 #print axioms Horizon.fanoPositions
 #print axioms Horizon.fano_even
 
@@ -41,6 +37,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Capacity.one_cell_block
 #print axioms Register.Capacity.product_state
 #print axioms Register.Capacity.ceiling
+#print axioms Register.Capacity.ceiling_by_outcome
 #print axioms Register.Capacity.ceiling_soft
 #print axioms Register.Capacity.nmax_iff
 #print axioms Register.Capacity.palmer_threshold
@@ -58,7 +55,6 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Reg.T_dS
 #print axioms Register.Reg.La_lap
 #print axioms Register.Reg.T_Unruh
-#print axioms Register.Reg.temperature_is_quantum_over_two_pi
 #print axioms Register.Reg.eta_eq
 #print axioms Register.Reg.clausius
 #print axioms Register.Reg.einstein_coefficient
@@ -160,6 +156,9 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.ceiling_cos
 #print axioms Register.Numerics.nmax_cos
 #print axioms Register.Numerics.ceiling_margins
+#print axioms Register.Numerics.soft_ceilings
+#print axioms Register.Numerics.average_block
+#print axioms Register.Numerics.missing_fraction
 #print axioms Register.Numerics.log2_L73
 #print axioms Register.Numerics.log2_planck_band
 #print axioms Register.Numerics.Gof_antitone
@@ -172,6 +171,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.G_bracket
 #print axioms Register.Numerics.Gof_factor_four
 #print axioms Register.Numerics.sun_counts
+#print axioms Register.Numerics.cosmic_mass_beyond_nariai
 #print axioms Register.Numerics.earth_orbit
 #print axioms Register.Numerics.solar_tests
 #print axioms Register.Numerics.phase_grid
@@ -183,7 +183,6 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.log2_Lgal
 #print axioms Register.Numerics.pins_agree
 #print axioms Register.Numerics.temperature_led_numbers
-#print axioms Register.Numerics.tully_fisher_speed
 #print axioms Register.Numerics.EΛ_val
 #print axioms Register.Numerics.ρΛ_val
 #print axioms Register.Numerics.GΛ_val

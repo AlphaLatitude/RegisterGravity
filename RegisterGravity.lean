@@ -1,6 +1,5 @@
 import RegisterGravity.Horizon
 import RegisterGravity.Projective
-import RegisterGravity.Dimension
 import RegisterGravity.RouteB
 import RegisterGravity.Capacity
 import RegisterGravity.Chain

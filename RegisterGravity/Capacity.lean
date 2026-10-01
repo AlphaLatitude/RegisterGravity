@@ -14,23 +14,33 @@ import Mathlib.Tactic.Positivity
 Formal counterpart of the paragraph of Sec. IV.A that derives the bound `2^N ≤ L`, and of the
 remarks of Sec. V on how soft the bound is and on Palmer's bit count.
 
-When a state is read jointly (Postulate 1), the cells on which the earlier qubits show an outcome
-that leaves a later qubit in one state form a *block* of the later string, and the string's fraction
-of 1s in the block gives the later qubit's probability in that state, since every probability is a
-frequency over the bits.  Outcomes that leave the qubit in the same state therefore share a block,
-and different states have disjoint blocks (`disjoint_blocks`).  Here `e` gives the joint outcome
-that the earlier qubits show at each cell of the later string, and `s` the state in which each
-outcome leaves the later qubit.  When every outcome leaves it in a different state, each outcome
-has a block of its own (`block_of_injective`); a product state, whose outcomes all leave it in one
-state, has one block, the whole string (`product_state`).
+When a state is measured jointly (Postulate 1), the strings are read together bit by bit, so every
+bit of a later string is paired with one outcome of the earlier qubits; this pairing is how the
+paper reads "measured jointly", a joint measurement being one measurement whose possible outcomes
+are the bits of the strings measured, paired position by position (the fifth reading of Sec. III,
+which is Palmer's: `N` correlated strings of `L` bits with one permutation applied to all of them),
+and it needs no shared cell.  The paper's *block* (Sec. IV.A) is the set of cells of a later string
+whose bits are paired with one joint outcome of the earlier qubits; blocks of different outcomes
+are disjoint, and the fraction of 1s on a block is the probability of the outcome 1 given the
+block's joint outcome, since every probability is a frequency over the bits.  Here `e` gives the
+joint outcome that the earlier qubits show at each cell of the later string, and the blocks are
+indexed through a map `s` from outcomes to labels: `block e s σ` is the set of cells whose outcome
+has the label `σ`.  With `s` the identity, the blocks are the paper's, one per joint outcome
+(`ceiling_by_outcome`); with `s` injective, still one per outcome (`block_of_injective`, and the
+general `ceiling`); with `s` constant, all outcomes share one block, the whole string
+(`product_state`), a coarser grouping than the paper's.
 
 * `two_le_card_of_frac`: a block whose fraction lies strictly between 0 and 1 needs at least two
   cells, one reading 1 and one reading 0.
-* `ceiling`: in a random state each of the `2^(N−1)` joint outcomes of the first `N − 1` qubits
-  leaves the last in a different state, with a probability strictly between 0 and 1, so the last
-  string, of `L` cells, needs `2^(N−1)` blocks of at least two cells, so `2^N ≤ L`.
+* `ceiling`: when each of the `2^(N−1)` joint outcomes of the first `N − 1` qubits occurs, with
+  the last qubit's bit given it at a probability strictly between 0 and 1, the last string, of
+  `L` cells, needs `2^(N−1)` blocks of at least two cells, so `2^N ≤ L`.  A random state is such a
+  state, and so is a product state of `N` qubits each in a superposition (Sec. IV.A): the bound
+  holds for every state in which all `2^N` joint outcomes occur.  `ceiling_by_outcome` is the
+  theorem with the paper's blocks, `s` the identity on outcomes.
 * `ceiling_soft`: if each block needs `r` cells, `2^(N−1) r ≤ L`, that is `2^N ≤ 2L/r`: the
-  ceiling falls by `log₂(r/2)`.
+  ceiling falls by `log₂(r/2)` (Sec. V: `202`, `200` and `199` for `r = 10`, `30` and `100` at
+  `L_cos`, `Numerics.soft_ceilings`).
 * `nmax_iff`: when `2^N₀ ≤ L < 2^(N₀+1)`, `2^N ≤ L` exactly when `N ≤ N₀`, so `N_max = N₀`.
 * `palmer_threshold`: Palmer's bit count `2^(N+1) − 2 ≤ NL` holds exactly for `N ≤ N₀` once it
   holds at `N₀ ≥ 1` and fails at `N₀ + 1`.
@@ -98,12 +108,13 @@ theorem one_cell_block (b : Cell → Bool) (B : Finset Cell) (h : B.card = 1) :
 
 variable [Fintype Cell]
 
-/-- the block of a state `σ` of the later qubit: the cells of the later string on which the earlier
-qubits show an outcome (`e`) that leaves the later qubit in `σ` (`s`) -/
+/-- the block with the label `σ`: the cells of the later string on which the earlier qubits show
+an outcome (`e`) whose label (`s`) is `σ`; with `s` the identity it is the paper's block of the
+joint outcome `σ` -/
 def block {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → S) (σ : S) : Finset Cell :=
   univ.filter (fun x => s (e x) = σ)
 
-/-- Different states have disjoint blocks. -/
+/-- Different labels have disjoint blocks. -/
 lemma disjoint_blocks {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → S) {σ τ : S}
     (h : σ ≠ τ) : Disjoint (block e s σ) (block e s τ) := by
   rw [Finset.disjoint_left]
@@ -111,16 +122,20 @@ lemma disjoint_blocks {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → 
   simp only [block, mem_filter, mem_univ, true_and] at hx hx'
   exact h (hx.symm.trans hx')
 
-/-- When every outcome leaves the later qubit in a different state, the block of an outcome's
-state is the set of cells that show that outcome. -/
+/-- When the labels of different outcomes differ, the block of an outcome's label is the set of
+cells that show that outcome, the paper's block. -/
 lemma block_of_injective {K S : Type*} [DecidableEq K] [DecidableEq S] (e : Cell → K) (s : K → S)
     (hs : Function.Injective s) (k : K) : block e s (s k) = univ.filter (fun x => e x = k) := by
   ext x
   simp only [block, mem_filter, mem_univ, true_and]
   exact hs.eq_iff
 
-/-- **A product state has one block per string** (Sec. IV.A): when every outcome leaves the later
-qubit in the same state `σ`, its block is the whole string. -/
+/-- **Blocks by conditional state, not the paper's blocks.**  When every joint outcome carries the
+same label `σ`, as when all of them leave the later qubit in one state, the block of that label
+is the whole string.  This is not the paper's definition of a block (Sec. IV.A), which indexes
+blocks by joint outcome: under the paper's definition a product state of superposed qubits has a
+block for each of the `2^(N−1)` joint outcomes, each with a fraction strictly between 0 and 1, and
+needs `2^N ≤ L` like a random state (`ceiling_by_outcome`). -/
 theorem product_state {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → S) (σ : S)
     (h : ∀ k, s k = σ) : block e s σ = univ := by
   ext x
@@ -147,12 +162,12 @@ theorem ceiling_soft {S : Type*} [DecidableEq S] (N L r : ℕ) (hL : Fintype.car
   omega
 
 /-- **The ceiling**, Eq. (nmax) (Sec. IV.A).  Read a state of `N` qubits jointly; let `e` give the
-joint outcome of the first `N − 1` qubits that each cell of the last string shows, `s` the state in
-which each outcome leaves the last qubit, and `b` the last string's bits.  In a random state each
-of the `2^(N−1)` joint outcomes leaves the last qubit in a different state (`s` is injective), with
-a probability strictly between 0 and 1: each block has a fraction of 1s strictly between 0 and 1.
-Each block then needs at least two cells, and the string of `L` cells has room for them only if
-`2^N ≤ L`. -/
+joint outcome of the first `N − 1` qubits that each cell of the last string shows, `s` an injective
+labeling of the outcomes, and `b` the last string's bits.  When each of the `2^(N−1)` joint
+outcomes occurs with the last qubit's bit given it at a probability strictly between 0 and 1, as
+in a random state and in a product state of superposed qubits, each block has a fraction of 1s
+strictly between 0 and 1.  Each block then needs at least two cells, and the string of `L` cells
+has room for them only if `2^N ≤ L`. -/
 theorem ceiling {S : Type*} [DecidableEq S] (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
     (e : Cell → Fin (2 ^ (N - 1))) (s : Fin (2 ^ (N - 1)) → S) (hs : Function.Injective s)
     (b : Cell → Bool)
@@ -165,6 +180,19 @@ theorem ceiling {S : Type*} [DecidableEq S] (N L : ℕ) (hN : 1 ≤ N) (hL : Fin
     congr 1
     omega
   rwa [e2] at h
+
+/-- **The ceiling with the paper's blocks** (Sec. IV.A): the blocks are indexed by joint outcome
+(`s` the identity), `block e id k` being the cells of the last string paired with the outcome
+`k`.  When every joint outcome occurs with the last qubit's bit given it at a probability strictly
+between 0 and 1, `2^N ≤ L`.  A random state is such a state; so is a product state of `N` qubits
+each in a superposition, whose `2^(N−1)` conditional probabilities all equal the last qubit's own:
+the bound holds for every state in which all `2^N` joint outcomes occur, and what singles out the
+random state is that only there is the excess observable (Sec. IV.A). -/
+theorem ceiling_by_outcome (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
+    (e : Cell → Fin (2 ^ (N - 1))) (b : Cell → Bool)
+    (hall : ∀ k, 0 < frac b (block e id k) ∧ frac b (block e id k) < 1) :
+    2 ^ N ≤ L :=
+  ceiling N L hN hL e id Function.injective_id b hall
 
 /-- **The largest `N` with `2^N ≤ L`**: when `2^N₀ ≤ L < 2^(N₀+1)`, `2^N ≤ L` exactly when
 `N ≤ N₀`, so `N_max = ⌊log₂ L⌋ = N₀`. -/

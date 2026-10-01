@@ -430,9 +430,66 @@ theorem ceiling_cos : (2 : ℝ) ^ 204 < Lcos ∧ Lcos < 2 ^ 205 := by
       _ < ((2 : ℝ) ^ 205) ^ 2 := by norm_num
 
 /-- **`N_max = 204`**, Eq. (nmax): `2^N ≤ L_cos` exactly when `N ≤ 204` (`Capacity.ceiling` gives
-`2^N ≤ L` for a random state of `N` qubits). -/
+`2^N ≤ L` for a random state of `N` qubits, and for every state in which all joint outcomes
+occur).  The register's rings are the largest rings, of `L_cos` cells, the ring length of the
+de Sitter horizon, whatever mass a horizon holds: a mass at rest inside a horizon shortens the
+closed geodesics at its throat, `L_M = L − 2α/ln 2`, not the register's rings (Sec. IV.A). -/
 theorem nmax_cos (N : ℕ) : (2 : ℝ) ^ N ≤ Lcos ↔ N ≤ 204 :=
   Capacity.nmax_iff 204 ceiling_cos.1.le ceiling_cos.2 N
+
+/-- **The softness of the ceiling** (Sec. V, Appendix A): a block of `r` cells resolves the last
+qubit's conditional probability to one part in `r`, and `2^(N−1) r ≤ L` (`Capacity.ceiling_soft`)
+holds at `L_cos` for `N ≤ 202` when `r = 10`, for `N ≤ 200` when `r = 30`, and for `N ≤ 199` when
+`r = 100`, and fails at the next `N` in each case. -/
+theorem soft_ceilings :
+    ((2 : ℝ) ^ 201 * 10 < Lcos ∧ Lcos < 2 ^ 202 * 10) ∧
+    ((2 : ℝ) ^ 199 * 30 < Lcos ∧ Lcos < 2 ^ 200 * 30) ∧
+    ((2 : ℝ) ^ 198 * 100 < Lcos ∧ Lcos < 2 ^ 199 * 100) := by
+  obtain ⟨h1, h2⟩ := Lcos_tight
+  have a1 : (2 : ℝ) ^ 201 * 10 < 4.3686e61 := by norm_num
+  have a2 : (4.3687e61 : ℝ) < 2 ^ 202 * 10 := by norm_num
+  have b1 : (2 : ℝ) ^ 199 * 30 < 4.3686e61 := by norm_num
+  have b2 : (4.3687e61 : ℝ) < 2 ^ 200 * 30 := by norm_num
+  have c1 : (2 : ℝ) ^ 198 * 100 < 4.3686e61 := by norm_num
+  have c2 : (4.3687e61 : ℝ) < 2 ^ 199 * 100 := by norm_num
+  exact ⟨⟨a1.trans h1, h2.trans a2⟩, ⟨b1.trans h1, h2.trans b2⟩, ⟨c1.trans h1, h2.trans c2⟩⟩
+
+/-- **The blocks at the ceiling** (Sec. V, Appendix A): at `N = 204` the `2²⁰³` blocks of the
+last string average `L_cos/2²⁰³ = 3.4` cells, certified as `3.35·2²⁰³ < L_cos < 3.45·2²⁰³`. -/
+theorem average_block : 3.35 * (2 : ℝ) ^ 203 < Lcos ∧ Lcos < 3.45 * (2 : ℝ) ^ 203 := by
+  obtain ⟨h1, h2⟩ := Lcos_tight
+  have a1 : 3.35 * (2 : ℝ) ^ 203 < 4.3686e61 := by norm_num
+  have a2 : (4.3687e61 : ℝ) < 3.45 * (2 : ℝ) ^ 203 := by norm_num
+  exact ⟨a1.trans h1, h2.trans a2⟩
+
+/-- **The missing joint outcomes above the ceiling** (Sec. IV.A, Appendix A): a state of `N`
+qubits in which all `2^N` joint outcomes occur cannot be held once `2^N > L`, and at least
+`2^N − L` of its outcomes are missing, the fraction `1 − L/2^N`: `0.15` at `N = 205` and `0.58`
+at `N = 206` for `L_cos`, certified as `0.149 < 1 − L_cos/2²⁰⁵ < 0.151` and
+`0.575 < 1 − L_cos/2²⁰⁶ < 0.5755`. -/
+theorem missing_fraction :
+    (0.149 < 1 - Lcos / 2 ^ 205 ∧ 1 - Lcos / 2 ^ 205 < 0.151) ∧
+    (0.575 < 1 - Lcos / 2 ^ 206 ∧ 1 - Lcos / 2 ^ 206 < 0.5755) := by
+  obtain ⟨h1, h2⟩ := Lcos_tight
+  have p5 : (0 : ℝ) < 2 ^ 205 := by positivity
+  have p6 : (0 : ℝ) < 2 ^ 206 := by positivity
+  have u5 : Lcos / 2 ^ 205 < 0.851 := by
+    rw [div_lt_iff₀ p5]
+    calc Lcos < 4.3687e61 := h2
+      _ < 0.851 * 2 ^ 205 := by norm_num
+  have l5 : 0.849 < Lcos / 2 ^ 205 := by
+    rw [lt_div_iff₀ p5]
+    calc (0.849 : ℝ) * 2 ^ 205 < 4.3686e61 := by norm_num
+      _ < Lcos := h1
+  have u6 : Lcos / 2 ^ 206 < 0.425 := by
+    rw [div_lt_iff₀ p6]
+    calc Lcos < 4.3687e61 := h2
+      _ < 0.425 * 2 ^ 206 := by norm_num
+  have l6 : 0.4245 < Lcos / 2 ^ 206 := by
+    rw [lt_div_iff₀ p6]
+    calc (0.4245 : ℝ) * 2 ^ 206 < 4.3686e61 := by norm_num
+      _ < Lcos := h1
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith
 
 /-! ### The robustness of the ceiling (Appendix A) -/
 
@@ -578,8 +635,9 @@ theorem palmer_211 :
   · push_cast; exact hyes
   · push_cast; norm_num; linarith
 
-/-- **Palmer's range of `L`** (Sec. V): the ceiling `⌊log₂ L⌋` is `212` for `L = 10⁶⁴`, "near 210",
-and `362` for `L = 10¹⁰⁹`, "near 360"; and `L_cos` lies below the smaller. -/
+/-- **Palmer's range of `L`** (Sec. V): by the same bound the ceiling `⌊log₂ L⌋` is `212` for a
+quantum-dot electron with `L = 10⁶⁴` and `362` for a hyperfine ion-trap qubit with `L = 10¹⁰⁹`;
+and `L_cos` lies below the smaller. -/
 theorem palmer_range :
     ((2 : ℝ) ^ 212 < 10 ^ 64 ∧ (10 : ℝ) ^ 64 < 2 ^ 213) ∧
     ((2 : ℝ) ^ 362 < 10 ^ 109 ∧ (10 : ℝ) ^ 109 < 2 ^ 363) ∧ Lcos < 10 ^ 64 := by
@@ -622,9 +680,10 @@ theorem horizon_counts :
 theorem reg_entropy : reg.Shor = Lcos ^ 2 / 4 * Real.log 2 := by
   simp only [Reg.Shor, Reg.Rhor, reg]
 
-/-- **Davies** (Sec. V): `log₂ 10¹²² ≈ 405` (`2⁸¹⁰ < 10²⁴⁴ < 2⁸¹¹`, that is,
-`405 < log₂ 10¹²² < 405.5`), and the logarithm of the horizon's `L²/4` rings is
-`2 log₂ L − 2 = 407.5`: `2⁸¹⁴⁹ < (L²/4)²⁰ < 2⁸¹⁵¹`, that is, `407.45 < log₂(L²/4) < 407.55`. -/
+/-- **Davies** (Sec. V): the `N ≈ 400` Palmer quotes for Davies' `10¹²²` bits is `log₂ 10¹²² = 405`
+(`2⁸¹⁰ < 10²⁴⁴ < 2⁸¹¹`, that is, `405 < log₂ 10¹²² < 405.5`), and the logarithm of the horizon's
+`L²/4` rings is `2 log₂ L − 2 = 407.5`: `2⁸¹⁴⁹ < (L²/4)²⁰ < 2⁸¹⁵¹`, that is,
+`407.45 < log₂(L²/4) < 407.55`. -/
 theorem davies :
     ((2 : ℝ) ^ 810 < 10 ^ 244 ∧ (10 : ℝ) ^ 244 < 2 ^ 811) ∧
     ((2 : ℝ) ^ 8149 < (Lcos ^ 2 / 4) ^ 20 ∧ (Lcos ^ 2 / 4) ^ 20 < 2 ^ 8151) := by
@@ -771,6 +830,54 @@ theorem sun_counts :
   · rw [eg]; linarith [hLα.1]
   · rw [eg]; linarith [hLα.2]
 
+/-- **Which horizon the count describes** (Secs. II, IV.D, Appendix A).  The Galaxy, `10¹² M☉`, a
+mass at rest, has `α = 1.35×10⁵⁰` and `2α/ln 2 = 3.9×10⁵⁰`, and `(2α/ln 2)/L = GM/c²R_Λ` is one
+part in `10¹¹` of `L_cos` (`8.9×10⁻¹²`).  The matter of a ball of radius `R_Λ` at today's mean
+density, `Ω_m = 0.315` of the critical density `3H₀²/8πG`, is `M = Ω_m H₀² R_Λ³/2G`, so with
+`R_Λ² = c²/H₀²Ω_Λ` its `GM/c²R_Λ = Ω_m/2Ω_Λ = 0.23`, beyond the Nariai limit `1/3√3 = 0.19` up to
+which the Schwarzschild–de Sitter solution has a horizon (`Reg.sds_outer_horizon` asks for
+`13 GM/c² < R_Λ`): it is not a mass at rest inside a static horizon, Eq. (SM) does not apply to
+it, and the count of Sec. II is that of the horizon of the solution without a mass. -/
+theorem cosmic_mass_beyond_nariai :
+    (1.345e50 < 1e12 * αs ∧ 1e12 * αs < 1.355e50) ∧
+    (3.85e50 < 2 * (1e12 * αs) / Real.log 2 ∧ 2 * (1e12 * αs) / Real.log 2 < 3.95e50) ∧
+    (8.9e-12 < 1e12 * GMs₀ / (c₀ ^ 2 * RL) ∧ 1e12 * GMs₀ / (c₀ ^ 2 * RL) < 8.91e-12) ∧
+    (0.315 : ℝ) * H₀ ^ 2 * RL ^ 3 / (2 * G₀) * G₀ / (c₀ ^ 2 * RL) = 0.315 / (2 * ΩΛ₀) ∧
+    (0.229 < (0.315 : ℝ) / (2 * ΩΛ₀) ∧ (0.315 : ℝ) / (2 * ΩΛ₀) < 0.2305) ∧
+    (0.192 < 1 / (3 * Real.sqrt 3) ∧ 1 / (3 * Real.sqrt 3) < 0.1925) ∧
+    1 / (3 * Real.sqrt 3) < (0.315 : ℝ) / (2 * ΩΛ₀) := by
+  pi_ln2
+  obtain ⟨r1, r2⟩ := RL_tight
+  have hR := RL_pos
+  have hR' : RL ≠ 0 := hR.ne'
+  have hα := sun_counts.1
+  have hcR : (0 : ℝ) < c₀ ^ 2 * RL := mul_pos (by norm_num) hR
+  have hs3 : 0 < Real.sqrt 3 := Real.sqrt_pos.2 (by norm_num)
+  have h3lo : (1.732 : ℝ) < Real.sqrt 3 := by rw [Real.lt_sqrt (by norm_num)]; norm_num
+  have h3hi : Real.sqrt 3 < 1.7321 := by rw [Real.sqrt_lt' (by norm_num)]; norm_num
+  have h33 : (0 : ℝ) < 3 * Real.sqrt 3 := mul_pos (by norm_num) hs3
+  have n1 : 1 / (3 * Real.sqrt 3) < 0.1925 := by
+    rw [div_lt_iff₀ h33]; linarith
+  have n2 : 0.192 < 1 / (3 * Real.sqrt 3) := by
+    rw [lt_div_iff₀ h33]; linarith
+  have m1 : 0.229 < (0.315 : ℝ) / (2 * ΩΛ₀) := by norm_num
+  have m2 : (0.315 : ℝ) / (2 * ΩΛ₀) < 0.2305 := by norm_num
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ⟨m1, m2⟩, ⟨n2, n1⟩, ?_⟩
+  · linarith [hα.1]
+  · linarith [hα.2]
+  · rw [lt_div_iff₀ ln2_pos]; linarith [hα.1]
+  · rw [div_lt_iff₀ ln2_pos]; linarith [hα.2]
+  · rw [lt_div_iff₀ hcR]
+    calc (8.9e-12 : ℝ) * (c₀ ^ 2 * RL) < 8.9e-12 * (c₀ ^ 2 * 1.6584e26) := by gcongr
+      _ < 1e12 * GMs₀ := by norm_num
+  · rw [div_lt_iff₀ hcR]
+    calc (1e12 * GMs₀ : ℝ) < 8.91e-12 * (c₀ ^ 2 * 1.6583e26) := by norm_num
+      _ < 8.91e-12 * (c₀ ^ 2 * RL) := by gcongr
+  · have e : RL ^ 3 = RL * RL ^ 2 := by ring
+    rw [e, RL_sq]
+    field_simp
+  · linarith
+
 /-- The chain's entropy removed by the Sun, `Lα = 2πM☉cR_Λ/ℏ` (`Reg.entropy_removed`), for these
 inputs. -/
 theorem reg_sun_entropy : reg.L * reg.α (GMs₀ / G₀) = Lcos * αs := by
@@ -887,13 +994,19 @@ theorem sun_crossing :
 
 /-! ## The galactic scale (Sec. IV.C, Table I, Appendix A) -/
 
-/-- **Eq. (aM)**: `a_M = πc²/12R_Λ = 1.42×10⁻¹⁰ m/s²` (`1.4` to two figures), and Verlinde's
-`c²/6R_Λ = 0.90×10⁻¹⁰`. -/
+/-- **Eq. (aM)**: `a_M = πc²/12R_Λ = 1.42×10⁻¹⁰ m/s²` (`1.4` to two figures); Verlinde's
+coefficient `1/6` gives `c²/6R_Λ = 0.90×10⁻¹⁰` with this `R_Λ` and `cH₀/6 = 1.1×10⁻¹⁰` with his
+`cH₀`; and with his coefficient the observed `a₀` would exceed the bound, `c²/6R_Λ < a₀`. -/
 theorem aM_val :
     (1.415e-10 < aM ∧ aM < 1.425e-10) ∧
-    (0.895e-10 < c₀ ^ 2 / (6 * RL) ∧ c₀ ^ 2 / (6 * RL) < 0.905e-10) := by
+    (0.895e-10 < c₀ ^ 2 / (6 * RL) ∧ c₀ ^ 2 / (6 * RL) < 0.905e-10) ∧
+    (1.05e-10 < c₀ * H₀ / 6 ∧ c₀ * H₀ / 6 < 1.15e-10) ∧
+    c₀ ^ 2 / (6 * RL) < a₀ := by
   have hR := RL_pos
-  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
+  have hV : c₀ ^ 2 / (6 * RL) < 0.905e-10 := by
+    apply lt_of_sq' (by positivity) (by norm_num)
+    rw [div_pow, mul_pow, RL_sq]; norm_num
+  refine ⟨⟨?_, ?_⟩, ⟨?_, hV⟩, ⟨by norm_num, by norm_num⟩, lt_trans hV (by norm_num)⟩
   · apply lt_of_sq aM_pos.le (by norm_num)
     rw [aM_sq]
     calc (1.415e-10 : ℝ) ^ 2 < (3.141592 : ℝ) ^ 2 * (c₀ ^ 2 * (H₀ ^ 2 * ΩΛ₀) / 144) := by norm_num
@@ -904,8 +1017,6 @@ theorem aM_val :
           mul_lt_mul_of_pos_right p2_hi (by norm_num)
       _ < (1.425e-10 : ℝ) ^ 2 := by norm_num
   · apply lt_of_sq (by positivity) (by norm_num)
-    rw [div_pow, mul_pow, RL_sq]; norm_num
-  · apply lt_of_sq' (by positivity) (by norm_num)
     rw [div_pow, mul_pow, RL_sq]; norm_num
 
 /-- A tighter enclosure of `a_M`. -/
@@ -925,19 +1036,21 @@ lemma aM_tight : 1.4188e-10 < aM ∧ aM < 1.4189e-10 := by
 theorem reg_aM_val : 1.415e-10 < reg.aM 4 ∧ reg.aM 4 < 1.425e-10 := by
   rw [reg_aM]; exact aM_val.1
 
-/-- **Against observation** (Sec. IV.C, Table I): `a₀/a_M = 0.85`, "observation reaches 85%
-of the bound"; `(a_M − 1.20)/0.24 = 0.9σ` [McGaugh 2016] and `(a_M − 1.19)/0.10 = 2.3σ`
-[Desmond 2023], with the total uncertainties `√(0.02² + 0.24²) = 0.24` and `√(0.04² + 0.09²) =
-0.10`. -/
+/-- **Against observation** (Sec. IV.C, Table I): the two measurements lie below the bound, at
+`1.20/a_M = 0.85` and `1.19/a_M = 0.84` of it, "85% and 84% of it"; the saturation question, `(a_M − 1.20)/0.24 = 0.9σ` [McGaugh 2016] and `(a_M − 1.19)/0.10 = 2.3σ` [Desmond 2023],
+with the total uncertainties `√(0.02² + 0.24²) = 0.24` and `√(0.04² + 0.09²) = 0.10`. -/
 theorem aM_vs_observation :
     (0.845 < a₀ / aM ∧ a₀ / aM < 0.855) ∧
+    (0.835 < 1.19e-10 / aM ∧ 1.19e-10 / aM < 0.845) ∧
     (0.85 < (aM - a₀) / 0.24e-10 ∧ (aM - a₀) / 0.24e-10 < 0.95) ∧
     (2.25 < (aM - 1.19e-10) / 0.10e-10 ∧ (aM - 1.19e-10) / 0.10e-10 < 2.35) ∧
     (0.235 < Real.sqrt (0.02 ^ 2 + 0.24 ^ 2) ∧ Real.sqrt (0.02 ^ 2 + 0.24 ^ 2) < 0.245) ∧
     (0.095 < Real.sqrt (0.04 ^ 2 + 0.09 ^ 2) ∧ Real.sqrt (0.04 ^ 2 + 0.09 ^ 2) < 0.105) := by
   obtain ⟨t1, t2⟩ := aM_tight
   have ha := aM_pos
-  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
+  · rw [lt_div_iff₀ ha]; nlinarith
+  · rw [div_lt_iff₀ ha]; nlinarith
   · rw [lt_div_iff₀ ha]; nlinarith
   · rw [div_lt_iff₀ ha]; nlinarith
   · rw [lt_div_iff₀ (by norm_num)]; linarith
@@ -1015,9 +1128,9 @@ theorem log2_Lgal :
     calc (Lgal ^ 2) ^ 50 < (1.0091 * (2 : ℝ) ^ 410) ^ 50 := by gcongr
       _ < 2 ^ 20501 := by norm_num
 
-/-- **The two pins agree to 18%, a quarter of a bit** (Sec. V): `L_gal/L_cos = 1.18`,
-with `2²⁴ < (L_gal/L_cos)¹⁰⁰ < 2²⁵`, that is, `0.24 < log₂(L_gal/L_cos) < 0.25`; and
-`L_cos/L_gal = 0.85`: the value lies inside the bound at 85%. -/
+/-- **The value lies inside the bound, at 85% of it, a quarter of a bit below** (Sec. V):
+`L_cos/L_gal = 0.85`, and `L_gal/L_cos = 1.18` with `2²⁴ < (L_gal/L_cos)¹⁰⁰ < 2²⁵`, that is,
+`0.24 < log₂(L_gal/L_cos) < 0.25`. -/
 theorem pins_agree :
     (1.175 < Lgal / Lcos ∧ Lgal / Lcos < 1.185) ∧
     ((2 : ℝ) ^ 24 < (Lgal / Lcos) ^ 100 ∧ (Lgal / Lcos) ^ 100 < 2 ^ 25) ∧
@@ -1110,13 +1223,6 @@ theorem temperature_led_numbers :
     linarith
   · rw [hrar, lt_div_iff₀ (by linarith)]; nlinarith
   · rw [hrar, div_lt_iff₀ (by linarith)]; nlinarith
-
-/-- **The Tully–Fisher speed** of a `10¹¹ M☉` galaxy (Sec. IV.C): `v_c⁴ = a_M G M`,
-`v_c = 208 km/s`. -/
-theorem tully_fisher_speed :
-    (208e3 : ℝ) ^ 4 < aM * (1e11 * GMs₀) ∧ aM * (1e11 * GMs₀) < (208.5e3 : ℝ) ^ 4 := by
-  obtain ⟨h1, h2⟩ := aM_tight
-  constructor <;> nlinarith
 
 /-! ## The cosmological scale (Sec. IV.D, Table I, Appendix A) -/
 

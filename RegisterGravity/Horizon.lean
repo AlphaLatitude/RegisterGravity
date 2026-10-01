@@ -33,7 +33,14 @@ Formal counterpart of Sec. II, "The count", of *Gravitation from Hilbert-Space G
   holds every cell, so the register has more than one largest ring (`two_loops`).
 
 The theorems below need `4 ≤ L` (a largest ring has at least two opposite pairs).  Nothing else is
-assumed: no metric, no area, no Bekenstein–Hawking.  The proof follows the paper: a largest ring
+assumed: no metric, no area, no Bekenstein–Hawking, and no drawing of the register in space.  None
+exists: with a cell and its opposite as a point and a largest ring as a line, the register is a
+finite projective plane (`Projective.lean`), whose every line holds `L/2 ≥ 3` points for `L ≥ 6`,
+and by the Sylvester–Gallai theorem a finite set of points of the real projective plane, not all on
+one line, always determines a line through exactly two of them; so the register cannot be drawn
+with its points on a sphere and its lines as great circles, and the paper does not draw it (Sec. II,
+"The horizon's area").  The count is an incidence structure, and what joins it to the horizon's area
+is a reading, a ring's share of that area (`Chain.ringShare`).  The proof follows the paper: a largest ring
 `E` that misses a cell `P` (`exists_loop_not_mem`, by the paper's construction), then `ρ = L/2` by
 counting the pairs of `E` (`two_mul_card_through`), then `C` and `R`.  That `L` is even follows
 here from `ρ = L/2` (`even_L`), and in `RouteB.lean` from the opposite lying halfway round

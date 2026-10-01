@@ -196,10 +196,10 @@ theorem sds_outer_horizon (G M Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
 
 /-- **The period of the horizon is the lap of the largest ring** (Sec. IV.D, the content of the
 boundary condition).  With `hdS`, the field of the solution without a mass at the horizon is
-`g(R_Λ) = −c²/R_Λ`, so the horizon's surface gravity is `a_Λ = c²/R_Λ`, here derived.  The ring
-of an observer held at that acceleration, `L_a` of `Chain.lean`, whose lap time is the thermal
-period `2πc/a` of his horizon, is the largest ring, `L_{a_Λ} = L`; so the period of the horizon,
-`2πc/a_Λ = 2πR_Λ/c`, is the lap time `Lt_c` of the largest ring, Eq. (clock). -/
+`g(R_Λ) = −c²/R_Λ`, so the horizon's surface gravity is `a_Λ = c²/R_Λ`, here derived.  The thermal
+period `2πc/a` of a horizon of that surface gravity, in ticks `L_a` of `Chain.lean`, is `L`,
+`L_{a_Λ} = L`; so the period of the horizon, `2πc/a_Λ = 2πR_Λ/c`, is the lap time `Lt_c` of the
+largest ring, Eq. (clock). -/
 theorem horizon_period (G Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) :
     R.gSdS G 0 Λ R.RL = -R.aΛ ∧ R.La R.aΛ = R.L ∧
     R.La R.aΛ * R.tc = 2 * R.pi * R.c / R.aΛ ∧ 2 * R.pi * R.c / R.aΛ = R.L * R.tc := by
@@ -217,9 +217,9 @@ theorem horizon_period (G Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) :
     unfold aΛ
     field_simp
 
-/-- **Eq. (energy) from the boundary condition**: with `I1` for the ring of an observer held at
-the horizon's surface gravity, which is the largest ring (`horizon_period`), the temperature of
-the horizon is Unruh's at `a_Λ`, `ℏa_Λ/2πc`, and it is `E_c/L = ℏc/2πR_Λ`, the Gibbons–Hawking
+/-- **Eq. (energy) from the boundary condition**: with `I1` for the period of a horizon of surface
+gravity `a_Λ`, which is the lap of the largest ring (`horizon_period`), the temperature of the
+horizon is Unruh's at `a_Λ`, `ℏa_Λ/2πc`, and it is `E_c/L = ℏc/2πR_Λ`, the Gibbons–Hawking
 temperature: `ℏ` over the lap time of the largest ring. -/
 theorem horizon_temperature (G Λ T : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
     (I1 : R.kB * T = R.ℏ / (R.La R.aΛ * R.tc)) :
@@ -233,34 +233,23 @@ theorem horizon_temperature (G Λ T : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
   rw [hL] at I1
   exact R.T_dS T I1
 
-/-- **The horizon's radius** (Sec. IV.D).  The solution without a mass has its horizon at `√(3/Λ)`,
-given a horizon at all (`Λ > 0`, which the paper derives from the rings: the solutions with `Λ ≤ 0`
-have no closed line of translation, and the files take it as the hypothesis `hΛ`).  Postulate 1
-enters twice, as the register's own input, each time with a property of the solution's horizon.
-A largest ring keeps its length, so it is at rest relative to its center, and nothing beyond the
-horizon is at rest, so its radius `R_Λ` lies within that center's horizon, `f(R_Λ) ≥ 0` (`hrest`).
-And the horizon's great circles are closed lines of translation, so they are rings, and no ring
-has more than `L` cells: the circumference `2π√(3/Λ)` is at most `Lℓ_c` (`P1`).  Then the horizon
-is at `R_Λ`: the hypothesis `hdS` of the chain follows, and with it `Λ = 3/R_Λ²`. -/
-theorem horizon_radius (G Λ : ℝ) (hΛ : 0 < Λ) (hrest : 0 ≤ R.fSdS G 0 Λ R.RL)
-    (P1 : 2 * R.pi * Real.sqrt (3 / Λ) ≤ R.L * R.ℓc) :
+/-- **The horizon's radius** (Sec. IV.D).  A ring is a closed line of translation, a closed
+geodesic of space.  Of the maximally symmetric solutions without a mass only de Sitter space has
+one, so `Λ > 0` (the hypothesis `hΛ`), and its closed geodesics are circles of radius `√(3/Λ)`,
+all of length `2π√(3/Λ)`, a classical property of the solution taken as known like the solution
+itself.  A largest ring, of length `Lℓ_c`, is one of them: `Lℓ_c = 2π√(3/Λ)` (`hgeo`).  Then the
+horizon of the solution without a mass, at `√(3/Λ)`, is at `R_Λ = Lℓ_c/2π`: the hypothesis `hdS`
+of the chain follows, and with it `Λ = 3/R_Λ²`. -/
+theorem horizon_radius (G Λ : ℝ) (hΛ : 0 < Λ)
+    (hgeo : R.L * R.ℓc = 2 * R.pi * Real.sqrt (3 / Λ)) :
     R.fSdS G 0 Λ R.RL = 0 ∧ Λ = 3 / R.RL ^ 2 := by
   reg_facts R
-  have hRL := R.RL_pos
   have h3 : (0 : ℝ) < 3 / Λ := by positivity
-  -- from `hrest`: `R_Λ² ≤ 3/Λ`, so `R_Λ ≤ √(3/Λ)`
-  have hsq : R.RL ^ 2 ≤ 3 / Λ := by
-    unfold fSdS at hrest
-    simp only [mul_zero, zero_div, sub_zero] at hrest
-    rw [le_div_iff₀ hΛ]
-    nlinarith
-  have hle : R.RL ≤ Real.sqrt (3 / Λ) := Real.le_sqrt_of_sq_le hsq
-  -- from `P1`: `√(3/Λ) ≤ Lℓ_c/2π = R_Λ`
-  have hge : Real.sqrt (3 / Λ) ≤ R.RL := by
+  -- from `hgeo`: `R_Λ = Lℓ_c/2π = √(3/Λ)`
+  have h2pi : (2 * R.pi : ℝ) ≠ 0 := by positivity
+  have heq : R.RL = Real.sqrt (3 / Λ) := by
     unfold RL
-    rw [le_div_iff₀ (by positivity)]
-    linarith
-  have heq : R.RL = Real.sqrt (3 / Λ) := le_antisymm hle hge
+    rw [hgeo, mul_div_cancel_left₀ _ h2pi]
   have hRL2 : R.RL ^ 2 = 3 / Λ := by rw [heq, Real.sq_sqrt h3.le]
   refine ⟨?_, ?_⟩
   · unfold fSdS

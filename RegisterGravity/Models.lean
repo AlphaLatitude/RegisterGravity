@@ -6,7 +6,9 @@ import RegisterGravity.RouteB
 
 A theorem proved from contradictory axioms would hold vacuously, so the axioms of `Horizon L` need
 a model.  The smallest is `L = 6`: the Fano plane, the projective plane of order `2 = L/2 − 1`,
-with each point doubled into a cell and its opposite.  Every axiom is checked by `decide`, and the
+with each point doubled into a cell and its opposite; it is an incidence structure, not a drawing,
+and like every finite projective plane of order at least 2 it has no drawing with straight lines or
+great circles (`Horizon.lean`).  Every axiom is checked by `decide`, and the
 counts of `Horizon.counts` come out as `14 = L²/2 − L + 2` cells and `7 = L²/4 − L/2 + 1` rings.
 The cyclic order of `RouteB.lean` has a model on it too: each ring runs through its three points
 on one side and back through them on the other, so that the opposite of a cell lies three steps,
