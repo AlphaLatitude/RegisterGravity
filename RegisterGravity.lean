@@ -3,9 +3,11 @@ import RegisterGravity.Projective
 import RegisterGravity.RouteB
 import RegisterGravity.Capacity
 import RegisterGravity.Chain
+import RegisterGravity.Symmetry
 import RegisterGravity.Galactic
 import RegisterGravity.Bridge
 import RegisterGravity.DeSitter
 import RegisterGravity.Cosmo
 import RegisterGravity.Numerics
 import RegisterGravity.Models
+import RegisterGravity.Planes

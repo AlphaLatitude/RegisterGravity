@@ -17,6 +17,14 @@ of the horizon:
   `S_in(r) = Sin 4 r` at `r = nℓ_c` is the fraction that `route_B_fraction` counts, without its
   correction `1 + 1/2n`, times the sphere's `N_s(r)` bits.  So Eq. (volume) is the count of
   Sec. IV.C to leading order in `1/n`, and the `κ = 4` of `Sin` is the count's.
+* `horizon_entropy_count`: every largest ring has half its cells inside any observer's horizon,
+  so the horizon counts every ring of the register at one bit each, `card Loop · ln 2`, the chain's
+  `S_hor` to relative order `2/L`; a ring's share of the horizon's area is that area over this
+  count.
+
+`Strings` is the state of the rings of a `Horizon L` that the paper's definition of a cell gives: a
+cell holds one bit of each ring through it, so each largest ring carries exactly one string, a bit
+on each of its cells.
 -/
 
 open Finset
@@ -25,6 +33,14 @@ namespace Register
 namespace Bridge
 
 variable {L : ℕ} (H : Horizon L) (R : Reg)
+
+/-- **The strings on the rings** (Sec. II).  A cell holds one bit of each ring through it (the
+paper's definition of a cell), so the bits on a ring's cells form one string of Postulate 1: every
+largest ring carries exactly one, and a second string would need a second bit on each of its
+cells.  `Strings` is that state, a bit for each ring and each of its cells.  What can change in a
+free string is which way it moves, a doublet, whose entropy is one bit (`Reg.one_bit`,
+`Reg.entropy_per_ring`). -/
+def Strings : Type := ∀ l : H.Loop, {X // X ∈ H.cells l} → Bool
 
 /-- **The exact counts in the chain's terms** (Sec. II, Eq. (counts)).  For a register whose `L`
 is that of the horizon `H`, `L ≥ 4`, the largest rings of `H` number `R_hor (1 − 2/L + 4/L²)` and
@@ -38,6 +54,23 @@ theorem counts_exact (hL : 4 ≤ L) (hRL : R.L = L) :
   obtain ⟨h1, h2⟩ := R.counts_leading_order
   rw [← h1, ← h2, hRL]
   constructor <;> linarith
+
+/-- **Every ring is counted on every horizon** (Sec. II, "The horizon's area"; Sec. IV.D).  Every
+largest ring has half its cells inside any observer's horizon, counting a cell on it as half
+(`Horizon.Positions.horizon_weight_ring`), so every one of the register's rings carries its bit on
+the horizon: at one bit per ring the horizon's entropy is `card Loop · ln 2`, which is the chain's
+`S_hor = (L²/4) ln 2` times `1 − 2/L + 4/L²` (`counts_exact`).  A ring's share of the horizon's
+area, `A_hor/R` (`Reg.ringShare`), is then the solution's area over this count, a quotient, not an
+identification. -/
+theorem horizon_entropy_count [NeZero L] (P : H.Positions) (hL : 4 ≤ L) (hRL : R.L = L)
+    (B : H.Cell) :
+    (∀ l : H.Loop,
+      ∑ X ∈ H.cells l, Horizon.Positions.weight (L := L) (P.dist B X) = (L : ℝ) / 2) ∧
+    (Fintype.card H.Loop : ℝ) * R.ln2 = R.Shor * (1 - 2 / R.L + 4 / R.L ^ 2) := by
+  refine ⟨fun l => P.horizon_weight_ring hL B l, ?_⟩
+  rw [(counts_exact H R hL hRL).1]
+  unfold Reg.Shor
+  ring
 
 /-- **Eq. (volume) from the count** (Sec. IV.C).  Let the largest rings of `H` carry the cyclic
 order `P`, let `B` be the body's cell and `Q` a cell of the sphere at distance `n` from it, with

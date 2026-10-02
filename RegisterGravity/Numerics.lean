@@ -23,7 +23,9 @@ value the paper quotes.  Observational values and their uncertainties are inputs
 `GM☉ = 1.32712440018e20 m³/s²` (so `M☉ = GM☉/G`), `1 au = 149597870700 m`, `R☉ = 6.957e8 m`, and
 for Mercury `a = 5.7909050e10 m`, `e = 0.205630`, `T = 87.9691 d`; `1 yr = 365.25 d`;
 `Ω_m = 0.315`, `q = −0.53`; the lunar-laser-ranging bound `|Ġ/G| ≲ 10⁻¹³ yr⁻¹`; Palmer's range
-of `L`, `10⁶⁴` to `10¹⁰⁹`, and Davies' `10¹²²`.
+of `L`, `10⁶⁴` to `10¹⁰⁹`, and Davies' `10¹²²`; for the bit's history (Sec. II), `1 MeV =
+1.602176634e-13 J`, Planck's uncertainty `±0.007` on `Ω_Λ`, and DESI's `Ω_m = 0.2975 ± 0.0086` from
+baryon acoustic oscillations alone in flat ΛCDM.
 
 ## `π`, `ln 2` and `e`
 
@@ -738,6 +740,89 @@ theorem davies :
       _ < (Lcos ^ 2 / 4) ^ 20 := by gcongr
   · calc (Lcos ^ 2 / 4) ^ 20 < (1.4436 * (2 : ℝ) ^ 409 / 4) ^ 20 := by gcongr
       _ < 2 ^ 8151 := by norm_num
+
+/-! ## The bit's history and the energy check of the current epoch (Sec. II, Appendix A)
+
+New inputs: `1 MeV = 1.602176634×10⁻¹³ J` (the SI elementary charge, exact), Planck's uncertainty
+`±0.007` on `Ω_Λ`, and DESI's `Ω_m = 0.2975 ± 0.0086` from baryon acoustic oscillations alone in
+flat ΛCDM. -/
+
+local notation "MeV₀" => ((1602176634 : ℝ) / 10 ^ 22)
+
+/-- **The strings of a horizon in thermal times** (Sec. II, "The bit's history"; Appendix A):
+`ln N = ln(L_cos²/4)` lies between `281.5` and `282.5`, so about `282` thermal times bring all
+`N = L²/4` strings of a horizon to equilibrium. -/
+theorem lnN_val : 281.5 < Real.log (Lcos ^ 2 / 4) ∧ Real.log (Lcos ^ 2 / 4) < 282.5 := by
+  obtain ⟨h1, h2⟩ := Lcos_sq_bounds
+  have e : ∀ a : ℝ, 0 < a → Real.log (a * (2 : ℝ) ^ 407) = Real.log a + 407 * Real.log 2 := by
+    intro a ha
+    rw [Real.log_mul ha.ne' (by positivity), Real.log_pow]
+    norm_num
+  have lo : 1.4435 * (2 : ℝ) ^ 407 < Lcos ^ 2 / 4 := by
+    rw [lt_div_iff₀ (by norm_num)]
+    calc 1.4435 * (2 : ℝ) ^ 407 * 4 = 1.4435 * (2 : ℝ) ^ 409 := by norm_num
+      _ < Lcos ^ 2 := h1
+  have hi : Lcos ^ 2 / 4 < 1.4436 * (2 : ℝ) ^ 407 := by
+    rw [div_lt_iff₀ (by norm_num)]
+    calc Lcos ^ 2 < 1.4436 * (2 : ℝ) ^ 409 := h2
+      _ = 1.4436 * (2 : ℝ) ^ 407 * 4 := by norm_num
+  have a1 : (1 : ℝ) - (1.4435 : ℝ)⁻¹ ≤ Real.log 1.4435 :=
+    Real.one_sub_inv_le_log_of_pos (by norm_num)
+  have a1' : (0.307 : ℝ) < 1 - (1.4435 : ℝ)⁻¹ := by norm_num
+  have a2 : Real.log 1.4436 < 0.38 := by
+    rw [Real.log_lt_iff_lt_exp (by norm_num)]
+    have := Real.quadratic_le_exp_of_nonneg (show (0 : ℝ) ≤ 0.38 by norm_num)
+    have h3 : (1.4436 : ℝ) < 1 + 0.38 + 0.38 ^ 2 / 2 := by norm_num
+    linarith
+  have l2a := Real.log_two_gt_d9
+  have l2b := Real.log_two_lt_d9
+  constructor
+  · have := Real.log_lt_log (by positivity) lo
+    rw [e 1.4435 (by norm_num)] at this
+    linarith
+  · have hpos : 0 < Lcos ^ 2 / 4 := by have := Lcos_pos; positivity
+    have := Real.log_lt_log hpos hi
+    rw [e 1.4436 (by norm_num)] at this
+    linarith
+
+/-- **Equilibrium by the first second** (Sec. II, "The bit's history"; Appendix A): `ln N` thermal
+times `ℏ/k_BT` at `k_BT = 1 MeV` take `2×10⁻¹⁹ s` (between `1.5` and `2.5×10⁻¹⁹ s`), and `10¹⁸`
+times as long is less than a fifth of a second. -/
+theorem relax_1MeV :
+    (1.5e-19 < Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀) ∧
+      Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀) < 2.5e-19) ∧
+    10 ^ 18 * (Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀)) < 1 / 5 := by
+  obtain ⟨h1, h2⟩ := lnN_val
+  have hτ : (0 : ℝ) < ℏ₀ / MeV₀ := by norm_num
+  have u : Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀) < 282.5 * (ℏ₀ / MeV₀) :=
+    mul_lt_mul_of_pos_right h2 hτ
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · calc (1.5e-19 : ℝ) < 281.5 * (ℏ₀ / MeV₀) := by norm_num
+      _ < Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀) := mul_lt_mul_of_pos_right h1 hτ
+  · calc Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀) < 282.5 * (ℏ₀ / MeV₀) := u
+      _ < 2.5e-19 := by norm_num
+  · calc 10 ^ 18 * (Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀))
+        < 10 ^ 18 * (282.5 * (ℏ₀ / MeV₀)) := mul_lt_mul_of_pos_left u (by norm_num)
+      _ < 1 / 5 := by norm_num
+
+/-- **One bit per string in the current epoch** (Sec. II, "The bit's history"; Appendix A).  At `b`
+bits per string the horizon's entropy is held by `S_hor/b k_B ln 2` strings, which at the horizon's
+thermal energy `E_c/L` on average carry `E_Λ/b ln 2`, against the `E_Λ/Ω_Λ` within `R_Λ` today, so
+the two agree at `b = Ω_Λ/ln 2`: `0.99 ± 0.01` with Planck's `Ω_Λ = 0.685 ± 0.007`, and
+`1.01 ± 0.01` with DESI's baryon acoustic oscillations alone, `Ω_Λ = 1 − Ω_m`,
+`Ω_m = 0.2975 ± 0.0086`. -/
+theorem bit_per_string :
+    (0.985 < ΩΛ₀ / Real.log 2 ∧ ΩΛ₀ / Real.log 2 < 0.995) ∧
+    (0.005 < (7 / 1000 : ℝ) / Real.log 2 ∧ (7 / 1000 : ℝ) / Real.log 2 < 0.015) ∧
+    (1.005 < (1 - 2975 / 10000 : ℝ) / Real.log 2 ∧
+      (1 - 2975 / 10000 : ℝ) / Real.log 2 < 1.015) ∧
+    (0.005 < (86 / 10000 : ℝ) / Real.log 2 ∧ (86 / 10000 : ℝ) / Real.log 2 < 0.015) := by
+  have l2a := Real.log_two_gt_d9
+  have l2b := Real.log_two_lt_d9
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
+  all_goals first
+    | (rw [lt_div_iff₀ ln2_pos]; linarith)
+    | (rw [div_lt_iff₀ ln2_pos]; linarith)
 
 /-! ## Newton's constant from the ceiling (Sec. V, Prediction 2, Appendix A) -/
 

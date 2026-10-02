@@ -17,7 +17,9 @@ direct count of `Horizon.counts`.
 
 Which orders a finite projective plane can have is the question the paper cites Bruck and Ryser
 for: their theorem excludes orders `1` or `2` modulo `4` that are not sums of two squares.  It is a
-citation, and no derivation uses it.
+citation, and no derivation uses it.  The converse of this file, a register from every finite
+projective plane, is `Horizon.register_of_plane` (`Models.lean`), and `Planes.lean` gives a plane,
+so a register, for every prime-power order.
 -/
 
 open Finset Configuration

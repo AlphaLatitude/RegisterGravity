@@ -39,8 +39,10 @@ finite projective plane (`Projective.lean`), whose every line holds `L/2 ≥ 3` 
 and by the Sylvester–Gallai theorem a finite set of points of the real projective plane, not all on
 one line, always determines a line through exactly two of them; so the register cannot be drawn
 with its points on a sphere and its lines as great circles, and the paper does not draw it (Sec. II,
-"The horizon's area").  The count is an incidence structure, and what joins it to the horizon's area
-is a reading, a ring's share of that area (`Chain.ringShare`).  The proof follows the paper: a largest ring
+"The horizon's area").  The count is an incidence structure; what joins it to the horizon's area is
+that every ring has half its cells inside any observer's horizon (`RouteB.lean`,
+`Bridge.horizon_entropy_count`), so the horizon counts them all, and a ring's share of its area
+(`Chain.ringShare`) is the area over the count.  The proof follows the paper: a largest ring
 `E` that misses a cell `P` (`exists_loop_not_mem`, by the paper's construction), then `ρ = L/2` by
 counting the pairs of `E` (`two_mul_card_through`), then `C` and `R`.  That `L` is even follows
 here from `ρ = L/2` (`even_L`), and in `RouteB.lean` from the opposite lying halfway round

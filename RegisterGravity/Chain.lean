@@ -25,11 +25,13 @@ axiom is declared.
 
 Beyond the two postulates the paper takes, as Sec. III lists, the symmetry of space (Sec. II),
 thermodynamics (Sec. III), Verlinde's elastic response (Sec. IV.C), and the first law for the
-cosmic fluid (Sec. VI), none of them a number, and it reads the postulates in five places
-(Secs. II, IV.A and IV.C).  In the files the symmetry of space is folded into `ringShare` and `Ns` (a
-ring's share of area the same everywhere) and into the solution taken as known.  Here the
-thermodynamic and elastic inputs are hypotheses, and the readings are definitions, the fifth a
-function.
+cosmic fluid (Sec. VI), none of them a number.  In the files every one of them is a named
+hypothesis of the theorems that use it: the symmetry of space is `hsym` of
+`Symmetry.strings_from_symmetry` (no direction preferred at any point, hence no point, so the
+fraction of the rings within an angular distance of a point is the same at every point, the share
+of the three-sphere's volume near a great circle), and it also enters through the solution taken
+as known.  The five identifications that earlier versions of the paper listed as readings of the
+postulates (its Table II) are derived below; the section after the inputs says where.
 
 Thermodynamics:
 * `I1` (a horizon is thermal): a horizon whose imaginary-time period is `τ` has `k_B T = ℏ/τ`
@@ -52,31 +54,42 @@ Elasticity, in the galactic law only (`Galactic.lean`):
   (`Galactic.saturated_no_equality`), and it enters as reached at a radius or in the limit,
   hypothesis `hsat` (`Galactic.elastic`, `Galactic.deep_regime_equality`).
 
-The five readings (Table II of the paper; Sec. II, "The horizon's area", after the postulates
-and "Counting in the bulk", Sec. IV.A, and Sec. IV.C), definitions here, not theorems:
-* `Ahor` and `ringShare`, the count identified with the horizon's area: the register is not drawn
-  on the horizon (it cannot be, `Horizon.lean`); what the count and the sphere share is a number,
-  `R` rings for the area `4πR_Λ²`, each ring worth `A_hor/R = 4ℓ_c²/π` of it to leading order in
-  `1/L` (`shares`).
-* `Shor`, the entropy of the horizon: one string on each ring, with a bit on each of its cells, is
-  how the paper reads Postulate 1, so the horizon holds one bit for each of its rings (`one_bit`).
-* `Ns`, the strings of a sphere that is not a horizon: the register fixes a sphere's incidences,
-  `L²/2` at every distance (two cells of every ring on average), so counted by incidence every
-  sphere would hold all `L²/4` strings, as a horizon does, and the register would know no distance; the
-  number of its strings is read instead from its area, one for each ring's share of it,
-  `4ℓ_c²/π`, the same everywhere (Postulate 2 distinguishes no cell and the symmetry of space no
-  direction).  This is the area law of a screen, the one reading taken beyond the cosmological
-  horizon, and Sec. III uses it on every local horizon (the density the same on each); from it
-  follow the counts of every sphere in the bulk (`bulk_counts`, `ratio_of_areas`).
-* `Galactic.Sin`, the entropy a sphere's strings hold inside it: a string's one bit is spread
-  evenly over its cells inside the horizon (`Galactic.string_share`), since the bit is which way
-  the whole string moves, a property of no one cell, and every cell is read alike, the arrangement
-  of the bits being no part of the state, so that no law picks a cell by its bit and the exchange
-  of a `1` and a `−1` changes no prediction (Secs. IV.A, IV.C); its share `4n/L` is
-  the count's (`Bridge.Sin_from_count`).
-* `Capacity.ceiling`'s pairing `e`: a joint measurement reads its strings in step, the `k`-th bit of
-  each together (Sec. IV.A); it enters as the function that gives, at each cell of the last string,
-  the outcome the other qubits show.
+## The readings of earlier versions, derived
+
+Versions of the paper up to v11.1.18 listed five identifications as readings of the postulates
+(its Table II), and the files carried them as definitions.  They are derived now:
+* The count identified with the horizon's area (`Ahor`, `ringShare`): every largest ring has half
+  its cells inside any observer's horizon, counting a cell on it as half
+  (`Horizon.Positions.horizon_weight_ring`), so the horizon counts every one of the register's `R`
+  rings at one bit each (`Bridge.horizon_entropy_count`); `A_hor/R = 4ℓ_c²/π` (`shares`) is the
+  solution's area over that count, a quotient.
+* One string on each ring (`Shor`, `Bridge.Strings`): from the paper's definition of a cell, which
+  holds one bit of each ring through it, so the bits on a ring's cells form one string of
+  Postulate 1 and a second string would need a second bit on each cell.  What can change in a
+  free string on its ring is which way it moves, a doublet, whose entropy is one bit (`one_bit`,
+  `entropy_per_ring`).  The paper's Sec. II adds the bit's history and the energy check of the
+  current epoch, whose numbers `Numerics.lnN_val`, `Numerics.relax_1MeV` and
+  `Numerics.bit_per_string` certify.  Interactions change the strings' states, not their number,
+  and enter the count only as corrections.
+* The strings of a sphere that is not a horizon (`Ns`): from the symmetry of space, the hypothesis
+  `hsym` of `Symmetry.strings_from_symmetry`.  A ring is a great circle of the three-sphere of
+  radius `R_Λ` (Sec. IV.D), and with no direction preferred at any point, hence no point, the
+  fraction of the rings within angular distance `θ ≤ π/2` of a point is the same at every point, so it is its
+  average over the three-sphere, which, counted ring by ring, is the share of the volume within `θ`
+  of a great circle, `sin²θ` (`Symmetry.tube_fraction`); the sphere of that angular radius has the areal
+  radius `R_Λ sin θ`, so a sphere of areal radius `r` holds `(L²/4)(r/R_Λ)²` strings, one for each
+  ring's share of its area, the same on every sphere (`Symmetry.density_uniform`).  This is the
+  area law of a screen, and Sec. III uses it on every local horizon; `bulk_counts` and
+  `ratio_of_areas` give its forms.
+* The share of a string's bit inside a sphere (`Galactic.Sin`): the bit is read at one cell, and
+  every cell is read alike, since the arrangement of the bits is no part of the state
+  (`Capacity.cells_read_alike`, Sec. IV.A); so on average it is spread evenly over the cells the
+  observer can read, the `L/2` inside his horizon (`Galactic.string_share`), and the share `4n/L`
+  is the count of Sec. IV.C (`Horizon.Positions.route_B_fraction`, `Bridge.Sin_from_count`).
+* The pairing of a joint measurement (`Capacity.ceiling_in_step`): a joint measurement is one
+  measurement, so it reads one position, the same on every string of the qubits it measures,
+  which the shift keeps in step (Postulate 1); the joint outcome a position shows is the strings'
+  bits there (`Capacity.jointOutcome`), no function chosen.
 
 ## One bit per ring
 
@@ -102,8 +115,8 @@ and `DeSitter.horizon_radius` derives it, with `Λ > 0` as a hypothesis, from th
 a closed geodesic of the solution, all of which have length `2π√(3/Λ)`, each a great circle of the
 horizon of some observer at rest.  The register's rings are the largest rings, of `L` cells; every
 one crosses an observer's horizon with half its cells inside and carries the entropy inside it
-(`Galactic.Sin`), and the horizon's own entropy is the register's count identified with its area
-(`Shor`).  With a mass inside, the solution's closed geodesics are the great circles of its
+(`Galactic.Sin`), and the horizon's own entropy is the register's count, every ring counted
+(`Shor`, `Bridge.horizon_entropy_count`).  With a mass inside, the solution's closed geodesics are the great circles of its
 horizons' throats, of `L_M = L − 2α/ln 2` cells at the cosmological horizon and `4πGM/c²ℓ_c` at a
 black hole's, the shorter rings Postulate 1 allows, outside the count of Postulate 2; the area law
 (`Ns`), one bit per ring's share of area, gives the horizon `L_M²/4` bits, the number Eq. (counts)
@@ -176,8 +189,8 @@ noncomputable def ρc : ℝ := R.Ec / R.ℓc ^ 3
 length `Lℓ_c`; Sec. IV.D derives that each largest ring is such a circle and that the horizon has
 the same radius (`DeSitter.horizon_radius`). -/
 noncomputable def RL : ℝ := R.L * R.ℓc / (2 * R.pi)
-/-- the area of a sphere of radius `R_Λ`, the horizon's by Sec. IV.D; the count's link to it is
-the reading `ringShare` -/
+/-- the area of a sphere of radius `R_Λ`, the horizon's by Sec. IV.D; every one of the register's
+rings is counted on it (`Bridge.horizon_entropy_count`), and `ringShare` is its area over that count -/
 noncomputable def Ahor : ℝ := 4 * R.pi * R.RL ^ 2
 /-- the cells of the register, `L²/2` to leading order in `1/L` (`Bridge.counts_exact`); an
 observer's horizon is `L` of them, a quarter lap from him (Sec. IV.D) -/
@@ -187,15 +200,17 @@ each a great circle of the horizon of some observer at rest, and each crossing e
 horizon with half its cells inside (Secs. II, IV.D) -/
 noncomputable def Rhor : ℝ := R.L ^ 2 / 4
 /-- **The entropy**, Eq. (S), in units of `k_B`: one bit, `ln 2`, for each largest ring.  Every
-ring carries one string (Sec. II, the reading of Postulate 1), what can change in a free string on
-its ring is which way it moves, the string moving as a whole (Postulate 1), a doublet; the bits
-are the possible outcomes of measuring it, so a string is one qubit, and a doublet weighted
-equally holds one bit
-(`one_bit`); interactions enter the count only as corrections. -/
+ring carries exactly one string, since a cell holds one bit of each ring through it
+(`Bridge.Strings`); what can change in a free string on its ring is which way it moves, the string
+moving as a whole (Postulate 1), a doublet; the bits are the possible outcomes of measuring it, so
+a string is one qubit, and a doublet weighted equally holds one bit (`one_bit`, `entropy_per_ring`);
+and every ring has half its cells inside any observer's horizon, so every ring is counted on it
+(`Bridge.horizon_entropy_count`).  Interactions enter the count only as corrections. -/
 noncomputable def Shor : ℝ := R.Rhor * R.ln2
 /-- the horizon's area over the register's cells, an auxiliary the paper does not use -/
 noncomputable def cellShare : ℝ := R.Ahor / R.Chor
-/-- a ring's share of an observer's horizon, its area over the `L²/4` rings that cross it -/
+/-- a ring's share of an observer's horizon, its area over the `L²/4` rings that cross it
+(`Bridge.horizon_entropy_count`): a quotient of the solution's area by the register's count -/
 noncomputable def ringShare : ℝ := R.Ahor / R.Rhor
 /-- the entropy per unit area of the horizon, `η = k_B R ln 2/A_hor` -/
 noncomputable def η : ℝ := R.kB * R.Shor / R.Ahor
@@ -228,6 +243,13 @@ theorem shares : R.cellShare = 2 * R.ℓc ^ 2 / R.pi ∧ R.ringShare = 4 * R.ℓ
   unfold cellShare ringShare Ahor Chor Rhor RL
   constructor <;> (field_simp; ring)
 
+/-- **The entropy per ring is one bit** (Sec. II): the horizon's entropy over its rings is `ln 2`. -/
+theorem entropy_per_ring : R.Shor / R.Rhor = R.ln2 := by
+  reg_facts R
+  have : R.Rhor ≠ 0 := by unfold Rhor; positivity
+  unfold Shor
+  field_simp
+
 /-- The lap time of the largest ring is the de Sitter period, Eq. (clock): `Lt_c = 2πR_Λ/c`. -/
 theorem lap_time : R.L * R.tc = 2 * R.pi * R.RL / R.c := by
   reg_facts R
@@ -246,13 +268,13 @@ theorem quarter_lap : R.pi * R.RL / 2 = R.L * R.ℓc / 4 := by
 
 /-- the distance in cells, `n = r/ℓ_c` -/
 noncomputable def n (r : ℝ) : ℝ := r / R.ℓc
-/-- **The strings of a sphere that is not a horizon** (Sec. II, "Counting in the bulk"), a
-reading: its entropy over `k_B ln 2`, one bit per string, with the entropy read as the horizon's,
-one bit for each ring's share of its area, `S = ηA` with the horizon's `η` (`eta_eq`), since a
-ring's share of area is the same everywhere.  This is the area law of a screen, the one reading
-taken beyond the cosmological horizon and used on every local horizon in Sec. III; the register's
-incidences, the same on every sphere, do not count its
-strings (Sec. II, "Counting in the bulk"). -/
+/-- **The strings of a sphere that is not a horizon** (Sec. II, "Counting in the bulk"): its
+entropy over `k_B ln 2`, one bit per string, at the horizon's entropy per unit area `η`
+(`eta_eq`), `S = ηA`.  That a sphere of areal radius `r` holds this many strings,
+`(L²/4)(r/R_Λ)²`, is derived from the symmetry of space in `Symmetry.strings_from_symmetry`, and
+that the density is the same on every sphere in `Symmetry.density_uniform`; this is the area law
+of a screen, which Sec. III uses on every local horizon.  The register's incidences, the same on
+every sphere, do not count its strings (Sec. II, "Counting in the bulk"); the symmetry does. -/
 noncomputable def Ns (r : ℝ) : ℝ := R.η * (4 * R.pi * r ^ 2) / (R.kB * R.ln2)
 /-- twice the strings of a sphere of radius `r`: the crossings of its surface, two for each string,
 as a ring crosses a horizon in an opposite pair; not the sphere's cells, which number `L`
@@ -270,8 +292,9 @@ theorem bulk_counts (r : ℝ) :
   · field_simp
     ring
 
-/-- **The ratio of areas**, derived: a sphere of radius `r` holds the fraction `(r/R_Λ)²` of the
-register's rings, its area in units of a ring's share; its crossings scale the same way. -/
+/-- **The ratio of areas**: a sphere of radius `r` holds the fraction `(r/R_Λ)²` of the
+register's rings, its area in units of a ring's share, which is what the symmetry of space gives
+(`Symmetry.strings_from_symmetry`); its crossings scale the same way. -/
 theorem ratio_of_areas (r : ℝ) :
     R.Ns r = R.Rhor * (r / R.RL) ^ 2 ∧ R.Nc r = R.Chor * (r / R.RL) ^ 2 ∧
     R.Ns r = 4 * R.pi * r ^ 2 / R.ringShare := by

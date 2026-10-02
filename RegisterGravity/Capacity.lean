@@ -14,21 +14,23 @@ import Mathlib.Tactic.Positivity
 Formal counterpart of the paragraph of Sec. IV.A that derives the bound `2^N ≤ L`, and of the
 remarks of Sec. V on how soft the bound is and on Palmer's bit count.
 
-When a state is measured jointly (Postulate 1), the strings are read together bit by bit, so every
-bit of a later string is paired with one outcome of the earlier qubits; this pairing is how the
-paper reads "measured jointly", a joint measurement being one measurement whose possible outcomes
-are the bits of the strings measured, paired position by position (the fifth reading of Sec. III,
-which is Palmer's: `N` correlated strings of `L` bits with one permutation applied to all of them),
-and it needs no shared cell.  The paper's *block* (Sec. IV.A) is the set of cells of a later string
-whose bits are paired with one joint outcome of the earlier qubits; blocks of different outcomes
-are disjoint, and the fraction of 1s on a block is the probability of the outcome 1 given the
-block's joint outcome, since every probability is a frequency over the bits.  Here `e` gives the
-joint outcome that the earlier qubits show at each cell of the later string, and the blocks are
-indexed through a map `s` from outcomes to labels: `block e s σ` is the set of cells whose outcome
-has the label `σ`.  With `s` the identity, the blocks are the paper's, one per joint outcome
-(`ceiling_by_outcome`); with `s` injective, still one per outcome (`block_of_injective`, and the
-general `ceiling`); with `s` constant, all outcomes share one block, the whole string
-(`product_state`), a coarser grouping than the paper's.
+When a state is measured jointly (Postulate 1), one measurement reads one position, the same on
+every string of the qubits it measures, since the shift carries every string one cell per tick and
+keeps them in step; its outcome is the bits at that position, and which position is read is not
+chosen, every one being read alike (`cells_read_alike`).  So every position of a later string is
+paired with one outcome of the earlier qubits, their bits there (`jointOutcome`); this is Palmer's
+state of `N` qubits, `N` correlated strings of `L` bits with one permutation applied to all of
+them, and it needs no shared cell.  The paper's *block* (Sec. IV.A) is the set of cells of a later
+string whose bits are paired with one joint outcome of the earlier qubits; blocks of different
+outcomes are disjoint, and the fraction of 1s on a block is the probability of the outcome 1 given
+the block's joint outcome, since every probability is a frequency over the bits.  The general
+theorems take the pairing as a function `e` from the cells of the later string to the joint
+outcomes, and index the blocks through a map `s` from outcomes to labels: `block e s σ` is the set
+of cells whose outcome has the label `σ`.  With `s` the identity, the blocks are the paper's, one
+per joint outcome (`ceiling_by_outcome`); with `s` injective, still one per outcome
+(`block_of_injective`, and the general `ceiling`); with `s` constant, all outcomes share one block,
+the whole string (`product_state`), a coarser grouping than the paper's.  `ceiling_in_step` is the
+bound with the pairing the strings supply, `e` the bits of the earlier strings at each position.
 
 * `two_le_card_of_frac`: a block whose fraction lies strictly between 0 and 1 needs at least two
   cells, one reading 1 and one reading 0.
@@ -41,6 +43,10 @@ general `ceiling`); with `s` constant, all outcomes share one block, the whole s
 * `ceiling_soft`: if each block needs `r` cells, `2^(N−1) r ≤ L`, that is `2^N ≤ 2L/r`: the
   ceiling falls by `log₂(r/2)` (Sec. V: `202`, `200` and `199` for `r = 10`, `30` and `100` at
   `L_cos`, `Numerics.soft_ceilings`).
+* `ceiling_in_step`: the same bound for `N` strings read in step, the pairing being their bits at
+  each position (`jointOutcome`).
+* `cells_read_alike`: if exchanging a `1` and a `−1` between two cells leaves the probability of
+  the outcome unchanged, every cell is read with the same probability (Sec. IV.A).
 * `nmax_iff`: when `2^N₀ ≤ L < 2^(N₀+1)`, `2^N ≤ L` exactly when `N ≤ N₀`, so `N_max = N₀`.
 * `palmer_threshold`: Palmer's bit count `2^(N+1) − 2 ≤ NL` holds exactly for `N ≤ N₀` once it
   holds at `N₀ ≥ 1` and fails at `N₀ + 1`.
@@ -193,6 +199,86 @@ theorem ceiling_by_outcome (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = 
     (hall : ∀ k, 0 < frac b (block e id k) ∧ frac b (block e id k) < 1) :
     2 ^ N ≤ L :=
   ceiling N L hN hL e id Function.injective_id b hall
+
+/-- **Strings read in step** (Sec. IV.A, how "measured jointly" is read).  A joint measurement is
+one measurement, so it reads one position, the same on every string of the qubits it measures,
+since the shift carries every string one cell per tick and keeps them in step (Postulate 1); its
+outcome is the bits at that position, and which position is read is not chosen (`cells_read_alike`).
+So the joint outcome of the first `N − 1` qubits that a position `x` of the last string shows is
+their bits at `x`.  Here `bits i` is the string of the `i`-th qubit, indexed by the common
+positions. -/
+def jointOutcome {N : ℕ} (bits : Fin N → Cell → Bool) (x : Cell) : Fin (N - 1) → Bool :=
+  fun i => bits (Fin.castLE (Nat.sub_le N 1) i) x
+
+/-- **The ceiling for strings read in step** (Sec. IV.A), Eq. (nmax).  With the pairing of
+`jointOutcome`, the bits of the strings at one position, the block of a joint outcome `ω` is the
+set of positions at which the first `N − 1` strings show `ω`.  When every `ω` occurs with the last
+qubit's bit given it at a probability strictly between 0 and 1, `2^N ≤ L`: `ceiling_by_outcome`
+with the pairing supplied by the strings, no function chosen. -/
+theorem ceiling_in_step (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
+    (bits : Fin N → Cell → Bool)
+    (hall : ∀ ω : Fin (N - 1) → Bool,
+      0 < frac (bits ⟨N - 1, by omega⟩) (univ.filter (fun x => jointOutcome bits x = ω)) ∧
+      frac (bits ⟨N - 1, by omega⟩) (univ.filter (fun x => jointOutcome bits x = ω)) < 1) :
+    2 ^ N ≤ L := by
+  have hcard : Fintype.card (Fin (N - 1) → Bool) = 2 ^ (N - 1) := by
+    rw [Fintype.card_fun, Fintype.card_bool, Fintype.card_fin]
+  let φ : (Fin (N - 1) → Bool) ≃ Fin (2 ^ (N - 1)) := Fintype.equivFinOfCardEq hcard
+  refine ceiling_by_outcome N L hN hL (fun x => φ (jointOutcome bits x)) (bits ⟨N - 1, by omega⟩)
+    (fun k => ?_)
+  have hb : block (fun x => φ (jointOutcome bits x)) id k
+      = univ.filter (fun x => jointOutcome bits x = φ.symm k) := by
+    ext x
+    simp only [block, mem_filter, mem_univ, true_and, id, ← Equiv.eq_symm_apply]
+  rw [hb]
+  exact hall (φ.symm k)
+
+/-- the probability of the outcome `1` when the string's bits are `b` and the cell `x` is read with
+probability `p x`: the sum of `p` over the cells whose bit is `1` -/
+noncomputable def outcomeProb (p : Cell → ℝ) (b : Cell → Bool) : ℝ :=
+  ∑ x ∈ univ.filter (fun x => b x = true), p x
+
+/-- **Every cell is read alike** (Sec. IV.A).  A measurement returns the bit of one cell
+(Postulate 1); let `p x` be the probability that the cell `x` is read, which depends on the state
+and the cell alone.  The arrangement of the bits, which cells carry the 1s with the string where
+it is on its ring, is no part of the state, so exchanging a `1` and a `−1` between two cells must
+leave the probability of the outcome unchanged (`hinv`).  For strings measured jointly the exchange
+is of two positions in all of them at once, which keeps every pairing and every phase (Sec. IV.A).  Then every cell is read with the same probability, `1/L` on a string of `L`
+cells: every probability is a frequency over the string's bits, and a string's bit sits at every
+one of its cells alike (Sec. IV.C, `Reg.string_share`).  The proof exchanges the one `1` of a string
+that reads `1` at `x` alone with the `−1` at `y`. -/
+theorem cells_read_alike [DecidableEq Cell] (p : Cell → ℝ)
+    (hinv : ∀ (b : Cell → Bool) (x y : Cell), b x = true → b y = false →
+      outcomeProb p (b ∘ Equiv.swap x y) = outcomeProb p b) :
+    (∀ x y, p x = p y) ∧ ((∑ x, p x) = 1 → ∀ x, p x = 1 / Fintype.card Cell) := by
+  have hxy : ∀ x y, p x = p y := by
+    intro x y
+    by_cases hxy : x = y
+    · rw [hxy]
+    · have h := hinv (fun z => decide (z = x)) x y (by simp) (by simp [Ne.symm hxy])
+      have h1 : outcomeProb p (fun z => decide (z = x)) = p x := by
+        unfold outcomeProb
+        have e : univ.filter (fun z => decide (z = x) = true) = {x} := by
+          ext z; simp
+        rw [e, sum_singleton]
+      have h2 : outcomeProb p ((fun z => decide (z = x)) ∘ Equiv.swap x y) = p y := by
+        unfold outcomeProb
+        have e : univ.filter (fun z => ((fun z => decide (z = x)) ∘ Equiv.swap x y) z = true)
+            = {y} := by
+          ext z
+          simp only [Function.comp_apply, decide_eq_true_eq, mem_filter, mem_univ, true_and,
+            mem_singleton, Equiv.swap_apply_eq_iff, Equiv.swap_apply_left]
+        rw [e, sum_singleton]
+      rw [h2, h1] at h
+      exact h.symm
+  refine ⟨hxy, fun hsum x => ?_⟩
+  have hpos : 0 < Fintype.card Cell := Fintype.card_pos_iff.2 ⟨x⟩
+  have hall : ∑ y, p y = Fintype.card Cell * p x := by
+    rw [sum_congr rfl (fun y _ => hxy y x), sum_const, card_univ, nsmul_eq_mul]
+  rw [hsum] at hall
+  have hc : (Fintype.card Cell : ℝ) ≠ 0 := by exact_mod_cast hpos.ne'
+  field_simp
+  linarith
 
 /-- **The largest `N` with `2^N ≤ L`**: when `2^N₀ ≤ L < 2^(N₀+1)`, `2^N ≤ L` exactly when
 `N ≤ N₀`, so `N_max = ⌊log₂ L⌋ = N₀`. -/

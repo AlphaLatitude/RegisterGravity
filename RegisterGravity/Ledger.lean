@@ -4,7 +4,8 @@ import RegisterGravity
 
 For every main theorem, the axioms its proof depends on.  A physical input is never an axiom
 here: a thermodynamic or elastic input is a named hypothesis in the statement of the theorem that
-uses it, and the symmetry of space enters through definitions and the solution (see `Chain.lean`).
+uses it, and so is the symmetry of space (`hsym` of `Symmetry.lean`), which also enters through the
+solution (see `Chain.lean`).
 The expected output for every line is `[propext, Classical.choice, Quot.sound]`, the
 logical minimum of classical mathematics in Lean; an unfinished proof would show up as an extra axiom. -/
 
@@ -21,6 +22,9 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Horizon.fano_order
 #print axioms Horizon.fanoPositions
 #print axioms Horizon.fano_even
+#print axioms Horizon.register_of_plane
+#print axioms Horizon.fieldPlane_order
+#print axioms Horizon.register_of_prime_power
 
 -- Secs. II and IV.C, the cyclic order of the rings and where the strings hold their entropy
 #print axioms Horizon.Positions.even_of_halfway
@@ -39,6 +43,8 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Capacity.product_state
 #print axioms Register.Capacity.ceiling
 #print axioms Register.Capacity.ceiling_by_outcome
+#print axioms Register.Capacity.ceiling_in_step
+#print axioms Register.Capacity.cells_read_alike
 #print axioms Register.Capacity.ceiling_soft
 #print axioms Register.Capacity.nmax_iff
 #print axioms Register.Capacity.palmer_threshold
@@ -48,6 +54,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Reg.area_in_cells
 #print axioms Register.Reg.counts_leading_order
 #print axioms Register.Reg.shares
+#print axioms Register.Reg.entropy_per_ring
 #print axioms Register.Reg.lap_time
 #print axioms Register.Reg.quarter_lap
 #print axioms Register.Reg.bulk_counts
@@ -64,6 +71,13 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Reg.entropy_quarter
 #print axioms Register.Reg.quarter_any_count
 #print axioms Register.Reg.G_mul_eta
+
+-- Sec. II, the strings of a sphere from the symmetry of space
+#print axioms Register.Reg.tube_volume
+#print axioms Register.Reg.tube_fraction
+#print axioms Register.Reg.strings_from_symmetry
+#print axioms Register.Reg.density_uniform
+#print axioms Register.Reg.tube_model
 
 -- Secs. III–IV, the solution about a mass and what follows from it
 #print axioms Register.Reg.hasDerivAt_fSdS
@@ -114,6 +128,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 -- Secs. II and IV.C, the count and the chain joined
 #print axioms Register.Bridge.counts_exact
 #print axioms Register.Bridge.Sin_from_count
+#print axioms Register.Bridge.horizon_entropy_count
 
 -- Secs. IV.D and V, the ring and the pins
 #print axioms Register.Reg.L_from_horizon
@@ -174,6 +189,9 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.palmer_range
 #print axioms Register.Numerics.horizon_counts
 #print axioms Register.Numerics.davies
+#print axioms Register.Numerics.lnN_val
+#print axioms Register.Numerics.relax_1MeV
+#print axioms Register.Numerics.bit_per_string
 #print axioms Register.Numerics.G_bracket
 #print axioms Register.Numerics.Gof_factor_four
 #print axioms Register.Numerics.sun_counts

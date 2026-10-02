@@ -255,13 +255,14 @@ theorem shortfall_removes (G M b r : ℝ) (ρ D : ℝ → ℝ) (hbr : b < r)
           field_simp
   · unfold SM; ring
 
-/-- **The string's share** (Sec. IV.C), a reading of Postulate 1.  Which way a string moves is its
-entropy, and every bit carries that alike, so the string's one bit is spread evenly over its cells
-inside the horizon, since every cell is read alike: the arrangement of the bits is no part of the
-state, so no law picks a cell by its bit, and exchanging a `1` and a `−1` between two cells, or two
-positions across strings measured jointly, must leave every prediction unchanged (Sec. IV.A).  Of `m` cells numbered `1, …, m` from
-the body, the first `n` hold the share `n/m`; `RouteB.route_B_fraction` counts them over the rings
-through a cell of the sphere. -/
+/-- **The string's share** (Sec. IV.C), derived.  Which way a string moves is its entropy, one
+bit, read at one cell; every cell is read alike (`Capacity.cells_read_alike`, Sec. IV.A: the
+arrangement of the bits is no part of the state, so exchanging a `1` and a `−1` between two cells,
+or two positions across strings measured jointly, leaves every prediction unchanged), so on
+average the bit is spread evenly over the cells the body's observer can read, the half of the
+string inside his horizon.  Of `m` such cells numbered `1, …, m` from the body, the first `n` hold
+the share `n/m`; `RouteB.route_B_fraction` counts them over the rings through a cell of the
+sphere. -/
 theorem string_share (m n : ℕ) (hn : n ≤ m) :
     (((Finset.Icc 1 m).filter (fun k => k ≤ n)).card : ℝ) / ((Finset.Icc 1 m).card : ℝ)
       = (n : ℝ) / m := by
@@ -298,8 +299,9 @@ noncomputable def SinGen (s A : ℝ) : ℝ := (s / (R.L * R.ℓc / 4)) * (A / R.
 /-- **The general form of Eq. (volume), and the horizon check** (Sec. IV.C).  For a sphere of
 areal radius `r` at ring distance `r`, the case `r ≪ R_Λ` where the two distances agree, `SinGen`
 is `Sin 4 r`, Eq. (volume).  At the horizon itself, ring distance `Lℓ_c/4` and area `4πR_Λ²`, it
-is `S_hor = (L²/4) ln 2`: the inside halves of all `L²/4` strings lie within it, and the readings
-`Sin` (the even spread) and `Ns` (the area law) agree on the horizon's entropy. -/
+is `S_hor = (L²/4) ln 2`: the inside halves of all `L²/4` strings lie within it, and the two
+counts, `Sin` (the share along the rings) and `Ns` (the strings by area), agree on the horizon's
+entropy. -/
 theorem Sin_general (r : ℝ) :
     R.SinGen r (4 * R.pi * r ^ 2) = R.Sin 4 r ∧
     R.SinGen (R.L * R.ℓc / 4) R.Ahor = R.Shor := by
