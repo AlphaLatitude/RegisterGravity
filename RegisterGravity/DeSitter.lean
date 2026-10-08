@@ -194,11 +194,11 @@ theorem sds_outer_horizon (G M Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
       mul_nonpos_of_nonneg_of_nonpos (by linarith) (by linarith)
     linarith
 
-/-- **The period of the horizon is the lap of the largest ring** (Sec. IV.D, the content of the
-boundary condition).  With `hdS`, the field of the solution without a mass at the horizon is
-`g(R_Λ) = −c²/R_Λ`, so the horizon's surface gravity is `a_Λ = c²/R_Λ`, here derived.  The thermal
-period `2πc/a` of a horizon of that surface gravity, in ticks `L_a` of `Chain.lean`, is `L`,
-`L_{a_Λ} = L`; so the period of the horizon, `2πc/a_Λ = 2πR_Λ/c`, is the lap time `Lt_c` of the
+/-- **The period of the horizon is the lap of the largest ring** (Sec. III; the content of the
+boundary condition of Sec. IV.D).  With `hdS`, the field of the solution without a mass at the
+horizon is `g(R_Λ) = −c²/R_Λ`, so the horizon's surface gravity is `a_Λ = c²/R_Λ`, here derived.
+The thermal period `2πc/a` of a horizon of that surface gravity, in ticks `L_a` of `Chain.lean`, is
+`L`, `L_{a_Λ} = L`; so the period of the horizon, `2πc/a_Λ = 2πR_Λ/c`, is the lap time `Lt_c` of the
 largest ring, Eq. (clock). -/
 theorem horizon_period (G Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) :
     R.gSdS G 0 Λ R.RL = -R.aΛ ∧ R.La R.aΛ = R.L ∧
@@ -233,13 +233,14 @@ theorem horizon_temperature (G Λ T : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
   rw [hL] at I1
   exact R.T_dS T I1
 
-/-- **The horizon's radius** (Sec. IV.D).  A ring is a closed line of translation, a closed
-geodesic of space.  Of the maximally symmetric solutions without a mass only de Sitter space has
-one, so `Λ > 0` (the hypothesis `hΛ`), and its closed geodesics are circles of radius `√(3/Λ)`,
-all of length `2π√(3/Λ)`, a classical property of the solution taken as known like the solution
-itself.  A largest ring, of length `Lℓ_c`, is one of them: `Lℓ_c = 2π√(3/Λ)` (`hgeo`).  Then the
-horizon of the solution without a mass, at `√(3/Λ)`, is at `R_Λ = Lℓ_c/2π`: the hypothesis `hdS`
-of the chain follows, and with it `Λ = 3/R_Λ²`. -/
+/-- **The horizon's radius** (Sec. IV.D).  A ring is a closed line of translation, a closed geodesic
+of space.  Of the maximally symmetric solutions without a mass, taken simply connected, only
+de Sitter space has one, and the paper's premises exclude their quotients (Sec. IV.D), so `Λ > 0`
+(the hypothesis `hΛ`), and its closed geodesics are circles of radius `√(3/Λ)`, all of length
+`2π√(3/Λ)`, a classical property of the solution taken as known like the solution itself.  A largest
+ring, of length `Lℓ_c`, is one of them: `Lℓ_c = 2π√(3/Λ)` (`hgeo`).  Then the horizon of the
+solution without a mass, at `√(3/Λ)`, is at `R_Λ = Lℓ_c/2π`: the hypothesis `hdS` of the chain
+follows, and with it `Λ = 3/R_Λ²`. -/
 theorem horizon_radius (G Λ : ℝ) (hΛ : 0 < Λ)
     (hgeo : R.L * R.ℓc = 2 * R.pi * Real.sqrt (3 / Λ)) :
     R.fSdS G 0 Λ R.RL = 0 ∧ Λ = 3 / R.RL ^ 2 := by

@@ -29,20 +29,22 @@ outcomes, and index the blocks through a map `s` from outcomes to labels: `block
 of cells whose outcome has the label `σ`.  With `s` the identity, the blocks are the paper's, one
 per joint outcome (`ceiling_by_outcome`); with `s` injective, still one per outcome
 (`block_of_injective`, and the general `ceiling`); with `s` constant, all outcomes share one block,
-the whole string (`product_state`), a coarser grouping than the paper's.  `ceiling_in_step` is the
+the whole string (`product_state`), a coarser grouping than the paper's: the test of Sec. IV.A,
+which rests on whether each string has room for the different states of its qubit, counts in this
+way when it says "In a product state each string has one state to hold, on all its cells".  `ceiling_in_step` is the
 bound with the pairing the strings supply, `e` the bits of the earlier strings at each position.
 
 * `two_le_card_of_frac`: a block whose fraction lies strictly between 0 and 1 needs at least two
-  cells, one reading 1 and one reading 0.
+  cells, one reading 1 and one reading −1 (the bit `false` here).
 * `ceiling`: when each of the `2^(N−1)` joint outcomes of the first `N − 1` qubits occurs, with
   the last qubit's bit given it at a probability strictly between 0 and 1, the last string, of
   `L` cells, needs `2^(N−1)` blocks of at least two cells, so `2^N ≤ L`.  A random state is such a
   state, and so is a product state of `N` qubits each in a superposition (Sec. IV.A): the bound
   holds for every state in which all `2^N` joint outcomes occur.  `ceiling_by_outcome` is the
   theorem with the paper's blocks, `s` the identity on outcomes.
-* `ceiling_soft`: if each block needs `r` cells, `2^(N−1) r ≤ L`, that is `2^N ≤ 2L/r`: the
-  ceiling falls by `log₂(r/2)` (Sec. V: `202`, `200` and `199` for `r = 10`, `30` and `100` at
-  `L_cos`, `Numerics.soft_ceilings`).
+* `ceiling_soft`: if each block needs `r` cells, `2^(N−1) r ≤ L`, that is `N ≤ log₂(2L/r)`
+  (Sec. V: `202`, `200` and `199` for `r = 10`, `30` and `100` at `L_cos`,
+  `Numerics.soft_ceilings`).
 * `ceiling_in_step`: the same bound for `N` strings read in step, the pairing being their bits at
   each position (`jointOutcome`).
 * `cells_read_alike`: if exchanging a `1` and a `−1` between two cells leaves the probability of
@@ -64,7 +66,7 @@ noncomputable def frac (b : Cell → Bool) (B : Finset Cell) : ℝ :=
   ((B.filter (fun x => b x = true)).card : ℝ) / B.card
 
 /-- **A block whose fraction lies strictly between 0 and 1 needs at least two cells, one reading 1
-and one reading 0.** -/
+and one reading −1** (the bit `false` here). -/
 theorem two_le_card_of_frac (b : Cell → Bool) (B : Finset Cell)
     (h0 : 0 < frac b B) (h1 : frac b B < 1) :
     2 ≤ B.card ∧ (∃ x ∈ B, b x = true) ∧ (∃ y ∈ B, b y = false) := by
@@ -141,15 +143,19 @@ same label `σ`, as when all of them leave the later qubit in one state, the blo
 is the whole string.  This is not the paper's definition of a block (Sec. IV.A), which indexes
 blocks by joint outcome: under the paper's definition a product state of superposed qubits has a
 block for each of the `2^(N−1)` joint outcomes, each with a fraction strictly between 0 and 1, and
-needs `2^N ≤ L` like a random state (`ceiling_by_outcome`). -/
+needs `2^N ≤ L` like a random state (`ceiling_by_outcome`).  The paper's test (Sec. IV.A) speaks of a
+product state in this coarser way, "In a product state each string has one state to hold, on all its
+cells": its strings are exact and its pairing approximate, and the bound by joint outcome still holds
+for it. -/
 theorem product_state {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → S) (σ : S)
     (h : ∀ k, s k = σ) : block e s σ = univ := by
   ext x
   simp [block, h]
 
-/-- **The ceiling if each block needs `r` cells** (Sec. V): `2^(N−1)` joint outcomes that leave the
-later qubit in different states, each state with a block of at least `r` cells, in a string of `L`
-cells give `2^(N−1) r ≤ L`, that is `2^N ≤ 2L/r`, and the ceiling falls by `log₂(r/2)`. -/
+/-- **The ceiling if each block needs `r` cells** (Sec. V): a block of `r` cells resolves the last
+qubit's conditional probability and phase to one part in `r`.  With `2^(N−1)` joint outcomes of
+the earlier qubits, each with a block of at least `r` cells, a string of `L` cells gives
+`2^(N−1) r ≤ L`, that is `N ≤ log₂(2L/r)`. -/
 theorem ceiling_soft {S : Type*} [DecidableEq S] (N L r : ℕ) (hL : Fintype.card Cell = L)
     (e : Cell → Fin (2 ^ (N - 1))) (s : Fin (2 ^ (N - 1)) → S) (hs : Function.Injective s)
     (hr : ∀ k, r ≤ (block e s (s k)).card) :
@@ -167,13 +173,13 @@ theorem ceiling_soft {S : Type*} [DecidableEq S] (N L r : ℕ) (hL : Fintype.car
   simp only [card_univ, Fintype.card_fin, smul_eq_mul] at h
   omega
 
-/-- **The ceiling**, Eq. (nmax) (Sec. IV.A).  Read a state of `N` qubits jointly; let `e` give the
-joint outcome of the first `N − 1` qubits that each cell of the last string shows, `s` an injective
-labeling of the outcomes, and `b` the last string's bits.  When each of the `2^(N−1)` joint
-outcomes occurs with the last qubit's bit given it at a probability strictly between 0 and 1, as
-in a random state and in a product state of superposed qubits, each block has a fraction of 1s
-strictly between 0 and 1.  Each block then needs at least two cells, and the string of `L` cells
-has room for them only if `2^N ≤ L`. -/
+/-- **The ceiling**, Eq. (nmax) (Sec. IV.A).  Measure a state of `N` qubits jointly; let `e` give
+the joint outcome of the first `N − 1` qubits that each cell of the last string shows, `s` an
+injective labeling of the outcomes, and `b` the last string's bits.  When each of the `2^(N−1)`
+joint outcomes occurs with the last qubit's bit given it at a probability strictly between 0 and 1,
+as in a random state and in a product state of superposed qubits, each block has a fraction of 1s
+strictly between 0 and 1.  Each block then needs at least two cells, and the string of `L` cells has
+room for them only if `2^N ≤ L`. -/
 theorem ceiling {S : Type*} [DecidableEq S] (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
     (e : Cell → Fin (2 ^ (N - 1))) (s : Fin (2 ^ (N - 1)) → S) (hs : Function.Injective s)
     (b : Cell → Bool)
@@ -192,8 +198,10 @@ theorem ceiling {S : Type*} [DecidableEq S] (N L : ℕ) (hN : 1 ≤ N) (hL : Fin
 `k`.  When every joint outcome occurs with the last qubit's bit given it at a probability strictly
 between 0 and 1, `2^N ≤ L`.  A random state is such a state; so is a product state of `N` qubits
 each in a superposition, whose `2^(N−1)` conditional probabilities all equal the last qubit's own:
-the bound holds for every state in which all `2^N` joint outcomes occur, and what singles out the
-random state is that only there is the excess observable (Sec. IV.A). -/
+the bound holds for every state in which all `2^N` joint outcomes occur.  By themselves the missing
+outcomes show nothing (Sec. IV.A); what sets the random state apart is that its last qubit has a
+different state for each joint outcome of the others, so that its string has too few cells to hold
+them all once `2^N > L`, where a product state's string has one state to hold. -/
 theorem ceiling_by_outcome (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
     (e : Cell → Fin (2 ^ (N - 1))) (b : Cell → Bool)
     (hall : ∀ k, 0 < frac b (block e id k) ∧ frac b (block e id k) < 1) :
@@ -240,13 +248,14 @@ noncomputable def outcomeProb (p : Cell → ℝ) (b : Cell → Bool) : ℝ :=
 
 /-- **Every cell is read alike** (Sec. IV.A).  A measurement returns the bit of one cell
 (Postulate 1); let `p x` be the probability that the cell `x` is read, which depends on the state
-and the cell alone.  The arrangement of the bits, which cells carry the 1s with the string where
-it is on its ring, is no part of the state, so exchanging a `1` and a `−1` between two cells must
-leave the probability of the outcome unchanged (`hinv`).  For strings measured jointly the exchange
-is of two positions in all of them at once, which keeps every pairing and every phase (Sec. IV.A).  Then every cell is read with the same probability, `1/L` on a string of `L`
-cells: every probability is a frequency over the string's bits, and a string's bit sits at every
-one of its cells alike (Sec. IV.C, `Reg.string_share`).  The proof exchanges the one `1` of a string
-that reads `1` at `x` alone with the `−1` at `y`. -/
+and the cell alone.  The arrangement of the bits, which cells carry the 1s with the string where it
+is on its ring, is no part of the state, so exchanging a `1` and a `−1` between two cells must leave
+the probability of the outcome unchanged (`hinv`).  For strings measured jointly the exchange is of
+two positions in all of them at once, which keeps every pairing and every phase (Sec. IV.A).  Then
+every cell is read with the same probability, `1/L` on a string of `L` cells: every probability is a
+frequency over the string's bits, and a string's bit sits at every one of its cells alike
+(Sec. IV.C, `Reg.string_share`).  The proof exchanges the one `1` of a string that reads `1` at `x`
+alone with the `−1` at `y`. -/
 theorem cells_read_alike [DecidableEq Cell] (p : Cell → ℝ)
     (hinv : ∀ (b : Cell → Bool) (x y : Cell), b x = true → b y = false →
       outcomeProb p (b ∘ Equiv.swap x y) = outcomeProb p b) :

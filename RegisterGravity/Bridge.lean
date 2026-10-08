@@ -1,5 +1,6 @@
 import RegisterGravity.Galactic
 import RegisterGravity.RouteB
+import RegisterGravity.Symmetry
 
 /-!
 # The count and the chain, joined
@@ -7,7 +8,7 @@ import RegisterGravity.RouteB
 `Horizon.lean` and `RouteB.lean` count the cells and rings of a `Horizon L`, with `L` a natural
 number.  `Chain.lean` and `Galactic.lean` derive the laws over a register `Reg` whose `L` is a
 positive real, with the horizon's counts entered as `L²/2` and `L²/4` and the share of a sphere's
-strings inside it as `4n/L`.  The two theorems here join them for any register whose `L` is that
+strings inside it as `4n/L`.  The theorems here join them for any register whose `L` is that
 of the horizon:
 
 * `counts_exact`: the rings and cells of the horizon number the chain's `R_hor = L²/4` and
@@ -21,6 +22,10 @@ of the horizon:
   so the horizon counts every ring of the register at one bit each, `card Loop · ln 2`, the chain's
   `S_hor` to relative order `2/L`; a ring's share of the horizon's area is that area over this
   count.
+* `horizon_cells`: an observer's horizon is the `L` cells that lie `⌊L/4⌋` steps from his cell, with
+  `L/2` rings through each; at the chain's `cellArea = A_hor/L` each they make up the horizon's
+  area, so a cell takes `Lℓ_c²/π` of area and strings cross a unit of area `π/2ℓ_c²` times
+  (Sec. II, "Counting in the bulk"; `Symmetry.lean`).
 
 `Strings` is the state of the rings of a `Horizon L` that the paper's definition of a cell gives: a
 cell holds one bit of each ring through it, so each largest ring carries exactly one string, a bit
@@ -36,10 +41,9 @@ variable {L : ℕ} (H : Horizon L) (R : Reg)
 
 /-- **The strings on the rings** (Sec. II).  A cell holds one bit of each ring through it (the
 paper's definition of a cell), so the bits on a ring's cells form one string of Postulate 1: every
-largest ring carries exactly one, and a second string would need a second bit on each of its
-cells.  `Strings` is that state, a bit for each ring and each of its cells.  What can change in a
-free string is which way it moves, a doublet, whose entropy is one bit (`Reg.one_bit`,
-`Reg.entropy_per_ring`). -/
+largest ring carries exactly one.  `Strings` is that state, a bit for each ring and each of its
+cells.  What can change in a free string is which way it moves, a doublet, whose entropy is one
+bit (`Reg.one_bit`, `Reg.entropy_per_ring`). -/
 def Strings : Type := ∀ l : H.Loop, {X // X ∈ H.cells l} → Bool
 
 /-- **The exact counts in the chain's terms** (Sec. II, Eq. (counts)).  For a register whose `L`
@@ -71,6 +75,27 @@ theorem horizon_entropy_count [NeZero L] (P : H.Positions) (hL : 4 ≤ L) (hRL :
   rw [(counts_exact H R hL hRL).1]
   unfold Reg.Shor
   ring
+
+/-- **The cells of a horizon, and the area of a cell** (Sec. II, "Counting in the bulk").  An
+observer's horizon is the cells that lie `⌊L/4⌋` steps from his cell (the statement's `L / 4`, a
+division of whole numbers), two on each of the rings through it: there are `L` of them
+(`Horizon.Positions.card_dist_eq`), with `L/2` rings through each (`Horizon.two_mul_card_through`).
+For a register `R` with the same `L`, the `L` cells at `cellArea = A_hor/L` each make up the
+horizon's area, so a cell takes `Lℓ_c²/π` of area (`Reg.cellArea_eq`), and the `L/2` rings through
+it cross a unit of area `π/2ℓ_c²` times (`Reg.crossingDensity_eq`).  When 4 divides `L` these are
+the cells that `RouteB.weight` counts as on the horizon, `L/4` cells out.  When it does not, no
+cell is `L/4` steps out, and these are the outermost cells that `RouteB.weight` counts as inside
+the horizon, half a step short of it. -/
+theorem horizon_cells [NeZero L] (P : H.Positions) (hL : 4 ≤ L) (hRL : R.L = L) (B : H.Cell) :
+    (univ.filter (fun X => P.dist B X = L / 4)).card = L ∧
+    (∀ X : H.Cell, 2 * (H.through X).card = L) ∧
+    ((univ.filter (fun X => P.dist B X = L / 4)).card : ℝ) * R.cellArea = R.Ahor := by
+  have hd1 : 1 ≤ L / 4 := by omega
+  have hd2 : 2 * (L / 4) < L := by omega
+  have hcard := P.card_dist_eq hL B hd1 hd2
+  refine ⟨hcard, fun X => H.two_mul_card_through hL X, ?_⟩
+  rw [hcard, ← hRL]
+  exact (R.cellArea_eq).2
 
 /-- **Eq. (volume) from the count** (Sec. IV.C).  Let the largest rings of `H` carry the cyclic
 order `P`, let `B` be the body's cell and `Q` a cell of the sphere at distance `n` from it, with

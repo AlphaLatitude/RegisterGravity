@@ -55,11 +55,9 @@ theorem shift_in_cells (G M : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η)
 
 /-- **The entropy a mass removes**, Eq. (SM).  The circumference of the horizon with the mass inside
 is `L_M = L − 2α/ln 2` cells, and the area law, one bit per ring's share of area, gives it
-`L_M²/4` bits, the number Eq. (counts) would give with `L_M` in place of `L` (the closed geodesics
-at its throat, of `L_M` cells, are the shorter rings Postulate 1 allows; Sec. IV.C, IV.D), so the
-entropy is `(ln 2)/4` times the square
-of the circumference in cells and the loss is
-`(L/2)·(2α/ln 2)·ln 2 = Lα` to first order (exactly `Lα − α²/ln 2`); and
+`L_M²/4` bits, the number Eqs. (counts) and (S) would give with `L_M` in place of `L` (the closed
+geodesics at its throat, of `L_M` cells, are the shorter rings Postulate 1 allows; Sec. IV.C,
+IV.D).  The loss is `(L/2)·(2α/ln 2)·ln 2 = Lα` to first order (exactly `Lα − α²/ln 2`); and
 `Lα = Mc²/k_B T_dS = 2πMcR_Λ/ℏ` with `I1` for `T_dS`. -/
 theorem entropy_removed (G M T : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
     (I1 : R.kB * T = R.ℏ / (R.L * R.tc)) :
@@ -292,16 +290,16 @@ theorem Sin_eq (κ r : ℝ) : R.Sin κ r = κ * R.pi ^ 2 * R.n r ^ 3 * R.ln2 / R
   field_simp
 
 /-- the entropy a sphere's strings hold inside it in general (Sec. IV.C, after Eq. (volume)): the
-share by ring distance `s`, `s` over the quarter lap `Lℓ_c/4`, times the strings by area, the
-sphere's area `A` over a ring's share, times one bit -/
+share by ring distance `s`, `s` divided by the quarter lap `Lℓ_c/4`, times the number of strings
+by area, the sphere's area `A` divided by a ring's share of area, times one bit -/
 noncomputable def SinGen (s A : ℝ) : ℝ := (s / (R.L * R.ℓc / 4)) * (A / R.ringShare) * R.ln2
 
 /-- **The general form of Eq. (volume), and the horizon check** (Sec. IV.C).  For a sphere of
 areal radius `r` at ring distance `r`, the case `r ≪ R_Λ` where the two distances agree, `SinGen`
 is `Sin 4 r`, Eq. (volume).  At the horizon itself, ring distance `Lℓ_c/4` and area `4πR_Λ²`, it
-is `S_hor = (L²/4) ln 2`: the inside halves of all `L²/4` strings lie within it, and the two
-counts, `Sin` (the share along the rings) and `Ns` (the strings by area), agree on the horizon's
-entropy. -/
+is `S_hor/k_B = (L²/4) ln 2` (`Shor`): the inside halves of all `L²/4` strings lie within it, and
+the two counts, `Sin` (the share along the rings) and `Ns` (the strings by area), agree on the
+horizon's entropy. -/
 theorem Sin_general (r : ℝ) :
     R.SinGen r (4 * R.pi * r ^ 2) = R.Sin 4 r ∧
     R.SinGen (R.L * R.ℓc / 4) R.Ahor = R.Shor := by
@@ -668,7 +666,7 @@ theorem aM_values :
   · unfold aM; field_simp; ring
   · unfold aM; field_simp; ring
 
-/-- **The apparent dark mass** (Sec. IV.C, the deep regime): with the register's `κ = 4`, where
+/-- **The apparent mass** (Sec. IV.C, the deep regime): with the register's `κ = 4`, where
 the bound is reached the apparent mass of `elastic` satisfies `M_D² = M²n²·π³ ln 2/(6Lα)`, so
 `M_D = Mn√(π³ ln 2/6Lα)` grows by a fixed amount per cell of distance. -/
 theorem apparent_mass (G M MD r ε : ℝ) (hr : 0 < r) (hM : 0 < M)

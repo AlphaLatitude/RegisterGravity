@@ -77,7 +77,7 @@ theorem fano_order : fano.order (by norm_num) = 2 := by
   have h := fano.two_mul_order_add_one (by norm_num)
   omega
 
-/-- In the model, `L = 6` is even because the opposite lies halfway round
+/-- In the model, `L = 6` is even because the opposite lies halfway around
 (`Positions.even_of_halfway`). -/
 theorem fano_even : Even 6 := by
   have hx : (((0 : Fin 7), false) : fano.Cell) ∈ fano.cells (0 : Fin 7) := by

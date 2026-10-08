@@ -13,9 +13,9 @@ import Mathlib.Tactic.Positivity
 Formal counterpart of the paragraphs of Sec. IV.C that give the fraction `4n/L`.  The largest
 rings carry their cyclic order: each ring's cells sit at the positions `0, …, L − 1` of `ZMod L`,
 one step per cell (Postulate 1: the shift moves every bit of a string one cell along its ring per
-tick), and the opposite of a cell lies halfway round, `L/2` steps on (Postulate 2).  Postulate 2 then gives
-every cell not opposite the body's cell `B` a distance from it: the number of steps along the one
-largest ring through both, the shorter way round.
+tick), and the opposite of a cell lies halfway around, `L/2` steps on (Postulate 2).  Postulate 2
+then gives every cell not opposite the body's cell `B` a distance from it: the number of steps
+between them, the shorter way around, along the one largest ring through both.
 
 What is proved, for `L ≥ 4`:
 
@@ -31,7 +31,7 @@ What is proved, for `L ≥ 4`:
 
 The horizon's distance `L/4` is the quarter lap of `Chain.quarter_lap`: the de Sitter solution puts
 the horizon at the proper distance `πR_Λ/2 = Lℓ_c/4` (`DeSitter.proper_distance`).  The positions
-also give the paper's reason that `L` is even, the opposite lying halfway round
+also give the paper's reason that `L` is even, the opposite lying halfway around
 (`even_of_halfway`).
 -/
 
@@ -73,7 +73,7 @@ structure Positions (H : Horizon L) where
   pos : H.Loop → H.Cell → ZMod L
   /-- distinct cells of a ring sit at distinct positions -/
   pos_inj : ∀ l x y, x ∈ H.cells l → y ∈ H.cells l → pos l x = pos l y → x = y
-  /-- the opposite lies halfway round -/
+  /-- the opposite lies halfway around -/
   pos_opp : ∀ l x, x ∈ H.cells l → pos l (H.opp x) = pos l x + ((L / 2 : ℕ) : ZMod L)
 
 namespace Positions
@@ -83,7 +83,7 @@ variable {H} (P : H.Positions)
 /-- the steps from `x` to `y` along the ring `l`, in the direction of the shift -/
 def offset (l : H.Loop) (x y : H.Cell) : ℕ := (P.pos l y - P.pos l x).val
 
-/-- the ring distance: the steps from `x` to `y` along `l`, the shorter way round -/
+/-- the ring distance: the steps from `x` to `y` along `l`, the shorter way around -/
 def ringDist (l : H.Loop) (x y : H.Cell) : ℕ := min (P.offset l x y) (L - P.offset l x y)
 
 /-- **The distance of a cell from the body's cell `B`** (Postulate 2): along the one largest ring
@@ -213,7 +213,7 @@ lemma ringDist_eq_val (l : H.Loop) (B X : H.Cell) :
     P.ringDist l B X = min (P.pos l X - P.pos l B).val (L - (P.pos l X - P.pos l B).val) := rfl
 
 /-- **Two cells at each distance on a ring.**  On a largest ring through `B`, exactly two cells
-lie at each distance `d` with `1 ≤ d < L/2`: one each way round. -/
+lie at each distance `d` with `1 ≤ d < L/2`: one each way around. -/
 theorem card_ringDist (l : H.Loop) (B : H.Cell) {d : ℕ} (hd1 : 1 ≤ d) (hd2 : 2 * d < L) :
     ((H.cells l).filter (fun X => P.ringDist l B X = d)).card = 2 := by
   classical
@@ -372,10 +372,11 @@ theorem sphere_count (hL : 4 ≤ L) (B Q : H.Cell) {n : ℕ} (hQ : P.dist B Q = 
 
 /-- **`L − 2` cells at each distance on the other rings through a cell of the sphere**
 (Sec. IV.C).  Let `A` be a largest ring through the body's cell `B` and a cell `Q` of the sphere.
-The other largest rings through `Q` hold between them every cell off `A` exactly once, and their
-cells off `A` are all their cells but `Q` and its opposite.  At each distance `d` from `B` with
-`1 ≤ d < L/2` there are `L` cells (`card_dist_eq`), two of them on `A` (`card_ringDist`), so these
-rings hold `L − 2` cells at each such distance. -/
+The other largest rings through `Q` hold between them every cell not on `A` exactly once, and
+their cells not on `A` are all their cells but `Q` and its opposite.  At each distance `d` from
+`B` with `1 ≤ d < L/2` there are `L` cells (`card_dist_eq`), two of them on `A` (`card_ringDist`),
+so these rings together hold `L − 2` of the `L` cells at each such distance, and `A` holds the
+other two. -/
 theorem per_distance_count (hL : 4 ≤ L) (B Q : H.Cell) (A : H.Loop) (hBA : B ∈ H.cells A)
     (hQA : Q ∈ H.cells A) {d : ℕ} (hd1 : 1 ≤ d) (hd2 : 2 * d < L) :
     ∑ l ∈ (H.through Q).erase A, ((H.cells l \ H.cells A).filter (fun X => P.dist B X = d)).card

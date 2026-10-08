@@ -10,6 +10,7 @@ The expected output for every line is `[propext, Classical.choice, Quot.sound]`,
 logical minimum of classical mathematics in Lean; an unfinished proof would show up as an extra axiom. -/
 
 -- Sec. II, the count (Postulates 1–2), the projective plane, and a model of the axioms
+#print axioms Horizon.last_clause_iff
 #print axioms Horizon.exists_loop_not_mem
 #print axioms Horizon.two_mul_card_through
 #print axioms Horizon.counts
@@ -73,11 +74,11 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Reg.G_mul_eta
 
 -- Sec. II, the strings of a sphere from the symmetry of space
-#print axioms Register.Reg.tube_volume
-#print axioms Register.Reg.tube_fraction
+#print axioms Register.Reg.cellArea_eq
+#print axioms Register.Reg.crossingDensity_eq
 #print axioms Register.Reg.strings_from_symmetry
 #print axioms Register.Reg.density_uniform
-#print axioms Register.Reg.tube_model
+#print axioms Register.Reg.symmetry_model
 
 -- Secs. III–IV, the solution about a mass and what follows from it
 #print axioms Register.Reg.hasDerivAt_fSdS
@@ -129,8 +130,9 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Bridge.counts_exact
 #print axioms Register.Bridge.Sin_from_count
 #print axioms Register.Bridge.horizon_entropy_count
+#print axioms Register.Bridge.horizon_cells
 
--- Secs. IV.D and V, the ring and the pins
+-- Secs. IV.D, V and VI: the ring, the pins and the equation of state
 #print axioms Register.Reg.L_from_horizon
 #print axioms Register.Reg.G_Lambda
 #print axioms Register.Reg.black_hole_quarter
@@ -191,7 +193,7 @@ logical minimum of classical mathematics in Lean; an unfinished proof would show
 #print axioms Register.Numerics.davies
 #print axioms Register.Numerics.lnN_val
 #print axioms Register.Numerics.relax_1MeV
-#print axioms Register.Numerics.bit_per_string
+#print axioms Register.Numerics.vacuum_share
 #print axioms Register.Numerics.G_bracket
 #print axioms Register.Numerics.Gof_factor_four
 #print axioms Register.Numerics.sun_counts

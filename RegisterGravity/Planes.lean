@@ -7,13 +7,13 @@ import Mathlib.LinearAlgebra.Projectivization.Cardinality
 
 Sec. II of the paper: "every plane of order `k` gives a register of `L = 2(k + 1)`, each point
 doubled into a cell and its opposite, as the Lean files prove.  Since planes exist for every
-prime-power order [Veblen and Bussey] and primes lie close together [Dusart], many values of `L`
-... have a register".  The first sentence is `Horizon.register_of_plane`
-(`Models.lean`).  For the second, Mathlib has the projective plane over any field `K`, the
-projectivization `ℙ K (Fin 3 → K)` with incidence by orthogonality, and the finite field
-`GaloisField p n` of `pⁿ` elements for every prime `p` and `n ≥ 1`.  The plane over a field of `q`
-elements has `q² + q + 1` points, so its order is `q`, and its doubling is a register of
-`L = 2(q + 1)`.
+prime-power order [Veblen and Bussey] and primes lie close together [Dusart], a register exists for
+many values of `L` within the percent or so to which Sec. IV.D fixes it".  The first sentence is
+`Horizon.register_of_plane` (`Models.lean`).  For the second, Mathlib has the projective plane over
+any field `K`, the projectivization `ℙ K (Fin 3 → K)` with incidence by orthogonality, and the
+finite field `GaloisField p n` of `pⁿ` elements for every prime `p` and `n ≥ 1`.  The plane over a
+field of `q` elements has `q² + q + 1` points, so its order is `q`, and its doubling is a register
+of `L = 2(q + 1)`.
 
 Which values of `L` near `L_cos` are of this form rests on the distribution of primes, for which
 the paper cites Dusart; the files do not prove it, and no theorem uses it.

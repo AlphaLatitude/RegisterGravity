@@ -30,7 +30,9 @@ Formal counterpart of Sec. II, "The count", of *Gravitation from Hilbert-Space G
   (`exists_loop`, `unique_loop`).
 * Postulate 2, third clause: any two largest rings share a cell (`loops_meet`).
 * Every largest ring has `L` cells (`card_cells`), and, by the last clause of Postulate 2, no ring
-  holds every cell, so the register has more than one largest ring (`two_loops`).
+  holds every cell, so the register has more than one largest ring (`two_loops`).  Given the
+  other clauses, `4 ≤ L` and one largest ring, the two forms of the last clause are equivalent
+  (`last_clause_iff`).
 
 The theorems below need `4 ≤ L` (a largest ring has at least two opposite pairs).  Nothing else is
 assumed: no metric, no area, no Bekenstein–Hawking, and no drawing of the register in space.  None
@@ -45,7 +47,7 @@ that every ring has half its cells inside any observer's horizon (`RouteB.lean`,
 (`Chain.ringShare`) is the area over the count.  The proof follows the paper: a largest ring
 `E` that misses a cell `P` (`exists_loop_not_mem`, by the paper's construction), then `ρ = L/2` by
 counting the pairs of `E` (`two_mul_card_through`), then `C` and `R`.  That `L` is even follows
-here from `ρ = L/2` (`even_L`), and in `RouteB.lean` from the opposite lying halfway round
+here from `ρ = L/2` (`even_L`), and in `RouteB.lean` from the opposite lying halfway around
 (`Positions.even_of_halfway`), which is the paper's reason.
 -/
 
@@ -82,7 +84,8 @@ structure Horizon (L : ℕ) where
   /-- Postulate 2, third clause: any two largest rings share a cell -/
   loops_meet : ∀ l₁ l₂, ∃ x, x ∈ cells l₁ ∧ x ∈ cells l₂
   /-- Postulate 2, last clause: no ring holds every cell, so the register has more than one largest
-  ring -/
+  ring; given the other clauses, `4 ≤ L` and one largest ring, the two are equivalent
+  (`last_clause_iff`) -/
   two_loops : ∃ l₁ l₂ : Loop, l₁ ≠ l₂
 
 namespace Horizon
@@ -146,7 +149,7 @@ lemma exists_loop_mem (hL : 4 ≤ L) (P : H.Cell) : ∃ A : H.Loop, P ∈ H.cell
 
 /-- **A cell off a given largest ring** (needs `4 ≤ L`), Postulate 2's last clause.  Here it comes
 from `two_loops`: another ring meets the given one in one opposite pair (`inter_eq_pair`), and its
-other cells lie off it. -/
+other cells lie off it.  `last_clause_iff` gives the converse. -/
 lemma exists_cell_not_mem (hL : 4 ≤ L) (l : H.Loop) : ∃ x : H.Cell, x ∉ H.cells l := by
   obtain ⟨l₁, l₂, hne⟩ := H.two_loops
   -- one of the two rings differs from `l`
@@ -163,11 +166,61 @@ lemma exists_cell_not_mem (hL : 4 ≤ L) (l : H.Loop) : ∃ x : H.Cell, x ∉ H.
   simp only [mem_insert, mem_singleton] at this
   tauto
 
+/-- **Postulate 2's last clause in the paper's words.** The paper says that no ring holds every
+cell. The structure `Horizon` takes the clause as `two_loops`, that the register has two different
+largest rings. Given the other clauses, `4 ≤ L`, and one largest ring `l₀` to start from, the two
+are equivalent, so the structure assumes what the paper says. Without `l₀`, an empty register would
+meet the other clauses and the paper's clause, with no ring at all. The paper's clause is about any
+ring, and `Loop` holds the largest rings only; but no ring has more than `L` cells (Postulate 1), so
+a ring that held every cell would leave the register at most `L` cells, and `l₀`, with `L` cells,
+would hold every cell too.
+
+One way is `exists_cell_not_mem`: with two different rings, every ring misses a cell. The other
+way: if `l₀` misses a cell `x`, then `l₀`, with `L ≥ 4` cells, has a cell `y` that is not the
+opposite of `x`, and `y` is not `x` either, since `x` is off `l₀`. The largest ring through `x` and
+`y` (the second clause) holds `x`, so it is not `l₀`. -/
+theorem last_clause_iff {Cell Loop : Type} [Fintype Cell] [Fintype Loop] [DecidableEq Cell]
+    [DecidableEq Loop] (opp : Cell → Cell) (cells : Loop → Finset Cell)
+    (opp_opp : ∀ x, opp (opp x) = x) (opp_ne : ∀ x, opp x ≠ x)
+    (card_cells : ∀ l, (cells l).card = L) (opp_mem : ∀ l x, x ∈ cells l → opp x ∈ cells l)
+    (exists_loop : ∀ x y, y ≠ x → y ≠ opp x → ∃ l, x ∈ cells l ∧ y ∈ cells l)
+    (unique_loop : ∀ x y l₁ l₂, y ≠ x → y ≠ opp x →
+      x ∈ cells l₁ → y ∈ cells l₁ → x ∈ cells l₂ → y ∈ cells l₂ → l₁ = l₂)
+    (loops_meet : ∀ l₁ l₂, ∃ x, x ∈ cells l₁ ∧ x ∈ cells l₂)
+    (hL : 4 ≤ L) (l₀ : Loop) :
+    (∃ l₁ l₂ : Loop, l₁ ≠ l₂) ↔ ∀ l : Loop, ∃ x, x ∉ cells l := by
+  constructor
+  · intro h2 l
+    let R : Horizon L :=
+      { Cell := Cell, Loop := Loop, opp := opp, cells := cells, opp_opp := opp_opp,
+        opp_ne := opp_ne, card_cells := card_cells, opp_mem := opp_mem,
+        exists_loop := exists_loop, unique_loop := unique_loop, loops_meet := loops_meet,
+        two_loops := h2 }
+    exact R.exists_cell_not_mem hL l
+  · intro hmiss
+    obtain ⟨x, hx⟩ := hmiss l₀
+    obtain ⟨y, hy, hyx'⟩ : ∃ y ∈ cells l₀, y ≠ opp x := by
+      by_contra h
+      push Not at h
+      have hsub : cells l₀ ⊆ {opp x} := fun z hz => mem_singleton.2 (h z hz)
+      have hc := card_le_card hsub
+      rw [card_singleton, card_cells] at hc
+      omega
+    have hyx : y ≠ x := by
+      rintro rfl
+      exact hx hy
+    obtain ⟨l, hxl, -⟩ := exists_loop x y hyx hyx'
+    refine ⟨l, l₀, ?_⟩
+    rintro rfl
+    exact hx hxl
+
 /-- **A largest ring that misses a given cell** (Sec. II, the paper's construction).  Take a
 largest ring `A` through `P` and a cell `Q` off it (`exists_cell_not_mem`).  With `S` a cell of `A`
 other than `P` and its opposite, `Q` and `S` are not opposite, since the opposite of `S` lies on
 `A`, so one largest ring `E` passes through both.  It misses `P`, since the one ring through `P`
-and `S` is `A`, which does not hold `Q`. -/
+and `S` is `A`, which does not hold `Q`.  The paper adds that `E` misses the opposite of `P` as
+well, since the opposite of that cell is `P`; that step is `opp_mem_iff`, taken in
+`two_mul_card_through`. -/
 lemma exists_loop_not_mem (hL : 4 ≤ L) (P : H.Cell) : ∃ E : H.Loop, P ∉ H.cells E := by
   obtain ⟨A, hPA⟩ := H.exists_loop_mem hL P
   obtain ⟨Q, hQ⟩ := H.exists_cell_not_mem hL A
@@ -180,10 +233,11 @@ lemma exists_loop_not_mem (hL : 4 ≤ L) (P : H.Cell) : ∃ E : H.Loop, P ∉ H.
   have hE : E = A := H.unique_loop S P E A (Ne.symm hSP) (H.ne_opp_symm hSP') hSE hPE hSA hPA
   exact hE ▸ hQE
 
-/-- **`ρ = L/2`** (Sec. II): twice the number of largest rings through any cell is `L`.  Each ring
-through `P` meets the ring `E` that misses `P` in one opposite pair, and each cell of `E` lies on
-exactly one ring through `P`; counting the pairs (ring through `P`, cell of `E` on it) both ways
-gives `2ρ = L`. -/
+/-- **`ρ = L/2`** (Sec. II): twice the number of largest rings through any cell is `L`.  The ring
+`E` that misses `P` (`exists_loop_not_mem`) misses the opposite of `P` as well (`opp_mem_iff`).
+Each ring through `P` meets `E` in one opposite pair, and each cell of `E`, being neither `P` nor
+its opposite, lies on exactly one ring through `P`; counting the pairs (ring through `P`, cell of
+`E` on it) both ways gives `2ρ = L`. -/
 theorem two_mul_card_through (hL : 4 ≤ L) (P : H.Cell) : 2 * (H.through P).card = L := by
   obtain ⟨E, hPE⟩ := H.exists_loop_not_mem hL P
   have hP'E : H.opp P ∉ H.cells E := fun h => hPE ((H.opp_mem_iff E P).1 h)

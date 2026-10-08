@@ -1,14 +1,14 @@
 import RegisterGravity.Galactic
 
 /-!
-# The cosmological scale: the ring (Sec. IV.D), and the pins (Sec. V)
+# The cosmological scale: the ring (Sec. IV.D), the pins (Sec. V), the equation of state (Sec. VI)
 
 `L` from the horizon, `GΛ`, the energy and density of the ring, its Misner–Sharp and Komar energies,
-the push, the zero-gravity radius and why it lies below the crossing, the crossover `r = R_Λ v_c/c`,
-`Λ = 432 a_M²/π²c⁴`, the ratio of the two pins, the drift of `G` that a Hubble-radius horizon would
-give, and the equation-of-state bound.  `Λ` is the integration constant
-of the solution of `Chain.lean`, fixed by the boundary condition `hdS` (`deSitter`); the inputs are
-the named hypotheses (see `Chain.lean`).
+the push, the zero-gravity radius and why it lies below the crossing, the crossover `r = R_Λ v_c/c`
+(which the paper no longer prints), `Λ = 432 a_M²/π²c⁴`, the ratio of the two pins, the drift of `G`
+that a Hubble-radius horizon would give, and the equation-of-state bound.  `Λ` is the integration
+constant of the solution of `Chain.lean`, fixed by the boundary condition `hdS` (`deSitter`); the
+inputs are the named hypotheses (see `Chain.lean`).
 -/
 
 open Real
@@ -34,7 +34,7 @@ theorem G_Lambda (G Λ : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η))
   unfold RL
   constructor <;> (field_simp; ring)
 
-/-- **A black hole's horizon by the area law** (Sec. IV.D, the remark on the throat circles): its
+/-- **A black hole's horizon by the area law** (Sec. IV.D, on the shorter rings at the throats): its
 great circles have `L' = 4πGM/c²ℓ_c` cells, and `(L'²/4) ln 2 = πr_s²/ℓ_P² = A/4ℓ_P²` with
 `r_s = 2GM/c²` and `A = 4πr_s²`, the quarter per Planck area again, by Eq. (cell) alone. -/
 theorem black_hole_quarter (G M : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R.η)) :
@@ -52,8 +52,8 @@ theorem black_hole_quarter (G M : ℝ) (hJ : G = R.c ^ 3 * R.kB / (4 * R.ℏ * R
   · rw [hℓP]; field_simp; ring
   · field_simp
 
-/-- the energy of the ring: entropy times temperature, `E_Λ = (L²/4) ln 2 · (E_c/L)`, one Landauer
-energy for each string -/
+/-- the heat of the ring's strings, entropy times temperature, which is the vacuum's energy:
+`E_Λ = (L²/4) ln 2 · (E_c/L)`, one Landauer energy for each string -/
 noncomputable def EΛ : ℝ := R.Shor * (R.Ec / R.L)
 /-- the energy density of the ring spread over the interior, `ρ_Λ = E_Λ/(4πR_Λ³/3)` -/
 noncomputable def ρΛ : ℝ := R.EΛ / (4 / 3 * R.pi * R.RL ^ 3)
@@ -223,8 +223,9 @@ theorem crossover (aM G M Λ r : ℝ) (hr : 0 < r) (hdS : R.fSdS G 0 Λ R.RL = 0
   rw [eq_div_iff (by positivity)]
   linear_combination (-1 : ℝ) * key
 
-/-- **The crossover in terms of the rotation speed** (Sec. IV.D): with `v_c⁴ = a_M GM`
-(`tully_fisher`), the balance lies at `r = R_Λ v_c/c`, in cells `n = Lv_c/2πc`. -/
+/-- **The crossover in terms of the rotation speed** (Sec. IV.D of the paper's versions up to -6-25;
+since -6-26 the paper says only that the pull that meets the push is the deep one): with
+`v_c⁴ = a_M GM` (`tully_fisher`), the balance lies at `r = R_Λ v_c/c`, in cells `n = Lv_c/2πc`. -/
 theorem crossover_speed (aM G M r vc : ℝ) (hr : 0 < r) (hvc : 0 < vc)
     (hTF : vc ^ 4 = aM * G * M) (h4 : r ^ 4 = R.RL ^ 4 * aM * G * M / R.c ^ 4) :
     r = R.RL * vc / R.c ∧ R.n r = R.L * vc / (2 * R.pi * R.c) := by

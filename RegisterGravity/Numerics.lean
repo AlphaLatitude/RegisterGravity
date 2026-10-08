@@ -14,26 +14,36 @@ Table I, the text, and Appendix A, recomputed from the Appendix's inputs and cer
 interval: each theorem states `lo < quantity < hi`, and every number in the interval rounds to the
 value the paper quotes.  Observational values and their uncertainties are inputs, not claims.
 
-## Inputs (Appendix A), as exact rationals
+## Inputs, as exact rationals
+
+Appendix A prints `c`, `ℏ` and `G` to four figures, with the values used here beside them, and
+prints `GM☉` in full.  The megaparsec, the astronomical unit, the year, the solar radius and
+Mercury's orbit are standard units and solar-system constants that the paper does not print: its
+Data availability refers to these files for them.  `k_B` is not printed either; it cancels in
+every figure certified here.  `q`, Palmer's range and Davies' number are in the paper's text.
 
 `c = 299792458 m/s`, `ℏ = 1.054571817e-34 J s`, `k_B = 1.380649e-23 J/K`,
-`G = 6.67430e-11 m³ kg⁻¹ s⁻²`, `H₀ = 67.4 km/s/Mpc` with `1 Mpc = 3.0856775814913673e22 m`,
+`G = 6.67430e-11 m³ kg⁻¹ s⁻²`, `H₀ = 67.4 km/s/Mpc` with Planck's uncertainty `±0.5` and with
+`1 Mpc = 3.0856775814913673e22 m`, the local `H₀ = 73 km/s/Mpc` (`log2_L73`),
 `Ω_Λ = 0.685`, `a₀ = 1.20e-10 m/s²` with the uncertainties `±0.02 ± 0.24` [McGaugh 2016] and
-`1.19 ± 0.04 ± 0.09` [Desmond 2023]; for the Sun the IAU heliocentric constant
-`GM☉ = 1.32712440018e20 m³/s²` (so `M☉ = GM☉/G`), `1 au = 149597870700 m`, `R☉ = 6.957e8 m`, and
+`1.19 ± 0.04 ± 0.09` [Desmond 2023]; for the Sun the IAU heliocentric constant at its nominal
+value, `GM☉ = 1.3271244e20 m³/s²` (so `M☉ = GM☉/G`), `1 au = 149597870700 m`, `R☉ = 6.957e8 m`, and
 for Mercury `a = 5.7909050e10 m`, `e = 0.205630`, `T = 87.9691 d`; `1 yr = 365.25 d`;
 `Ω_m = 0.315`, `q = −0.53`; the lunar-laser-ranging bound `|Ġ/G| ≲ 10⁻¹³ yr⁻¹`; Palmer's range
-of `L`, `10⁶⁴` to `10¹⁰⁹`, and Davies' `10¹²²`; for the bit's history (Sec. II), `1 MeV =
-1.602176634e-13 J`, Planck's uncertainty `±0.007` on `Ω_Λ`, and DESI's `Ω_m = 0.2975 ± 0.0086` from
-baryon acoustic oscillations alone in flat ΛCDM.
+of `L`, `10⁶⁴` to `10¹⁰⁹`, and Davies' `10¹²²`; for the heat and energy of the strings (Sec. IV.E),
+Planck's uncertainty `±0.007` on `Ω_Λ` and DESI's `Ω_m = 0.2975 ± 0.0086` from baryon acoustic
+oscillations alone in flat ΛCDM; and `1 MeV = 1.602176634e-13 J` for `relax_1MeV`, a figure the paper
+no longer prints.
 
 ## `π`, `ln 2` and `e`
 
 `π` and `ln 2` are Mathlib's `Real.pi` and `Real.log 2`, and they enter through Mathlib's bounds
 `3.141592 < π < 3.141593` (`Real.pi_gt_d6`, `Real.pi_lt_d6`) and
-`0.6931471803 < ln 2 < 0.6931471808` (`Real.log_two_gt_d9`, `Real.log_two_lt_d9`); `e` enters two
-numbers, through `Real.exp_one_gt_d9`, `Real.exp_one_lt_d9`, `Real.sum_le_exp_of_nonneg` and
-`Real.exp_bound'`.  Nothing else is assumed.
+`0.6931471803 < ln 2 < 0.6931471808` (`Real.log_two_gt_d9`, `Real.log_two_lt_d9`); `e` enters
+three numbers, the two fractions of the radial acceleration relation and `ln(L_cos²/4)`, through
+`Real.exp_one_gt_d9`, `Real.exp_one_lt_d9`, `Real.sum_le_exp_of_nonneg`,
+`Real.quadratic_le_exp_of_nonneg`, `Real.exp_bound'`, `Real.exp_bound_div_one_sub_of_interval'`
+and `Real.one_sub_inv_le_log_of_pos`.  Nothing else is assumed.
 
 ## Bridge to the chain
 
@@ -62,7 +72,7 @@ local notation "Mpc₀" => ((30856775814913673 : ℝ) * 10 ^ 6)
 local notation "H₀" => ((67400 : ℝ) / ((30856775814913673 : ℝ) * 10 ^ 6))
 local notation "ΩΛ₀" => ((685 : ℝ) / 1000)
 local notation "a₀" => ((12 : ℝ) / 10 ^ 11)
-local notation "GMs₀" => ((132712440018 : ℝ) * 10 ^ 9)
+local notation "GMs₀" => ((13271244 : ℝ) * 10 ^ 13)
 local notation "au₀" => ((149597870700 : ℝ))
 local notation "yr₀" => ((31557600 : ℝ))
 local notation "Rs₀" => ((6957 : ℝ) * 10 ^ 5)
@@ -441,9 +451,9 @@ theorem nmax_cos (N : ℕ) : (2 : ℝ) ^ N ≤ Lcos ↔ N ≤ 204 :=
   Capacity.nmax_iff 204 ceiling_cos.1.le ceiling_cos.2 N
 
 /-- **The softness of the ceiling** (Sec. V, Appendix A): a block of `r` cells resolves the last
-qubit's conditional probability to one part in `r`, and `2^(N−1) r ≤ L` (`Capacity.ceiling_soft`)
-holds at `L_cos` for `N ≤ 202` when `r = 10`, for `N ≤ 200` when `r = 30`, and for `N ≤ 199` when
-`r = 100`, and fails at the next `N` in each case. -/
+qubit's conditional probability and phase to one part in `r`, and `2^(N−1) r ≤ L`
+(`Capacity.ceiling_soft`) holds at `L_cos` for `N ≤ 202` when `r = 10`, for `N ≤ 200` when `r = 30`,
+and for `N ≤ 199` when `r = 100`, and fails at the next `N` in each case. -/
 theorem soft_ceilings :
     ((2 : ℝ) ^ 201 * 10 < Lcos ∧ Lcos < 2 ^ 202 * 10) ∧
     ((2 : ℝ) ^ 199 * 30 < Lcos ∧ Lcos < 2 ^ 200 * 30) ∧
@@ -525,10 +535,10 @@ theorem ceiling_margins :
 /-- **The ceiling across the entropy per ring** (Sec. V, Appendix A).  With `s` bits of entropy
 per ring in place of one, Eq. (cell) carries `s ln 2`, `ℓ_c = √(πs ln 2) ℓ_P` and `L = L_cos/√s`,
 so `2²⁰⁴ ≤ L < 2²⁰⁵` exactly when `(L_cos/2²⁰⁵)² < s ≤ (L_cos/2²⁰⁴)²`; the two bounds are `0.7218`
-and `2.887`, certified as `0.7217 < (L_cos/2²⁰⁵)² < 0.7218` and `2.8869 < (L_cos/2²⁰⁴)² < 2.8872`.
+and `2.887`, certified as `0.72175 < (L_cos/2²⁰⁵)² < 0.7218` and `2.8869 < (L_cos/2²⁰⁴)² < 2.8872`.
 One bit (`s = 1`), one nat (`s = 1/ln 2 = 1.44`) and two bits all give `204`. -/
 theorem ceiling_entropy_range :
-    (0.7217 < (Lcos / 2 ^ 205) ^ 2 ∧ (Lcos / 2 ^ 205) ^ 2 < 0.7218) ∧
+    (0.72175 < (Lcos / 2 ^ 205) ^ 2 ∧ (Lcos / 2 ^ 205) ^ 2 < 0.7218) ∧
     (2.8869 < (Lcos / 2 ^ 204) ^ 2 ∧ (Lcos / 2 ^ 204) ^ 2 < 2.8872) ∧
     ∀ s : ℝ, 0 < s →
       (((2 : ℝ) ^ 204 ≤ Lcos / Real.sqrt s ↔ s ≤ (Lcos / 2 ^ 204) ^ 2) ∧
@@ -537,10 +547,11 @@ theorem ceiling_entropy_range :
   have hL := Lcos_pos
   have q1 : (4.3686e61 : ℝ) ^ 2 < Lcos ^ 2 := pow_lt_pow_left₀ t1 (by norm_num) (by norm_num)
   have q2 : Lcos ^ 2 < (4.3687e61 : ℝ) ^ 2 := pow_lt_pow_left₀ t2 hL.le (by norm_num)
+  obtain ⟨s1, -⟩ := Lcos_sq_bounds
   refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
   · rw [div_pow, lt_div_iff₀ (by positivity)]
-    calc (0.7217 : ℝ) * ((2 : ℝ) ^ 205) ^ 2 < (4.3686e61 : ℝ) ^ 2 := by norm_num
-      _ < Lcos ^ 2 := q1
+    calc (0.72175 : ℝ) * ((2 : ℝ) ^ 205) ^ 2 = 1.4435 * (2 : ℝ) ^ 409 := by norm_num
+      _ < Lcos ^ 2 := s1
   · rw [div_pow, div_lt_iff₀ (by positivity)]
     calc Lcos ^ 2 < (4.3687e61 : ℝ) ^ 2 := q2
       _ < 0.7218 * ((2 : ℝ) ^ 205) ^ 2 := by norm_num
@@ -613,10 +624,15 @@ theorem log2_L73 :
 /-- **Planck's uncertainties move `log₂ L_cos` by about `±0.02`** (Appendix A): for `H₀` within
 `±0.5 km/s/Mpc` of `67.4` and `Ω_Λ` within `±0.007` of `0.685`, `2⁴⁰⁹⁴⁹ < L²⁰⁰ < 2⁴⁰⁹⁵⁷`, that is,
 `204.745 < log₂ L < 204.785`, against `log₂ L_cos = 204.76` (`log2_Lcos`); the ceiling is `204`
-throughout the band. -/
+throughout the band.  Against `L_cos` itself, `L²⁰⁰` stays within a factor `2⁴` of `L_cos²⁰⁰` over
+the band, a shift below `0.02`, and at the two corners of the band it differs from `L_cos²⁰⁰` by
+more than a factor `2³`, a shift above `0.015` (the two shifts are `+0.018` and `−0.018`). -/
 theorem log2_planck_band (H Ω : ℝ) (hH1 : 66900 / Mpc₀ ≤ H) (hH2 : H ≤ 67900 / Mpc₀)
     (hΩ1 : 0.678 ≤ Ω) (hΩ2 : Ω ≤ 0.692) :
-    (2 : ℝ) ^ 40949 < Lof H Ω ^ 200 ∧ Lof H Ω ^ 200 < 2 ^ 40957 := by
+    ((2 : ℝ) ^ 40949 < Lof H Ω ^ 200 ∧ Lof H Ω ^ 200 < 2 ^ 40957) ∧
+    (Lcos ^ 200 < 2 ^ 4 * Lof H Ω ^ 200 ∧ Lof H Ω ^ 200 < 2 ^ 4 * Lcos ^ 200) ∧
+    2 ^ 3 * Lcos ^ 200 < Lof (66900 / Mpc₀) 0.678 ^ 200 ∧
+    2 ^ 3 * Lof (67900 / Mpc₀) 0.692 ^ 200 < Lcos ^ 200 := by
   have hHpos : 0 < H := lt_of_lt_of_le (by norm_num) hH1
   have hΩpos : 0 < Ω := lt_of_lt_of_le (by norm_num) hΩ1
   have hsq := Lof_sq H Ω hHpos.ne' hΩpos
@@ -644,15 +660,48 @@ theorem log2_planck_band (H Ω : ℝ) (hH1 : 66900 / Mpc₀ ≤ H) (hH2 : H ≤ 
           gcongr
       _ < 1.4805 * (2 : ℝ) ^ 409 := by norm_num
   have e : Lof H Ω ^ 200 = (Lof H Ω ^ 2) ^ 100 := by ring
-  rw [e]
-  constructor
+  have ec : Lcos ^ 200 = (Lcos ^ 2) ^ 100 := by ring
+  have eA : Lof (66900 / Mpc₀) 0.678 ^ 200 = (Lof (66900 / Mpc₀) 0.678 ^ 2) ^ 100 := by ring
+  have eB : Lof (67900 / Mpc₀) 0.692 ^ 200 = (Lof (67900 / Mpc₀) 0.692 ^ 2) ^ 100 := by ring
+  obtain ⟨c1, c2⟩ := Lcos_sq_bounds
+  -- the two corners of the band
+  have hA : 1.4803 * (2 : ℝ) ^ 409 < Lof (66900 / Mpc₀) 0.678 ^ 2 := by
+    rw [Lof_sq _ _ (by norm_num) (by norm_num)]
+    calc 1.4803 * (2 : ℝ) ^ 409
+        < (3.141592 / 0.6931471808) *
+            (4 * c₀ ^ 5 / (ℏ₀ * G₀ * ((66900 / Mpc₀) ^ 2 * 0.678))) := by norm_num
+      _ < π / Real.log 2 * (4 * c₀ ^ 5 / (ℏ₀ * G₀ * ((66900 / Mpc₀) ^ 2 * 0.678))) :=
+          mul_lt_mul_of_pos_right pq_lo (by norm_num)
+  have hB : Lof (67900 / Mpc₀) 0.692 ^ 2 < 1.408 * (2 : ℝ) ^ 409 := by
+    rw [Lof_sq _ _ (by norm_num) (by norm_num)]
+    calc π / Real.log 2 * (4 * c₀ ^ 5 / (ℏ₀ * G₀ * ((67900 / Mpc₀) ^ 2 * 0.692)))
+        < (3.141593 / 0.6931471803) *
+            (4 * c₀ ^ 5 / (ℏ₀ * G₀ * ((67900 / Mpc₀) ^ 2 * 0.692))) :=
+          mul_lt_mul_of_pos_right pq_hi (by norm_num)
+      _ < 1.408 * (2 : ℝ) ^ 409 := by norm_num
+  rw [e, ec, eA, eB]
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩
   · calc (2 : ℝ) ^ 40949 < (1.4079 * (2 : ℝ) ^ 409) ^ 100 := by norm_num
       _ < (Lof H Ω ^ 2) ^ 100 := by gcongr
   · calc (Lof H Ω ^ 2) ^ 100 < (1.4805 * (2 : ℝ) ^ 409) ^ 100 := by gcongr
       _ < 2 ^ 40957 := by norm_num
+  · calc (Lcos ^ 2) ^ 100 < (1.4436 * (2 : ℝ) ^ 409) ^ 100 := by gcongr
+      _ < 2 ^ 4 * (1.4079 * (2 : ℝ) ^ 409) ^ 100 := by norm_num
+      _ < 2 ^ 4 * (Lof H Ω ^ 2) ^ 100 := by gcongr
+  · calc (Lof H Ω ^ 2) ^ 100 < (1.4805 * (2 : ℝ) ^ 409) ^ 100 := by gcongr
+      _ < 2 ^ 4 * (1.4435 * (2 : ℝ) ^ 409) ^ 100 := by norm_num
+      _ < 2 ^ 4 * (Lcos ^ 2) ^ 100 := by gcongr
+  · calc 2 ^ 3 * (Lcos ^ 2) ^ 100 < 2 ^ 3 * (1.4436 * (2 : ℝ) ^ 409) ^ 100 := by gcongr
+      _ < (1.4803 * (2 : ℝ) ^ 409) ^ 100 := by norm_num
+      _ < (Lof (66900 / Mpc₀) 0.678 ^ 2) ^ 100 := by gcongr
+  · calc 2 ^ 3 * (Lof (67900 / Mpc₀) 0.692 ^ 2) ^ 100
+        < 2 ^ 3 * (1.408 * (2 : ℝ) ^ 409) ^ 100 := by gcongr
+      _ < (1.4435 * (2 : ℝ) ^ 409) ^ 100 := by norm_num
+      _ < (Lcos ^ 2) ^ 100 := by gcongr
 
-/-- The Appendix's powers of two: `2²⁰⁴ = 2.57×10⁶¹`, `2²⁰⁵ = 5.14×10⁶¹`, `2²¹² = 6.58×10⁶³`,
-`2²¹³ = 1.32×10⁶⁴`. -/
+/-- Powers of two: `2²⁰⁴ = 2.57×10⁶¹` and `2²⁰⁵ = 5.14×10⁶¹` (Appendix A); `2²¹² = 6.58×10⁶³` and
+`2²¹³ = 1.32×10⁶⁴`, which the paper does not print, bracket `10⁶⁴` and enter Palmer's bit count
+(`palmer_211`, `palmer_range`). -/
 theorem powers_of_two :
     ((2.565e61 : ℝ) < 2 ^ 204 ∧ (2 : ℝ) ^ 204 < 2.575e61) ∧
     ((5.135e61 : ℝ) < 2 ^ 205 ∧ (2 : ℝ) ^ 205 < 5.145e61) ∧
@@ -661,9 +710,9 @@ theorem powers_of_two :
   refine ⟨⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩,
     ⟨by norm_num, by norm_num⟩⟩
 
-/-- **Palmer's bit count** `2^(N+1) − 2 ≤ NL` (Sec. V, Appendix A): with `L_cos` it holds at
-`N = 211`, `2²¹² ≤ 211L_cos = 9.22×10⁶³`, and fails at `N = 212`, `2²¹³ > 212L_cos = 9.26×10⁶³`;
-so it holds exactly for `N ≤ 211` (`Capacity.palmer_threshold`). -/
+/-- **Palmer's bit count** `2^(N+1) − 2 ≤ NL` (Sec. V, which prints the `211` only): with `L_cos`
+it holds at `N = 211`, `2²¹² ≤ 211L_cos = 9.22×10⁶³`, and fails at `N = 212`,
+`2²¹³ > 212L_cos = 9.26×10⁶³`; so it holds exactly for `N ≤ 211` (`Capacity.palmer_threshold`). -/
 theorem palmer_211 :
     ((2 : ℝ) ^ 212 - 2 ≤ 211 * Lcos ∧ 212 * Lcos < 2 ^ 213 - 2) ∧
     (9.215e63 < 211 * Lcos ∧ 211 * Lcos < 9.225e63) ∧
@@ -741,7 +790,8 @@ theorem davies :
   · calc (Lcos ^ 2 / 4) ^ 20 < (1.4436 * (2 : ℝ) ^ 409 / 4) ^ 20 := by gcongr
       _ < 2 ^ 8151 := by norm_num
 
-/-! ## The bit's history and the energy check of the current epoch (Sec. II, Appendix A)
+/-! ## The bit's history (Sec. II and Appendix A of the paper's versions up to -6-25; figures the paper
+no longer prints)
 
 New inputs: `1 MeV = 1.602176634×10⁻¹³ J` (the SI elementary charge, exact), Planck's uncertainty
 `±0.007` on `Ω_Λ`, and DESI's `Ω_m = 0.2975 ± 0.0086` from baryon acoustic oscillations alone in
@@ -749,7 +799,8 @@ flat ΛCDM. -/
 
 local notation "MeV₀" => ((1602176634 : ℝ) / 10 ^ 22)
 
-/-- **The strings of a horizon in thermal times** (Sec. II, "The bit's history"; Appendix A):
+/-- **The strings of a horizon in thermal times** (Sec. II, "The bit's history", and Appendix A of
+the paper's versions up to -6-25; since -6-26 the paper no longer prints these figures):
 `ln N = ln(L_cos²/4)` lies between `281.5` and `282.5`, so about `282` thermal times bring all
 `N = L²/4` strings of a horizon to equilibrium. -/
 theorem lnN_val : 281.5 < Real.log (Lcos ^ 2 / 4) ∧ Real.log (Lcos ^ 2 / 4) < 282.5 := by
@@ -785,7 +836,8 @@ theorem lnN_val : 281.5 < Real.log (Lcos ^ 2 / 4) ∧ Real.log (Lcos ^ 2 / 4) < 
     rw [e 1.4436 (by norm_num)] at this
     linarith
 
-/-- **Equilibrium by the first second** (Sec. II, "The bit's history"; Appendix A): `ln N` thermal
+/-- **Equilibrium by the first second** (Sec. II, "The bit's history", and Appendix A of the paper's
+versions up to -6-25; since -6-26 the paper no longer prints these figures): `ln N` thermal
 times `ℏ/k_BT` at `k_BT = 1 MeV` take `2×10⁻¹⁹ s` (between `1.5` and `2.5×10⁻¹⁹ s`), and `10¹⁸`
 times as long is less than a fifth of a second. -/
 theorem relax_1MeV :
@@ -804,25 +856,6 @@ theorem relax_1MeV :
   · calc 10 ^ 18 * (Real.log (Lcos ^ 2 / 4) * (ℏ₀ / MeV₀))
         < 10 ^ 18 * (282.5 * (ℏ₀ / MeV₀)) := mul_lt_mul_of_pos_left u (by norm_num)
       _ < 1 / 5 := by norm_num
-
-/-- **One bit per string in the current epoch** (Sec. II, "The bit's history"; Appendix A).  At `b`
-bits per string the horizon's entropy is held by `S_hor/b k_B ln 2` strings, which at the horizon's
-thermal energy `E_c/L` on average carry `E_Λ/b ln 2`, against the `E_Λ/Ω_Λ` within `R_Λ` today, so
-the two agree at `b = Ω_Λ/ln 2`: `0.99 ± 0.01` with Planck's `Ω_Λ = 0.685 ± 0.007`, and
-`1.01 ± 0.01` with DESI's baryon acoustic oscillations alone, `Ω_Λ = 1 − Ω_m`,
-`Ω_m = 0.2975 ± 0.0086`. -/
-theorem bit_per_string :
-    (0.985 < ΩΛ₀ / Real.log 2 ∧ ΩΛ₀ / Real.log 2 < 0.995) ∧
-    (0.005 < (7 / 1000 : ℝ) / Real.log 2 ∧ (7 / 1000 : ℝ) / Real.log 2 < 0.015) ∧
-    (1.005 < (1 - 2975 / 10000 : ℝ) / Real.log 2 ∧
-      (1 - 2975 / 10000 : ℝ) / Real.log 2 < 1.015) ∧
-    (0.005 < (86 / 10000 : ℝ) / Real.log 2 ∧ (86 / 10000 : ℝ) / Real.log 2 < 0.015) := by
-  have l2a := Real.log_two_gt_d9
-  have l2b := Real.log_two_lt_d9
-  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
-  all_goals first
-    | (rw [lt_div_iff₀ ln2_pos]; linarith)
-    | (rw [div_lt_iff₀ ln2_pos]; linarith)
 
 /-! ## Newton's constant from the ceiling (Sec. V, Prediction 2, Appendix A) -/
 
@@ -861,8 +894,9 @@ theorem G_bracket :
       _ < _ := mul_lt_mul_of_pos_right pq_lo (by norm_num)
 
 /-- **A factor of two in `L` is a factor of four in `G`** (Sec. V): `G(2^N) = 4G(2^(N+1))`, so a
-measured ceiling, `2^N ≤ L < 2^(N+1)`, returns `ℓ_c = 2πR_Λ/L` to a factor of two and `G` to a
-factor of four. -/
+measured ceiling at which the bound is itself reached, `2^N ≤ L < 2^(N+1)`, returns `ℓ_c = 2πR_Λ/L` to
+a factor of two and `G` to a factor of four (Sec. V and Prediction 2, which ask that the shortfall
+above the ceiling be larger than the error of the experiment). -/
 theorem Gof_factor_four (N : ℕ) : Gof (2 ^ N) = 4 * Gof (2 ^ (N + 1)) := by
   rw [Gof_eq, Gof_eq, pow_succ]
   field_simp
@@ -878,8 +912,10 @@ theorem Gof_antitone {L₁ L₂ : ℝ} (h1 : 0 < L₁) (h12 : L₁ ≤ L₂) : G
   have hℏ : (0 : ℝ) < ℏ₀ := by norm_num
   nlinarith [this, hℏ, Real.log_pos one_lt_two]
 
-/-- **A ceiling of `205` or more falsifies Eq. (G)** (Sec. V, Prediction 2): for every `N ≥ 205`
-the bracket `[G(2^(N+1)), G(2^N)]` lies below the measured `G`, since `G(2^N) ≤ G(2²⁰⁵) < G₀`. -/
+/-- **A measured ceiling of `205` or more contradicts Eq. (G)** (Sec. V, Prediction 2): for every
+`N ≥ 205`, `G(2^N) ≤ G(2²⁰⁵) < G₀`.  A measured ceiling `N`, with a shortfall above it larger than the
+error of the experiment, gives `2^N ≤ L` and so, through Eq. (G), `G ≤ G(2^N)`, which for `N ≥ 205`
+lies below the measured `G`. -/
 theorem ceiling_above_204 (N : ℕ) (hN : 205 ≤ N) : Gof (2 ^ N) < G₀ := by
   have h205 : Gof (2 ^ 205) < G₀ := G_bracket.2.2.1
   have hle : Gof (2 ^ N) ≤ Gof (2 ^ 205) :=
@@ -895,9 +931,10 @@ theorem reg_αs : reg.α (GMs₀ / G₀) = αs := by
   unfold αs
   field_simp
 
-/-- **The Sun** (Sec. IV.C, Table I, Appendix A): `α = M☉/m_c = 1.35×10³⁸`; the horizon is drawn
+/-- **The Sun** (Sec. IV.B, Table I, Appendix A): `α = M☉/m_c = 1.35×10³⁸`; the horizon is drawn
 in by `GM☉/c²ℓ_c = α/(π ln 2) = 6.19×10³⁷` cells (`Reg.shift_in_cells`); the entropy the Sun
-removes is `Lα = 5.9×10⁹⁹`, and `5.9×10¹¹⁰` for a galaxy of `10¹¹ M☉`. -/
+removes is `Lα = 5.9×10⁹⁹`.  For a galaxy of `10¹¹ M☉` it is `5.9×10¹¹⁰`, a figure of earlier
+versions that the paper no longer prints. -/
 theorem sun_counts :
     (1.345e38 < αs ∧ αs < 1.355e38) ∧
     GMs₀ / (c₀ ^ 2 * lc) = αs / (π * Real.log 2) ∧
@@ -960,15 +997,17 @@ theorem sun_counts :
   · rw [eg]; linarith [hLα.1]
   · rw [eg]; linarith [hLα.2]
 
-/-- **Which horizon the count describes** (Secs. II, IV.D, Appendix A).  The Galaxy, `10¹² M☉`, a
-mass at rest, has `α = 1.35×10⁵⁰` and `2α/ln 2 = 3.9×10⁵⁰`, and `(2α/ln 2)/L = GM/c²R_Λ` is one
-part in `10¹¹` of `L_cos` (`8.9×10⁻¹²`).  The matter of a ball of radius `R_Λ` at today's mean
-density, `Ω_m = 0.315` of the critical density `3H₀²/8πG`, is `M = Ω_m H₀² R_Λ³/2G`, so with
-`R_Λ² = c²/H₀²Ω_Λ` its `GM/c²R_Λ = Ω_m/2Ω_Λ = 0.23`, beyond the Nariai limit `1/3√3 = 0.19` up to
-which the Schwarzschild–de Sitter solution has a horizon (`Reg.sds_outer_horizon` asks for
-`13 GM/c² < R_Λ`): it is not a mass at rest inside a static horizon, Eq. (SM) does not apply to
-it, and the count of Sec. II is that of the horizon of the solution without a mass. -/
+/-- **Which horizon the count describes** (Secs. II, IV.D, Appendix A).  The Galaxy,
+`10¹² M☉ = 2.0×10⁴² kg`, a mass at rest, has `α = 1.35×10⁵⁰` and `2α/ln 2 = 3.9×10⁵⁰`, and
+`(2α/ln 2)/L = GM/c²R_Λ` is one part in `10¹¹` of `L_cos` (`8.9×10⁻¹²`).  The matter of a ball of
+radius `R_Λ` at today's mean density, `Ω_m = 0.315` of the critical density `3H₀²/8πG`, is
+`M = Ω_m H₀² R_Λ³/2G`, so with `R_Λ² = c²/H₀²Ω_Λ` its `GM/c²R_Λ = Ω_m/2Ω_Λ = 0.23`, beyond the
+Nariai limit `1/3√3 = 0.19` up to which the Schwarzschild–de Sitter solution has a horizon
+(`Reg.sds_outer_horizon` asks for `13 GM/c² < R_Λ`): it is not a mass at rest inside a static
+horizon, Eq. (SM) does not apply to it, and the count of Sec. II is that of the horizon of the
+solution without a mass. -/
 theorem cosmic_mass_beyond_nariai :
+    (1.95e42 < 1e12 * (GMs₀ / G₀) ∧ 1e12 * (GMs₀ / G₀) < 2.05e42) ∧
     (1.345e50 < 1e12 * αs ∧ 1e12 * αs < 1.355e50) ∧
     (3.85e50 < 2 * (1e12 * αs) / Real.log 2 ∧ 2 * (1e12 * αs) / Real.log 2 < 3.95e50) ∧
     (8.9e-12 < 1e12 * GMs₀ / (c₀ ^ 2 * RL) ∧ 1e12 * GMs₀ / (c₀ ^ 2 * RL) < 8.91e-12) ∧
@@ -992,7 +1031,7 @@ theorem cosmic_mass_beyond_nariai :
     rw [lt_div_iff₀ h33]; linarith
   have m1 : 0.229 < (0.315 : ℝ) / (2 * ΩΛ₀) := by norm_num
   have m2 : (0.315 : ℝ) / (2 * ΩΛ₀) < 0.2305 := by norm_num
-  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ⟨m1, m2⟩, ⟨n2, n1⟩, ?_⟩
+  refine ⟨⟨by norm_num, by norm_num⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ⟨m1, m2⟩, ⟨n2, n1⟩, ?_⟩
   · linarith [hα.1]
   · linarith [hα.2]
   · rw [lt_div_iff₀ ln2_pos]; linarith [hα.1]
@@ -1056,10 +1095,10 @@ theorem reg_newton_earth :
   rw [← h]
   field_simp
 
-/-- **Mercury and the deflection of light** (Sec. IV.B): the anomalous advance
-`6πGM☉/(a(1−e²)c²)` is `5.0×10⁻⁷ rad` per orbit and `42.98″` per century (the `π` of the advance
-cancels the `π` of the conversion to arcseconds); the deflection of starlight at the solar limb
-`4GM☉/(c²R☉)` is `1.75″`. -/
+/-- **Mercury and the deflection of light** (Sec. IV.B): the anomalous advance `6πGM☉/(a(1−e²)c²)`
+is `42.98″` per century (the `π` of the advance cancels the `π` of the conversion to arcseconds),
+`5.0×10⁻⁷ rad` per orbit, a figure the paper does not print; the deflection of starlight at the
+solar limb `4GM☉/(c²R☉)` is `1.75″`. -/
 theorem solar_tests :
     (5.0e-7 < 6 * π * GMs₀ / (57909050e3 * (1 - 0.205630 ^ 2) * c₀ ^ 2) ∧
       6 * π * GMs₀ / (57909050e3 * (1 - 0.205630 ^ 2) * c₀ ^ 2) < 5.05e-7) ∧
@@ -1086,7 +1125,8 @@ theorem solar_tests :
   · calc _ < 4 * GMs₀ / (c₀ ^ 2 * Rs₀) * (648000 / 3.141592) := by gcongr
       _ < (1.755 : ℝ) := by norm_num
 
-/-- **The phase grid** (Sec. IV.B): the kinematic effect of a `2π/L` grid, `1.4×10⁻⁶¹ rad`
+/-- **The phase grid**, a check kept from earlier versions of the paper, whose Sec. IV.B remarked
+on it; the paper no longer does.  The kinematic effect of a `2π/L` grid, `1.4×10⁻⁶¹ rad`
 (`∼10⁻⁶¹`), lies fifty-four orders of magnitude below Mercury's `5×10⁻⁷ rad` per orbit: the ratio
 is between `10⁵⁴` and `10⁵⁵`. -/
 theorem phase_grid :
@@ -1125,8 +1165,9 @@ theorem sun_crossing :
 /-! ## The galactic scale (Sec. IV.C, Table I, Appendix A) -/
 
 /-- **Eq. (aM)**: `a_M = πc²/12R_Λ = 1.42×10⁻¹⁰ m/s²` (`1.4` to two figures); Verlinde's
-coefficient `1/6` gives `c²/6R_Λ = 0.90×10⁻¹⁰` with this `R_Λ` and `cH₀/6 = 1.1×10⁻¹⁰` with his
-`cH₀`; and with his coefficient the observed `a₀` would exceed the bound, `c²/6R_Λ < a₀`. -/
+coefficient `1/6` gives `c²/6R_Λ = 0.90×10⁻¹⁰` with this `R_Λ` (and `cH₀/6 = 1.1×10⁻¹⁰` with his
+`cH₀`, which the paper does not print); and with his coefficient the observed `a₀` would exceed
+the bound, `c²/6R_Λ < a₀`. -/
 theorem aM_val :
     (1.415e-10 < aM ∧ aM < 1.425e-10) ∧
     (0.895e-10 < c₀ ^ 2 / (6 * RL) ∧ c₀ ^ 2 / (6 * RL) < 0.905e-10) ∧
@@ -1167,8 +1208,10 @@ theorem reg_aM_val : 1.415e-10 < reg.aM 4 ∧ reg.aM 4 < 1.425e-10 := by
   rw [reg_aM]; exact aM_val.1
 
 /-- **Against observation** (Sec. IV.C, Table I): the two measurements lie below the bound, at
-`1.20/a_M = 0.85` and `1.19/a_M = 0.84` of it, "85% and 84% of it"; the saturation question, `(a_M − 1.20)/0.24 = 0.9σ` [McGaugh 2016] and `(a_M − 1.19)/0.10 = 2.3σ` [Desmond 2023],
-with the total uncertainties `√(0.02² + 0.24²) = 0.24` and `√(0.04² + 0.09²) = 0.10`. -/
+`1.20/a_M = 0.85` and `1.19/a_M = 0.84` of it, "85% and 84% of it"; the second question, whether the
+bound is reached, `(a_M − 1.20)/0.24 = 0.9σ` [McGaugh 2016] and `(a_M − 1.19)/0.10 = 2.3σ`
+[Desmond 2023], with the total uncertainties `√(0.02² + 0.24²) = 0.24` and
+`√(0.04² + 0.09²) = 0.10`. -/
 theorem aM_vs_observation :
     (0.845 < a₀ / aM ∧ a₀ / aM < 0.855) ∧
     (0.835 < 1.19e-10 / aM ∧ 1.19e-10 / aM < 0.845) ∧
@@ -1192,7 +1235,7 @@ theorem aM_vs_observation :
   · rw [Real.lt_sqrt (by norm_num)]; norm_num
   · rw [Real.sqrt_lt' (by norm_num)]; norm_num
 
-/-- **The coefficients** (Sec. IV.C, Appendix A), in units of `cH_∞ = c²/R_Λ`:
+/-- **The coefficients** (Appendix A), in units of `cH_∞ = c²/R_Λ`:
 `a₀/cH_∞ = 0.22 ± 0.04` measured [McGaugh 2016] and `0.22 ± 0.02` [Desmond 2023]; `π/12 = 0.26`
 here and `1/6 = 0.17` Verlinde. -/
 theorem coefficients :
@@ -1299,32 +1342,37 @@ theorem pins_agree :
 
 /-- **Why the temperature cannot lead** (Sec. IV.C): `2c²/R_Λ` is nine times the observed `a₀`;
 `√(1 + 2a_Λ/g_N)` at `g_N = 10a₀` is `1.38`, a transition 38% above Newton; and the observed
-relation there, `1/(1 − e^{−√10})` [McGaugh 2016], is `1.04`, 4% above. -/
+relation there, `1/(1 − e^{−√10})` [McGaugh 2016], is `1.044`, 4% above (Appendix A: the fraction
+`0.044`), certified as `1.0435 < 1/(1 − e^{−√10}) < 1.0445`. -/
 theorem temperature_led_numbers :
     (9.0 < 2 * c₀ ^ 2 / (RL * a₀) ∧ 2 * c₀ ^ 2 / (RL * a₀) < 9.1) ∧
     (1.375 < Real.sqrt (1 + 2 * (c₀ ^ 2 / RL) / (10 * a₀)) ∧
       Real.sqrt (1 + 2 * (c₀ ^ 2 / RL) / (10 * a₀)) < 1.385) ∧
-    (1.035 < 1 / (1 - Real.exp (-Real.sqrt 10)) ∧ 1 / (1 - Real.exp (-Real.sqrt 10)) < 1.045) := by
+    (1.0435 < 1 / (1 - Real.exp (-Real.sqrt 10)) ∧
+      1 / (1 - Real.exp (-Real.sqrt 10)) < 1.0445) := by
   have hR := RL_pos; have hH := Hinf_pos
   have e1 : 2 * c₀ ^ 2 / (RL * a₀) = 2 * c₀ * Hinf / a₀ := by unfold RL; field_simp
   have e2 : c₀ ^ 2 / RL = c₀ * Hinf := by unfold RL; field_simp
   obtain ⟨j1, j2⟩ := Hinf_tight
-  -- `e^{√10}` lies between `23.3` and `24`
+  -- `e^{√10}` lies between `23.6` and `23.98`
   have hs1 : (3.1622 : ℝ) < Real.sqrt 10 := by rw [Real.lt_sqrt (by norm_num)]; norm_num
   have hs2 : Real.sqrt 10 < 3.1623 := by rw [Real.sqrt_lt' (by norm_num)]; norm_num
   have he3 : Real.exp 3 = Real.exp 1 ^ 3 := by
     rw [← Real.exp_nat_mul]; norm_num
-  have hE1 : (23.3 : ℝ) < Real.exp (Real.sqrt 10) := by
+  have hE1 : (23.6 : ℝ) < Real.exp (Real.sqrt 10) := by
     have ha : Real.exp 3 * Real.exp 0.1622 < Real.exp (Real.sqrt 10) := by
       rw [← Real.exp_add]; exact Real.exp_lt_exp.2 (by linarith)
-    have hb : (0.1622 : ℝ) + 1 ≤ Real.exp 0.1622 := Real.add_one_le_exp _
+    have hq := Real.quadratic_le_exp_of_nonneg (show (0 : ℝ) ≤ 0.1622 by norm_num)
+    have hb : (1.1753 : ℝ) ≤ Real.exp 0.1622 := by
+      have h3 : (1.1753 : ℝ) < 1 + 0.1622 + 0.1622 ^ 2 / 2 := by norm_num
+      linarith
     have hc : (2.7182818283 : ℝ) ^ 3 < Real.exp 3 := by
       rw [he3]; exact pow_lt_pow_left₀ Real.exp_one_gt_d9 (by norm_num) (by norm_num)
-    have hd : (2.7182818283 : ℝ) ^ 3 * 1.1622 < Real.exp 3 * Real.exp 0.1622 := by
-      apply mul_lt_mul hc (by linarith) (by norm_num) (Real.exp_pos _).le
-    have : (23.3 : ℝ) < 2.7182818283 ^ 3 * 1.1622 := by norm_num
+    have hd : (2.7182818283 : ℝ) ^ 3 * 1.1753 < Real.exp 3 * Real.exp 0.1622 := by
+      apply mul_lt_mul hc hb (by norm_num) (Real.exp_pos _).le
+    have : (23.6 : ℝ) < 2.7182818283 ^ 3 * 1.1753 := by norm_num
     linarith
-  have hE2 : Real.exp (Real.sqrt 10) < 24 := by
+  have hE2 : Real.exp (Real.sqrt 10) < 23.98 := by
     have ha : Real.exp (Real.sqrt 10) < Real.exp 3 * Real.exp 0.1623 := by
       rw [← Real.exp_add]; exact Real.exp_lt_exp.2 (by linarith)
     have hb : Real.exp 0.1623 < 1 / (1 - 0.1623) :=
@@ -1333,7 +1381,7 @@ theorem temperature_led_numbers :
       rw [he3]; exact pow_lt_pow_left₀ Real.exp_one_lt_d9 (Real.exp_pos 1).le (by norm_num)
     have hd : Real.exp 3 * Real.exp 0.1623 < (2.7182818286 : ℝ) ^ 3 * (1 / (1 - 0.1623)) := by
       apply mul_lt_mul'' hc hb (Real.exp_pos _).le (Real.exp_pos _).le
-    have : (2.7182818286 : ℝ) ^ 3 * (1 / (1 - 0.1623)) < 24 := by norm_num
+    have : (2.7182818286 : ℝ) ^ 3 * (1 / (1 - 0.1623)) < 23.98 := by norm_num
     linarith
   have hrar : 1 / (1 - Real.exp (-Real.sqrt 10))
       = Real.exp (Real.sqrt 10) / (Real.exp (Real.sqrt 10) - 1) := by
@@ -1409,6 +1457,80 @@ theorem EΛ_val :
   · apply lt_of_sq' (by positivity) (by norm_num)
     rw [div_pow, mul_pow, RL_sq]; norm_num
 
+/-- **Heat and energy of the strings** (Sec. IV.E, Table I, Table II, Appendix A).  Every string has
+the energy `E_c/L` of Eq. (energy), so the `L²/4` strings hold `U = LE_c/4`, which is
+`c⁴R_Λ/(2G ln 2)`; their heat, one bit each at the horizon's temperature `E_c/L`, is `U ln 2 = E_Λ`
+(`reg.EΛ`), so the heat is `ln 2 = 0.693` of all the energy (`69.3%`) and the rest is
+`1 − ln 2 = 0.307` (`30.7%`).  For these inputs `U = 1.45×10⁷⁰ J` and `U(1 − ln 2) = 0.44×10⁷⁰ J`;
+the energy inside `R_Λ` today is `E_Λ/Ω_Λ = 1.46×10⁷⁰ J`, of which matter, `E_Λ(1 − Ω_Λ)/Ω_Λ`, is
+`0.46×10⁷⁰ J`; and `ln 2` lies `1.2σ` above Planck's `Ω_Λ = 0.685 ± 0.007` and `1.1σ` below DESI's
+`0.7025 ± 0.0086` from baryon acoustic oscillations alone (`Ω_Λ = 1 − Ω_m`, `Ω_m = 0.2975 ± 0.0086`). -/
+theorem vacuum_share :
+    (0.6925 < Real.log 2 ∧ Real.log 2 < 0.6935) ∧
+    (0.3065 < 1 - Real.log 2 ∧ 1 - Real.log 2 < 0.3075) ∧
+    (1.15 < (Real.log 2 - ΩΛ₀) / (7 / 1000) ∧ (Real.log 2 - ΩΛ₀) / (7 / 1000) < 1.25) ∧
+    (1.05 < ((1 - 2975 / 10000 : ℝ) - Real.log 2) / (86 / 10000) ∧
+      ((1 - 2975 / 10000 : ℝ) - Real.log 2) / (86 / 10000) < 1.15) ∧
+    Lcos * (ℏ₀ * c₀ / lc) / 4 = c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) ∧
+    c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) * Real.log 2 = reg.EΛ ∧
+    (1.445e70 < c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) ∧
+      c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) < 1.455e70) ∧
+    (0.435e70 < c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) * (1 - Real.log 2) ∧
+      c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) * (1 - Real.log 2) < 0.445e70) ∧
+    (1.455e70 < c₀ ^ 4 * RL / (2 * G₀ * ΩΛ₀) ∧ c₀ ^ 4 * RL / (2 * G₀ * ΩΛ₀) < 1.465e70) ∧
+    (0.455e70 < c₀ ^ 4 * RL / (2 * G₀ * ΩΛ₀) * (1 - ΩΛ₀) ∧
+      c₀ ^ 4 * RL / (2 * G₀ * ΩΛ₀) * (1 - ΩΛ₀) < 0.465e70) := by
+  pi_ln2
+  have hR := RL_pos
+  have hl := lc_pos
+  obtain ⟨hEeq, hE1, hE2⟩ := EΛ_val
+  -- `U = E_Λ/ln 2`, with `E_Λ = c⁴R_Λ/2G`
+  have eU : c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) = c₀ ^ 4 * RL / (2 * G₀) / Real.log 2 := by
+    rw [div_div]
+  have hU1 : 1.447e70 < c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) := by
+    rw [eU, lt_div_iff₀ ln2_pos]; nlinarith
+  have hU2 : c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) < 1.4485e70 := by
+    rw [eU, div_lt_iff₀ ln2_pos]; nlinarith
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩
+  · linarith
+  · linarith
+  · linarith
+  · linarith
+  · rw [lt_div_iff₀ (by norm_num)]; linarith
+  · rw [div_lt_iff₀ (by norm_num)]; linarith
+  · rw [lt_div_iff₀ (by norm_num)]; linarith
+  · rw [div_lt_iff₀ (by norm_num)]; linarith
+  · -- `LE_c/4 = c⁴R_Λ/(2G ln 2)`, by `ℓ_c² = π ln 2 ℏG/c³`
+    have h2 : lc ^ 2 = π * Real.log 2 * (ℏ₀ * G₀ / c₀ ^ 3) := lc_sq
+    have e1 : Lcos * (ℏ₀ * c₀ / lc) / 4 = π * RL * ℏ₀ * c₀ / (2 * lc ^ 2) := by
+      unfold Lcos; field_simp; ring
+    rw [e1, h2]; field_simp
+  · rw [hEeq]; field_simp
+  · exact lt_trans (by norm_num) hU1
+  · exact lt_trans hU2 (by norm_num)
+  · have h1 : (0.30685 : ℝ) < 1 - Real.log 2 := by linarith
+    calc (0.435e70 : ℝ) < 1.447e70 * 0.30685 := by norm_num
+      _ < c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) * (1 - Real.log 2) :=
+          mul_lt_mul'' hU1 h1 (by norm_num) (by norm_num)
+  · have h2 : 1 - Real.log 2 < (0.30686 : ℝ) := by linarith
+    calc c₀ ^ 4 * RL / (2 * G₀ * Real.log 2) * (1 - Real.log 2) < 1.4485e70 * 0.30686 :=
+          mul_lt_mul'' hU2 h2 (by linarith) (by linarith)
+      _ < (0.445e70 : ℝ) := by norm_num
+  · apply lt_of_sq (by positivity) (by norm_num)
+    rw [div_pow, mul_pow, RL_sq]; norm_num
+  · apply lt_of_sq' (by positivity) (by norm_num)
+    rw [div_pow, mul_pow, RL_sq]; norm_num
+  · have e : c₀ ^ 4 * RL / (2 * G₀ * ΩΛ₀) * (1 - ΩΛ₀) = c₀ ^ 4 * RL * ((1 - ΩΛ₀) / (2 * G₀ * ΩΛ₀)) := by
+      ring
+    rw [e]
+    apply lt_of_sq (by positivity) (by norm_num)
+    rw [mul_pow, mul_pow, RL_sq]; norm_num
+  · have e : c₀ ^ 4 * RL / (2 * G₀ * ΩΛ₀) * (1 - ΩΛ₀) = c₀ ^ 4 * RL * ((1 - ΩΛ₀) / (2 * G₀ * ΩΛ₀)) := by
+      ring
+    rw [e]
+    apply lt_of_sq' (by positivity) (by norm_num)
+    rw [mul_pow, mul_pow, RL_sq]; norm_num
+
 /-- **The vacuum energy density**: the chain's `ρ_Λ = 3π²ρ_c ln 2/2L²` for these inputs equals
 `Λc⁴/8πG`, which is `5.25×10⁻¹⁰ J/m³` (`5.3` to two figures, as in Sec. IV.D). -/
 theorem ρΛ_val :
@@ -1460,8 +1582,8 @@ theorem temperature_and_clock :
   · rw [div_div, div_lt_iff₀ (by positivity)]; nlinarith
 
 /-- **Any galaxy, group or cluster** (Sec. IV.D): the zero-gravity radius lies below the crossing
-when `M < c²R_Λ/(π³G)` (`Reg.zero_gravity_mass`), which is `3.6×10²¹ M☉`, above any cluster;
-for these inputs, every mass up to `10¹⁶ M☉` has `r_z < R_Λ/π`. -/
+when `M < c²R_Λ/(π³G)` (`Reg.zero_gravity_mass`), which is `3.6×10²¹ M☉`, above any cluster (the
+paper does not print the figure); for these inputs, every mass up to `10¹⁶ M☉` has `r_z < R_Λ/π`. -/
 theorem zero_gravity_masses :
     (3.6e21 * (GMs₀ / G₀) < c₀ ^ 2 * RL / (π ^ 3 * G₀) ∧
       c₀ ^ 2 * RL / (π ^ 3 * G₀) < 3.65e21 * (GMs₀ / G₀)) ∧
@@ -1494,7 +1616,8 @@ theorem zero_gravity_masses :
     linarith
   exact key hM'
 
-/-- **The crossover** of the deep pull and the push (Sec. IV.D), `r⁴ = R_Λ⁴a_M GM/c⁴`, that is
+/-- **The crossover** of the deep pull and the push (Sec. IV.D of the paper's versions up to -6-25;
+since -6-26 the paper no longer prints the figure), `r⁴ = R_Λ⁴a_M GM/c⁴`, that is
 `r = R_Λv_c/c`: `3.7 Mpc` for `10¹¹ M☉`. -/
 theorem crossover_radius :
     (3.7 * Mpc₀) ^ 4 < RL ^ 4 * aM * (1e11 * GMs₀) / c₀ ^ 4 ∧
@@ -1510,8 +1633,9 @@ theorem crossover_radius :
       _ < (3.75 * Mpc₀) ^ 4 := by norm_num
 
 /-- **The 123 orders are `L²`** (Table I, Sec. IV.D): the Planck density `c⁷/ℏG²`, the quantum field
-theory estimate of the vacuum energy density, is `4.6×10¹¹³ J/m³` (`10¹¹³`); it exceeds the
-ring's `ρ_Λ` by `(2 ln 2/3) L²` (`Reg.vacuum_ratio`), `8.8×10¹²²`, with `L² = 1.9×10¹²³`. -/
+theory estimate of the vacuum energy density, is `4.6×10¹¹³ J/m³`, the paper's `10¹¹³`; it exceeds
+the ring's `ρ_Λ` by `(2 ln 2/3) L²` (`Reg.vacuum_ratio`), `8.8×10¹²²`, with `L² = 1.9×10¹²³`, the
+paper's 123 orders.  The paper prints the orders only. -/
 theorem vacuum_orders :
     (4.6e113 < c₀ ^ 7 / (ℏ₀ * G₀ ^ 2) ∧ c₀ ^ 7 / (ℏ₀ * G₀ ^ 2) < 4.65e113) ∧
     c₀ ^ 7 / (ℏ₀ * G₀ ^ 2) / reg.ρΛ = 2 * Real.log 2 / 3 * Lcos ^ 2 ∧
@@ -1551,16 +1675,24 @@ theorem redshift_one :
 of the expansion rate, `|Λ̇/Λ| = |Ġ/G| ≲ 10⁻¹³ yr⁻¹`, so with `H₀ = 6.89×10⁻¹¹ yr⁻¹`,
 `|1 + w₀| ≲ 10⁻¹³/3H₀ = 4.8×10⁻⁴` (`5×10⁻⁴` to one figure), and twice that, `9.7×10⁻⁴`, if the drift
 is referred to the density `Λc⁴/8πG`, which carries `G` as well, `ρ̇_Λ/ρ_Λ = 2Λ̇/Λ`
-(`constancy_of_Lambda`); the drift a Hubble-radius horizon would
-give, `Ġ/G = 2H(1+q) ≈ 6×10⁻¹¹ yr⁻¹` at `q = −0.53` (`Reg.G_drift`), is six hundred times the
-lunar-laser-ranging bound `10⁻¹³ yr⁻¹`. -/
+(`constancy_of_Lambda`); the drift a Hubble-radius horizon would give,
+`Ġ/G = 2H(1+q) ≈ 6.5×10⁻¹¹ yr⁻¹` (`Reg.G_drift`), is about 650 times the lunar-laser-ranging
+bound `10⁻¹³ yr⁻¹` (Sec. IV.D).  The deceleration parameter is `q = Ω_m/2 − Ω_Λ`, which is `−0.53`
+to two figures for the Appendix's `Ω_m` and `Ω_Λ` (the last conjunct); the two figures are
+certified with that `q` and with the rounded `q = −0.53`, and hold for both. -/
 theorem constancy_numbers :
     (6.885e-11 < H₀ * yr₀ ∧ H₀ * yr₀ < 6.895e-11) ∧
     (4.8e-4 < 1e-13 / (3 * (H₀ * yr₀)) ∧ 1e-13 / (3 * (H₀ * yr₀)) < 4.85e-4) ∧
     (9.65e-4 < 2e-13 / (3 * (H₀ * yr₀)) ∧ 2e-13 / (3 * (H₀ * yr₀)) < 9.75e-4) ∧
-    (5.5e-11 < 2 * (H₀ * yr₀) * (1 - 0.53) ∧ 2 * (H₀ * yr₀) * (1 - 0.53) < 6.5e-11) ∧
-    (550 < 2 * (H₀ * yr₀) * (1 - 0.53) / 1e-13 ∧ 2 * (H₀ * yr₀) * (1 - 0.53) / 1e-13 < 650) := by
+    (6.45e-11 < 2 * (H₀ * yr₀) * (1 + ((0.315 : ℝ) / 2 - ΩΛ₀)) ∧
+      2 * (H₀ * yr₀) * (1 + ((0.315 : ℝ) / 2 - ΩΛ₀)) < 6.55e-11) ∧
+    (645 < 2 * (H₀ * yr₀) * (1 + ((0.315 : ℝ) / 2 - ΩΛ₀)) / 1e-13 ∧
+      2 * (H₀ * yr₀) * (1 + ((0.315 : ℝ) / 2 - ΩΛ₀)) / 1e-13 < 655) ∧
+    (6.45e-11 < 2 * (H₀ * yr₀) * (1 - 0.53) ∧ 2 * (H₀ * yr₀) * (1 - 0.53) < 6.55e-11) ∧
+    (645 < 2 * (H₀ * yr₀) * (1 - 0.53) / 1e-13 ∧ 2 * (H₀ * yr₀) * (1 - 0.53) / 1e-13 < 655) ∧
+    (-0.535 < (0.315 : ℝ) / 2 - ΩΛ₀ ∧ (0.315 : ℝ) / 2 - ΩΛ₀ < -0.525) := by
   refine ⟨⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩,
+    ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩,
     ⟨by norm_num, by norm_num⟩, ⟨by norm_num, by norm_num⟩⟩
 
 end Numerics
