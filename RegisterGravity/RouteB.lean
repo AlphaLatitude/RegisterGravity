@@ -8,12 +8,12 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 
 /-!
-# Where the strings hold their entropy: the ring-distance count (Sec. IV.C)
+# Distances in the register: the ring-distance count (Sec. IV.C)
 
-Formal counterpart of the paragraphs of Sec. IV.C that give the fraction `4n/L`.  The largest
+Formal counterpart of the paragraph of Sec. IV.C on distances from the body's cell.  The largest
 rings carry their cyclic order: each ring's cells sit at the positions `0, …, L − 1` of `ZMod L`,
-one step per cell (Postulate 1: the shift moves every bit of a string one cell along its ring per
-tick), and the opposite of a cell lies halfway around, `L/2` steps on (Postulate 2).  Postulate 2
+one step per cell (Postulate 1: the shift is a translation along the ring by one cell per tick),
+and the opposite of a cell lies halfway around, `L/2` steps on (Postulate 2).  Postulate 2
 then gives every cell not opposite the body's cell `B` a distance from it: the number of steps
 between them, the shorter way around, along the one largest ring through both.
 
@@ -24,13 +24,15 @@ What is proved, for `L ≥ 4`:
 * `dist_opp`: the two cells of an opposite pair lie at the distances `d` and `L/2 − d`;
 * `horizon_weight_ring`: every largest ring has half its cells, `L/2` of them, inside the horizon
   `L/4` cells out, counting a cell on it as half;
-* `sphere_count` and `route_B_fraction`: for a cell `P` at distance `n` from `B`, `n < L/4`, the
-  largest rings through `P` hold between them `nL + L/2` cells within distance `n` and `L²/4` inside
-  the horizon, so the fraction of their cells inside the horizon that lie within the sphere is
-  exactly `(4n + 2)/L = (4n/L)(1 + 1/2n)`, which is `n/(L/4) = 4n/L` to leading order in `1/n`.
+* `crossesHorizon`: every largest ring crosses the horizon of the observer at any cell, with a cell
+  inside or on it and a cell outside or on it.
 
-The horizon's distance `L/4` is the quarter lap of `Chain.quarter_lap`: the de Sitter solution puts
-the horizon at the proper distance `πR_Λ/2 = Lℓ_c/4` (`DeSitter.proper_distance`).  The positions
+`P` names the positions of the rings throughout.
+
+The horizon's distance `L/4` is the quarter lap of `Reg.quarter_lap`: the de Sitter solution puts
+the horizon at the proper distance `πR_Λ/2 = Lℓ_c/4` (`Reg.proper_distance`), and with the
+count's horizon taken to be the solution's (`hx`), `Main.horizon_quarter` derives the count's `L/4`
+from it.  The positions
 also give the paper's reason that `L` is even, the opposite lying halfway around
 (`even_of_halfway`).
 -/
@@ -65,8 +67,8 @@ lemma exists_loop_through (hL : 4 ≤ L) (B X : H.Cell) : ∃ l, B ∈ H.cells l
     · exact H.exists_loop B X h1 h2
 
 /-- **The cyclic order of the largest rings.**  Each ring's cells carry positions in `ZMod L`,
-distinct on the ring (Postulate 1: the shift moves every bit of a string one cell along its ring
-per tick), and the opposite of a cell lies `L/2` steps on (Postulate 2: the cell halfway around
+distinct on the ring (Postulate 1: the shift is a translation along the ring by one cell per
+tick), and the opposite of a cell lies `L/2` steps on (Postulate 2: the same cell halfway around
 every largest ring through it). -/
 structure Positions (H : Horizon L) where
   /-- the position of a cell on a largest ring through it -/
@@ -99,8 +101,6 @@ lemma ringDist_self (l : H.Loop) (x : H.Cell) : P.ringDist l x x = 0 := by
 lemma val_half (hL : 4 ≤ L) : ((L / 2 : ℕ) : ZMod L).val = L / 2 :=
   ZMod.val_cast_of_lt (by omega)
 
-lemma dist_self (B : H.Cell) : P.dist B B = 0 := by simp [dist]
-
 include P in
 /-- **`L` is even** (Sec. II): an opposite lies halfway around a ring of `L` cells.  The opposite
 of a cell lies `L/2` steps on, and the opposite of the opposite is the cell itself, so `2(L/2)`
@@ -132,9 +132,44 @@ lemma half_shift (k h : ℕ) (hk : k < 2 * h) :
   · rw [Nat.mod_eq_sub_mod (by omega), Nat.mod_eq_of_lt (by omega)]
     omega
 
+/-- a cell is `0` steps from itself -/
+lemma offset_self (l : H.Loop) (x : H.Cell) : P.offset l x x = 0 := by
+  simp [offset]
+
+/-- **The opposite of `B` lies `L/2` steps on along every largest ring through `B`** (Postulate 2:
+"one opposite, the same cell halfway around every largest ring through it"). -/
+lemma offset_opp_self (hL : 4 ≤ L) (l : H.Loop) (B : H.Cell) (hB : B ∈ H.cells l) :
+    P.offset l B (H.opp B) = L / 2 := by
+  unfold offset
+  rw [P.pos_opp l B hB, add_sub_cancel_left, val_half hL]
+
 variable [NeZero L]
 
 lemma offset_lt (l : H.Loop) (x y : H.Cell) : P.offset l x y < L := ZMod.val_lt _
+
+/-- the steps from `B` along a ring fix the cell -/
+lemma offset_inj (l : H.Loop) {B x y : H.Cell} (hx : x ∈ H.cells l) (hy : y ∈ H.cells l)
+    (h : P.offset l B x = P.offset l B y) : x = y :=
+  P.pos_inj l x y hx hy (sub_left_inj.1 (ZMod.val_injective L h))
+
+/-- a ring has a cell at every number of steps from `B` below `L`: its cells' positions fill
+`ZMod L` (`pos_inj` with `card_cells`) -/
+lemma exists_offset (l : H.Loop) (B : H.Cell) (j : ℕ) (hj : j < L) :
+    ∃ X ∈ H.cells l, P.offset l B X = j := by
+  classical
+  set φ : H.Cell → ZMod L := fun X => P.pos l X - P.pos l B with hφ
+  have hinj : Set.InjOn φ (H.cells l) := by
+    intro x hx y hy hxy
+    simp only [hφ, sub_left_inj] at hxy
+    exact P.pos_inj l x y hx hy hxy
+  have himage : (H.cells l).image φ = univ := by
+    apply Finset.eq_univ_of_card
+    rw [card_image_of_injOn hinj, H.card_cells, ZMod.card]
+  have hmem : ((j : ℕ) : ZMod L) ∈ (H.cells l).image φ := by rw [himage]; exact mem_univ _
+  obtain ⟨X, hX, hXj⟩ := mem_image.1 hmem
+  refine ⟨X, hX, ?_⟩
+  show (P.pos l X - P.pos l B).val = j
+  rw [show P.pos l X - P.pos l B = φ X from rfl, hXj, ZMod.val_cast_of_lt hj]
 
 lemma ringDist_le (l : H.Loop) (x y : H.Cell) : P.ringDist l x y ≤ L / 2 := by
   have := P.offset_lt l x y
@@ -188,29 +223,8 @@ theorem dist_opp (hL : 4 ≤ L) (B X : H.Cell) : P.dist B (H.opp X) = L / 2 - P.
   obtain ⟨l, hB, hX⟩ := H.exists_loop_through hL B X
   rw [P.dist_eq hL hB (H.opp_mem l X hX), P.dist_eq hL hB hX, P.ringDist_opp hL l B X hX]
 
-/-- Only `B` is at distance `0`. -/
-lemma dist_eq_zero (hL : 4 ≤ L) {B X : H.Cell} (h : P.dist B X = 0) : X = B := by
-  by_contra hXB
-  obtain ⟨l, hB, hX⟩ := H.exists_loop_through hL B X
-  rw [P.dist_eq hL hB hX] at h
-  have hne : P.pos l X - P.pos l B ≠ 0 := by
-    intro h0
-    exact hXB (P.pos_inj l X B hX hB (sub_eq_zero.1 h0))
-  have hv : P.offset l B X ≠ 0 := by
-    unfold offset
-    intro hv
-    exact hne ((ZMod.val_eq_zero _).1 hv)
-  have := P.offset_lt l B X
-  unfold ringDist at h
-  omega
-
 
 /-! ### The count at each distance -/
-
-omit [NeZero L] in
-/-- The ring distance as a function of the position difference. -/
-lemma ringDist_eq_val (l : H.Loop) (B X : H.Cell) :
-    P.ringDist l B X = min (P.pos l X - P.pos l B).val (L - (P.pos l X - P.pos l B).val) := rfl
 
 /-- **Two cells at each distance on a ring.**  On a largest ring through `B`, exactly two cells
 lie at each distance `d` with `1 ≤ d < L/2`: one each way around. -/
@@ -260,7 +274,7 @@ theorem card_ringDist (l : H.Loop) (B : H.Cell) {d : ℕ} (hd1 : 1 ≤ d) (hd2 :
   rw [ZMod.val_cast_of_lt hdL, ZMod.val_cast_of_lt hLd] at this
   omega
 
-/-- **`L` cells at each distance** (Sec. IV.C): at each distance `d` from `B` with `1 ≤ d < L/2`
+/-- **`L` cells at each distance** (the distance of Sec. IV.C): at each distance `d` from `B` with `1 ≤ d < L/2`
 there are exactly `L` cells, two on each of the `L/2` rings through `B`. -/
 theorem card_dist_eq (hL : 4 ≤ L) (B : H.Cell) {d : ℕ} (hd1 : 1 ≤ d) (hd2 : 2 * d < L) :
     (univ.filter (fun X => P.dist B X = d)).card = L := by
@@ -297,139 +311,10 @@ theorem card_dist_eq (hL : 4 ≤ L) (B : H.Cell) {d : ℕ} (hd1 : 1 ≤ d) (hd2 
   have := H.two_mul_card_through hL B
   omega
 
-/-- The cells within distance `n` of `B`: `B` itself and `L` at each distance `1, …, n`. -/
-theorem card_dist_le (hL : 4 ≤ L) (B : H.Cell) (n : ℕ) (hn : 2 * n < L) :
-    (univ.filter (fun X => P.dist B X ≤ n)).card = 1 + n * L := by
-  classical
-  induction n with
-  | zero =>
-    have : univ.filter (fun X => P.dist B X ≤ 0) = {B} := by
-      ext X
-      simp only [mem_filter, mem_univ, true_and, mem_singleton, Nat.le_zero]
-      exact ⟨P.dist_eq_zero hL, fun h => h ▸ P.dist_self B⟩
-    rw [this, card_singleton]; ring
-  | succ k ih =>
-    have hsplit : univ.filter (fun X => P.dist B X ≤ k + 1)
-        = univ.filter (fun X => P.dist B X ≤ k) ∪ univ.filter (fun X => P.dist B X = k + 1) := by
-      ext X; simp only [mem_filter, mem_univ, true_and, mem_union]; omega
-    have hdisj : Disjoint (univ.filter (fun X => P.dist B X ≤ k))
-        (univ.filter (fun X => P.dist B X = k + 1)) := by
-      rw [Finset.disjoint_filter]; intro X _ h1 h2; omega
-    rw [hsplit, card_union_of_disjoint hdisj, ih (by omega),
-      P.card_dist_eq hL B (by omega) (by omega)]
-    ring
-
-/-- **The rings through a cell of the sphere** (Sec. IV.C).  For a cell `Q` at distance `n` from `B`,
-inside the horizon (`4n < L`), the largest rings through `Q` hold between them `nL + L/2` cells
-within distance `n` of `B`: every cell off the pair of `Q` lies on exactly one of them, and `Q`
-lies on all `L/2`. -/
-theorem sphere_count (hL : 4 ≤ L) (B Q : H.Cell) {n : ℕ} (hQ : P.dist B Q = n) (hn : 4 * n < L) :
-    ∑ l ∈ H.through Q, ((H.cells l).filter (fun X => P.dist B X ≤ n)).card = n * L + L / 2 := by
-  classical
-  obtain ⟨h, hL2, hh⟩ := H.exists_half hL
-  set S := univ.filter (fun X => P.dist B X ≤ n) with hS
-  -- double count the pairs (ring through `Q`, cell of it within distance `n`)
-  have key : ∑ l ∈ H.through Q, ((H.cells l).filter (fun X => P.dist B X ≤ n)).card
-      = ∑ X ∈ S, ((H.through Q).filter (fun l => X ∈ H.cells l)).card := by
-    simp only [card_eq_sum_ones]
-    apply sum_comm'
-    intro l X
-    simp only [mem_filter, mem_through, hS, mem_univ, true_and]
-    tauto
-  rw [key]
-  have hQS : Q ∈ S := by simp [hS, hQ]
-  rw [← add_sum_erase S _ hQS]
-  -- `Q` lies on every ring through it
-  have hQcount : ((H.through Q).filter (fun l => Q ∈ H.cells l)).card = L / 2 := by
-    have : (H.through Q).filter (fun l => Q ∈ H.cells l) = H.through Q := by
-      ext l; simp [mem_through]
-    rw [this]
-    have := H.two_mul_card_through hL Q
-    omega
-  -- every other cell within distance `n` lies on exactly one ring through `Q`
-  have hone : ∀ X ∈ S.erase Q, ((H.through Q).filter (fun l => X ∈ H.cells l)).card = 1 := by
-    intro X hX
-    rw [mem_erase] at hX
-    obtain ⟨hXQ, hXS⟩ := hX
-    have hXn : P.dist B X ≤ n := by simpa [hS] using hXS
-    have hXQ' : X ≠ H.opp Q := by
-      intro hXo
-      rw [hXo, P.dist_opp hL B Q, hQ] at hXn
-      omega
-    obtain ⟨l, hQl, hXl⟩ := H.exists_loop Q X hXQ hXQ'
-    rw [card_eq_one]
-    refine ⟨l, ?_⟩
-    ext m
-    simp only [mem_filter, mem_through, mem_singleton]
-    constructor
-    · rintro ⟨hQm, hXm⟩
-      exact H.unique_loop Q X m l hXQ hXQ' hQm hXm hQl hXl
-    · rintro rfl
-      exact ⟨hQl, hXl⟩
-  rw [hQcount, sum_congr rfl hone, sum_const, smul_eq_mul, mul_one, card_erase_of_mem hQS,
-    hS, P.card_dist_le hL B n (by omega)]
-  omega
-
-/-- **`L − 2` cells at each distance on the other rings through a cell of the sphere**
-(Sec. IV.C).  Let `A` be a largest ring through the body's cell `B` and a cell `Q` of the sphere.
-The other largest rings through `Q` hold between them every cell not on `A` exactly once, and
-their cells not on `A` are all their cells but `Q` and its opposite.  At each distance `d` from
-`B` with `1 ≤ d < L/2` there are `L` cells (`card_dist_eq`), two of them on `A` (`card_ringDist`),
-so these rings together hold `L − 2` of the `L` cells at each such distance, and `A` holds the
-other two. -/
-theorem per_distance_count (hL : 4 ≤ L) (B Q : H.Cell) (A : H.Loop) (hBA : B ∈ H.cells A)
-    (hQA : Q ∈ H.cells A) {d : ℕ} (hd1 : 1 ≤ d) (hd2 : 2 * d < L) :
-    ∑ l ∈ (H.through Q).erase A, ((H.cells l \ H.cells A).filter (fun X => P.dist B X = d)).card
-      = L - 2 := by
-  classical
-  -- the cells of these rings at distance `d` are the cells off `A` at distance `d`
-  have hsplit : ((H.through Q).erase A).biUnion
-      (fun l => (H.cells l \ H.cells A).filter (fun X => P.dist B X = d))
-      = univ.filter (fun X => P.dist B X = d) \ H.cells A := by
-    ext X
-    simp only [mem_biUnion, mem_erase, mem_through, mem_filter, mem_sdiff, mem_univ, true_and]
-    constructor
-    · rintro ⟨l, -, ⟨-, hXA⟩, hd⟩
-      exact ⟨hd, hXA⟩
-    · rintro ⟨hd, hXA⟩
-      have hXQ : X ≠ Q := fun h => hXA (h ▸ hQA)
-      have hXQ' : X ≠ H.opp Q := fun h => hXA (h ▸ H.opp_mem A Q hQA)
-      obtain ⟨l, hQl, hXl⟩ := H.exists_loop Q X hXQ hXQ'
-      exact ⟨l, ⟨fun h => hXA (h ▸ hXl), hQl⟩, ⟨hXl, hXA⟩, hd⟩
-  -- each cell off `A` lies on one ring through `Q`
-  have hdisj : (((H.through Q).erase A : Finset H.Loop) : Set H.Loop).PairwiseDisjoint
-      (fun l => (H.cells l \ H.cells A).filter (fun X => P.dist B X = d)) := by
-    intro l₁ hl₁ l₂ hl₂ hne
-    rw [Function.onFun, Finset.disjoint_left]
-    intro X hX₁ hX₂
-    rw [mem_filter, mem_sdiff] at hX₁ hX₂
-    have hQ₁ : Q ∈ H.cells l₁ := (H.mem_through).1 (mem_of_mem_erase (mem_coe.1 hl₁))
-    have hQ₂ : Q ∈ H.cells l₂ := (H.mem_through).1 (mem_of_mem_erase (mem_coe.1 hl₂))
-    have hXQ : X ≠ Q := fun h => hX₁.1.2 (h ▸ hQA)
-    have hXQ' : X ≠ H.opp Q := fun h => hX₁.1.2 (h ▸ H.opp_mem A Q hQA)
-    exact hne (H.unique_loop Q X l₁ l₂ hXQ hXQ' hQ₁ hX₁.1.1 hQ₂ hX₂.1.1)
-  rw [← card_biUnion hdisj, hsplit]
-  -- `L` cells at distance `d`, two of them on `A`
-  have hall := P.card_dist_eq hL B hd1 hd2
-  have honA : (univ.filter (fun X => P.dist B X = d) ∩ H.cells A).card = 2 := by
-    have e : univ.filter (fun X => P.dist B X = d) ∩ H.cells A
-        = (H.cells A).filter (fun X => P.ringDist A B X = d) := by
-      ext X
-      simp only [mem_inter, mem_filter, mem_univ, true_and]
-      constructor
-      · rintro ⟨hd, hXA⟩
-        exact ⟨hXA, by rw [← P.dist_eq hL hBA hXA]; exact hd⟩
-      · rintro ⟨hXA, hd⟩
-        exact ⟨by rw [P.dist_eq hL hBA hXA]; exact hd, hXA⟩
-    rw [e]
-    exact P.card_ringDist A B hd1 hd2
-  have := card_sdiff_add_card_inter (univ.filter (fun X => P.dist B X = d)) (H.cells A)
-  omega
-
 /-! ### The horizon, a quarter lap out -/
 
 /-- the share of a cell inside the horizon, `L/4` cells from the body: `1` inside, `1/2` on it,
-`0` beyond -/
+`0` beyond (`Main.horizon_quarter` derives the distance `L/4` from the solution, given its `hx`) -/
 noncomputable def weight (d : ℕ) : ℝ := if 4 * d < L then 1 else if 4 * d = L then 1 / 2 else 0
 
 omit [NeZero L] in
@@ -479,39 +364,32 @@ theorem horizon_weight_ring (hL : 4 ≤ L) (B : H.Cell) (l : H.Loop) :
       _ = L := by rw [sum_const, H.card_cells, nsmul_eq_mul, mul_one]
   linarith
 
-/-- **The fraction of Sec. IV.C, exactly.**  For a cell `Q` of the sphere at distance `n` from the
-body, `1 ≤ n` and `4n < L`, the largest rings through `Q` hold `nL + L/2` cells within distance `n`
-and `L²/4` inside the horizon, so the fraction of their cells inside the horizon that lie within
-the sphere is `(4n + 2)/L = (4n/L)(1 + 1/2n)`: `n/(L/4) = 4n/L` to leading order in `1/n`. -/
-theorem route_B_fraction (hL : 4 ≤ L) (B Q : H.Cell) {n : ℕ} (hQ : P.dist B Q = n) (hn1 : 1 ≤ n)
-    (hn : 4 * n < L) :
-    ((∑ l ∈ H.through Q, ((H.cells l).filter (fun X => P.dist B X ≤ n)).card : ℕ) : ℝ)
-        / (∑ l ∈ H.through Q, ∑ X ∈ H.cells l, weight (L := L) (P.dist B X))
-      = (4 * n + 2) / L ∧
-    ((4 * n + 2 : ℝ) / L = 4 * n / L * (1 + 1 / (2 * n))) := by
-  obtain ⟨h, hL2, hh⟩ := H.exists_half hL
-  have hnum := P.sphere_count hL B Q hQ hn
-  have hden : ∑ l ∈ H.through Q, ∑ X ∈ H.cells l, weight (L := L) (P.dist B X)
-      = ((H.through Q).card : ℝ) * ((L : ℝ) / 2) := by
-    rw [sum_congr rfl (fun l _ => P.horizon_weight_ring hL B l), sum_const, nsmul_eq_mul]
-  have hρ := H.two_mul_card_through hL Q
-  have hρ' : ((H.through Q).card : ℝ) = h := by
-    have : (H.through Q).card = h := by omega
-    rw [this]
-  have hLr : (L : ℝ) = 2 * h := by rw [hL2]; push_cast; ring
-  have hh0 : (0 : ℝ) < h := by
-    have : 0 < h := by omega
-    exact_mod_cast this
-  have hn0 : (0 : ℝ) < n := by exact_mod_cast hn1
+/-- **A ring crosses the horizon** of the observer at the cell `B` (Sec. II): part of it lies inside
+the horizon and part outside, that is, it has a cell inside or on the horizon and a cell outside or
+on it, a cell on the horizon counting as half inside and half outside (`weight`). -/
+def CrossesHorizon (B : H.Cell) (l : H.Loop) : Prop :=
+  (∃ X ∈ H.cells l, 0 < weight (L := L) (P.dist B X)) ∧
+    (∃ X ∈ H.cells l, weight (L := L) (P.dist B X) < 1)
+
+/-- **Every ring crosses every observer's horizon** (Sec. II, "What the manifold contributes"), the
+horizon `L/4` cells from the observer's cell (`weight`), where the solution puts it
+(`Main.horizon_quarter`): half its cells lie inside, counting a cell on the horizon as half (`horizon_weight_ring`), so it
+lies neither wholly inside, where its `L` cells would weigh `L`, nor wholly outside, where they
+would weigh `0`. -/
+theorem crossesHorizon (hL : 4 ≤ L) (B : H.Cell) (l : H.Loop) : P.CrossesHorizon B l := by
+  have hsum := P.horizon_weight_ring hL B l
+  have hL0 : (0 : ℝ) < L := by exact_mod_cast (show 0 < L by omega)
   constructor
-  · rw [hnum, hden, hρ', hh]
-    push_cast
-    rw [hLr]
-    field_simp
-    ring
-  · rw [hLr]
-    field_simp
-    ring
+  · by_contra hcon
+    push Not at hcon
+    have : ∑ X ∈ H.cells l, weight (L := L) (P.dist B X) ≤ 0 := Finset.sum_nonpos hcon
+    linarith
+  · by_contra hcon
+    push Not at hcon
+    have h1 : ∑ X ∈ H.cells l, (1 : ℝ) ≤ ∑ X ∈ H.cells l, weight (L := L) (P.dist B X) :=
+      Finset.sum_le_sum hcon
+    rw [sum_const, H.card_cells, nsmul_eq_mul, mul_one] at h1
+    linarith
 
 end Positions
 

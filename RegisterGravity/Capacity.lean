@@ -14,41 +14,74 @@ import Mathlib.Tactic.Positivity
 Formal counterpart of the paragraph of Sec. IV.A that derives the bound `2^N ≤ L`, and of the
 remarks of Sec. V on how soft the bound is and on Palmer's bit count.
 
-When a state is measured jointly (Postulate 1), one measurement reads one position, the same on
-every string of the qubits it measures, since the shift carries every string one cell per tick and
-keeps them in step; its outcome is the bits at that position, and which position is read is not
-chosen, every one being read alike (`cells_read_alike`).  So every position of a later string is
-paired with one outcome of the earlier qubits, their bits there (`jointOutcome`); this is Palmer's
-state of `N` qubits, `N` correlated strings of `L` bits with one permutation applied to all of
-them, and it needs no shared cell.  The paper's *block* (Sec. IV.A) is the set of cells of a later
-string whose bits are paired with one joint outcome of the earlier qubits; blocks of different
-outcomes are disjoint, and the fraction of 1s on a block is the probability of the outcome 1 given
-the block's joint outcome, since every probability is a frequency over the bits.  The general
+The bits are the possible outcomes of one measurement of the qubit (Postulate 1): each cell's bit
+is one possible outcome among the `L`, so the outcome is the bit of a cell of a set `A` with the
+probability `|A|/L` (`share_read`, from the hypothesis `halike`: each cell's bit is the outcome
+with the probability `1/L`), and the probability of an outcome is its share of the bits.  When a
+state is measured jointly (Postulate 1), the possible outcomes are the positions, each one among
+`L`, the same on every string of the qubits it measures, since the shift is one translation on
+every string and keeps them in step; the outcome at a position is the bits there.  So every
+position of a later string is paired with one outcome of the earlier qubits, their bits there
+(`jointOutcome`); this is Palmer's state of `N` qubits, `N` correlated strings of `L` bits with one
+permutation applied to all of them, and it needs no shared cell.  The paper's *block* (Sec. IV.A)
+is the set of cells of a later string whose bits are paired with one joint outcome of the earlier
+qubits; blocks of different outcomes are disjoint, and the fraction of 1s on a block is the
+probability of the outcome 1 given the block's joint outcome, its share of the possible outcomes
+that show that joint outcome (`block_fraction_read`).  The general
 theorems take the pairing as a function `e` from the cells of the later string to the joint
 outcomes, and index the blocks through a map `s` from outcomes to labels: `block e s σ` is the set
 of cells whose outcome has the label `σ`.  With `s` the identity, the blocks are the paper's, one
-per joint outcome (`ceiling_by_outcome`); with `s` injective, still one per outcome
-(`block_of_injective`, and the general `ceiling`); with `s` constant, all outcomes share one block,
-the whole string (`product_state`), a coarser grouping than the paper's: the test of Sec. IV.A,
-which rests on whether each string has room for the different states of its qubit, counts in this
-way when it says "In a product state each string has one state to hold, on all its cells".  `ceiling_in_step` is the
+per joint outcome (`ceiling_by_outcome`); with `s` injective, still one per outcome (the general
+`ceiling`); with `s` constant, all outcomes would share one block, the whole string, a coarser
+grouping than the paper's: the test of Sec. IV.A,
+which rests on whether each string has room for the different conditional states of its qubit,
+its states given the outcomes of the earlier qubits, counts in this way when it says "In a product
+state each string has one conditional state to hold, on all its cells" (a block holds the conditional
+state of its joint outcome, and blocks of different outcomes may hold the same one).  The paper's
+Sec. IV.A also derives the limit for a linear cluster state followed by one layer of generic
+single-qubit rotations, whose last qubit has a different conditional state for each joint outcome of
+the earlier ones (`Cluster.chain_card`); for generic rotations every block's fraction lies strictly
+between 0 and 1, so that state is a case of `ceiling_by_outcome` as a random state is.  `ceiling_in_step` is the
 bound with the pairing the strings supply, `e` the bits of the earlier strings at each position.
 
 * `two_le_card_of_frac`: a block whose fraction lies strictly between 0 and 1 needs at least two
   cells, one reading 1 and one reading −1 (the bit `false` here).
+* `frac_pos_lt_one`: conversely, a block with a cell reading 1 and a cell reading −1 has a
+  fraction strictly between 0 and 1.  The ceilings of `Main.lean` come to the fractions this way,
+  from a joint outcome that occurs being the outcome at a position.
+* `outcomes_iff_cells`: what that premise and a condition on `pr` ask together.  Each outcome of
+  a set has a cell of either bit exactly when some `pr` meets both the premise and the condition
+  that each outcome of the set occurs with either value of the bit.
 * `ceiling`: when each of the `2^(N−1)` joint outcomes of the first `N − 1` qubits occurs, with
   the last qubit's bit given it at a probability strictly between 0 and 1, the last string, of
   `L` cells, needs `2^(N−1)` blocks of at least two cells, so `2^N ≤ L`.  A random state is such a
   state, and so is a product state of `N` qubits each in a superposition (Sec. IV.A): the bound
   holds for every state in which all `2^N` joint outcomes occur.  `ceiling_by_outcome` is the
   theorem with the paper's blocks, `s` the identity on outcomes.
+* `ceiling_logical`: a string with `2^N` blocks, each with a fraction strictly between 0 and 1,
+  needs `2^(N+1) ≤ L`.  Sec. IV.A finds up to that many conditional states on the fullest physical
+  string of `N` logical qubits, and that many in the surface code; that no physical string has
+  more, with the blocks read in order, is a step of coding theory that `Coding.lean` proves, with
+  the same count for blocks by
+  conditional state (`Coding.ceiling_line_code`, `Coding.card_condStates_le`);
+  `Numerics.logical_ceiling_cos` gives the `203` logical qubits that follow.
 * `ceiling_soft`: if each block needs `r` cells, `2^(N−1) r ≤ L`, that is `N ≤ log₂(2L/r)`
   (Sec. V: `202`, `200` and `199` for `r = 10`, `30` and `100` at `L_cos`,
   `Numerics.soft_ceilings`).
 * `ceiling_in_step`: the same bound for `N` strings read in step, the pairing being their bits at
   each position (`jointOutcome`).
-* `cells_read_alike`: if exchanging a `1` and a `−1` between two cells leaves the probability of
-  the outcome unchanged, every cell is read with the same probability (Sec. IV.A).
+* `share_read`: with each cell's bit one possible outcome among `L` (Postulate 1), the outcome is
+  the bit of a cell of a set `A` with the probability `|A|/L`, the set's share of the cells.
+* `condProb`, `block_fraction_read`: the probability that the outcome is `1`, given that it is
+  the bit of a cell of a block (`condProb`), is the block's fraction of 1s, so a block's fraction
+  is the conditional probability that the ceiling theorems of this file take it to be.
+  `Main.block_fraction` states it from Postulate 1's premise for the cells
+  (`Sources.P1.ring_bits_alike`).  The ceilings of `Main.lean` do not take those equal weights.
+  They take that a joint outcome that occurs is the outcome at a position
+  (`Sources.P1.outcomes_at_positions`) and that no ring has more than `L` cells
+  (`Sources.P1.ring_cells`).
+* `one_cell_block`: a block of one cell has the fraction 0 or 1, as a state of the
+  Greenberger–Horne–Zeilinger type needs (Secs. IV.A and V).
 * `nmax_iff`: when `2^N₀ ≤ L < 2^(N₀+1)`, `2^N ≤ L` exactly when `N ≤ N₀`, so `N_max = N₀`.
 * `palmer_threshold`: Palmer's bit count `2^(N+1) − 2 ≤ NL` holds exactly for `N ≤ N₀` once it
   holds at `N₀ ≥ 1` and fails at `N₀ + 1`.
@@ -105,6 +138,40 @@ theorem two_le_card_of_frac (b : Cell → Bool) (B : Finset Cell)
     exact Bool.noConfusion hy
   exact ⟨Finset.one_lt_card.2 ⟨x, hxB, y, hyB, hxy⟩, ⟨x, hxB, hx⟩, ⟨y, hyB, hy⟩⟩
 
+/-- A block with a cell that reads 1 and a cell that reads −1 has a fraction of 1s strictly
+between 0 and 1: the converse of `two_le_card_of_frac`. -/
+lemma frac_pos_lt_one (b : Cell → Bool) (B : Finset Cell) {x y : Cell} (hx : x ∈ B)
+    (hbx : b x = true) (hy : y ∈ B) (hby : b y = false) : 0 < frac b B ∧ frac b B < 1 := by
+  have hB : (0 : ℝ) < B.card := by exact_mod_cast Finset.card_pos.2 ⟨x, hx⟩
+  have hpos : 0 < (B.filter (fun z => b z = true)).card :=
+    Finset.card_pos.2 ⟨x, Finset.mem_filter.2 ⟨hx, hbx⟩⟩
+  have hlt : (B.filter (fun z => b z = true)).card < B.card :=
+    Finset.card_lt_card (Finset.filter_ssubset.2 ⟨y, hy, by simp [hby]⟩)
+  unfold frac
+  exact ⟨div_pos (by exact_mod_cast hpos) hB, (div_lt_one hB).2 (by exact_mod_cast hlt)⟩
+
+/-- **What the premise and a condition on `pr` ask together.**  The ceilings and the results on
+codes of `Main.lean` take a function `pr` in two hypotheses.  One is a condition: each outcome
+`k` of a set `A` occurs with either value of the bit, `pr k v > 0`.  The other is the premise
+`Sources.P1.outcomes_at_positions`: an outcome that occurs with a value of the bit is at a cell
+with that value.  Some `pr` meets the two exactly when each outcome of `A` has a cell of either
+bit.  In those results `pr` occurs in these two hypotheses only, so no statement says that it is
+the probabilities of a state.  The docstrings read it as the probabilities of the state that the
+register holds. -/
+lemma outcomes_iff_cells {K : Type*} (e : Cell → K) (b : Cell → Bool) (A : Set K) :
+    (∃ pr : K → Bool → ℝ, (∀ k ∈ A, 0 < pr k true ∧ 0 < pr k false) ∧
+      (∀ k v, 0 < pr k v → ∃ x, e x = k ∧ b x = v)) ↔
+    ∀ k ∈ A, (∃ x, e x = k ∧ b x = true) ∧ (∃ y, e y = k ∧ b y = false) := by
+  classical
+  constructor
+  · rintro ⟨pr, hA, hout⟩ k hk
+    exact ⟨hout k true (hA k hk).1, hout k false (hA k hk).2⟩
+  · intro h
+    refine ⟨fun k v => if ∃ x, e x = k ∧ b x = v then 1 else 0, fun k hk => ?_, fun k v hkv => ?_⟩
+    · simp [(h k hk).1, (h k hk).2]
+    · by_contra hno
+      simp [hno] at hkv
+
 /-- **A block of one cell** has the fraction 0 or 1 (Sec. IV.A, Sec. V): a state of the
 Greenberger–Horne–Zeilinger type needs only blocks of fraction 0 or 1, one cell each, and a string
 of `L` blocks of one cell uses all its bits with every fraction 0 or 1. -/
@@ -129,28 +196,6 @@ lemma disjoint_blocks {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → 
   intro x hx hx'
   simp only [block, mem_filter, mem_univ, true_and] at hx hx'
   exact h (hx.symm.trans hx')
-
-/-- When the labels of different outcomes differ, the block of an outcome's label is the set of
-cells that show that outcome, the paper's block. -/
-lemma block_of_injective {K S : Type*} [DecidableEq K] [DecidableEq S] (e : Cell → K) (s : K → S)
-    (hs : Function.Injective s) (k : K) : block e s (s k) = univ.filter (fun x => e x = k) := by
-  ext x
-  simp only [block, mem_filter, mem_univ, true_and]
-  exact hs.eq_iff
-
-/-- **Blocks by conditional state, not the paper's blocks.**  When every joint outcome carries the
-same label `σ`, as when all of them leave the later qubit in one state, the block of that label
-is the whole string.  This is not the paper's definition of a block (Sec. IV.A), which indexes
-blocks by joint outcome: under the paper's definition a product state of superposed qubits has a
-block for each of the `2^(N−1)` joint outcomes, each with a fraction strictly between 0 and 1, and
-needs `2^N ≤ L` like a random state (`ceiling_by_outcome`).  The paper's test (Sec. IV.A) speaks of a
-product state in this coarser way, "In a product state each string has one state to hold, on all its
-cells": its strings are exact and its pairing approximate, and the bound by joint outcome still holds
-for it. -/
-theorem product_state {K S : Type*} [DecidableEq S] (e : Cell → K) (s : K → S) (σ : S)
-    (h : ∀ k, s k = σ) : block e s σ = univ := by
-  ext x
-  simp [block, h]
 
 /-- **The ceiling if each block needs `r` cells** (Sec. V): a block of `r` cells resolves the last
 qubit's conditional probability and phase to one part in `r`.  With `2^(N−1)` joint outcomes of
@@ -198,21 +243,43 @@ theorem ceiling {S : Type*} [DecidableEq S] (N L : ℕ) (hN : 1 ≤ N) (hL : Fin
 `k`.  When every joint outcome occurs with the last qubit's bit given it at a probability strictly
 between 0 and 1, `2^N ≤ L`.  A random state is such a state; so is a product state of `N` qubits
 each in a superposition, whose `2^(N−1)` conditional probabilities all equal the last qubit's own:
-the bound holds for every state in which all `2^N` joint outcomes occur.  By themselves the missing
-outcomes show nothing (Sec. IV.A); what sets the random state apart is that its last qubit has a
-different state for each joint outcome of the others, so that its string has too few cells to hold
-them all once `2^N > L`, where a product state's string has one state to hold. -/
+the bound holds for every state in which all `2^N` joint outcomes occur.  No sample shows which
+outcomes are missing (Sec. IV.A); what sets the random state apart is that its last qubit has a
+different conditional state for each joint outcome of the others, so that its string has too few
+cells to hold them all once `2^N > L`, where a product state's string has one conditional state to
+hold.  A linear cluster state followed by one layer of generic single-qubit rotations has as many
+conditional states as a random state (`Cluster.chain_card`), and the paper derives the same limit
+for it (Sec. IV.A). -/
 theorem ceiling_by_outcome (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
     (e : Cell → Fin (2 ^ (N - 1))) (b : Cell → Bool)
     (hall : ∀ k, 0 < frac b (block e id k) ∧ frac b (block e id k) < 1) :
     2 ^ N ≤ L :=
   ceiling N L hN hL e id Function.injective_id b hall
 
+/-- **The ceiling for logical qubits** (Sec. IV.A).  A string whose cells fall into `2^N` blocks,
+each with a fraction of 1s strictly between 0 and 1, needs two cells for each block, so
+`2^(N+1) ≤ L` (`ceiling_by_outcome` at `N + 1`).  In a Calderbank–Shor–Steane code a physical bit,
+given the earlier physical bits, is fixed, balanced, or equal or opposite to the logical bit.  Where
+the equal and the opposite case both occur, as for the last bit of a line in the surface code, the
+fullest physical string of a random state of `N` logical qubits has a conditional state for each
+joint outcome of the earlier logical qubits and each case, `2^N` in all, twice as many as a logical
+string, each held on a block of its own, and no physical string has more conditional states to hold,
+which the files prove with the blocks read in order.
+`Coding.lean` proves that step (`Coding.css_conditional_joint`, `Coding.LineCode.jointBitGiven_rest`,
+`Coding.card_condStates_le`, `Coding.LineCode.card_lineStates`) and the count with blocks by
+conditional state (`Coding.two_mul_card_states_le`, `Coding.ceiling_both_cases`,
+`Coding.ceiling_line_code`); `Numerics.logical_ceiling_cos` gives `203` logical qubits at
+`L_cos`. -/
+theorem ceiling_logical (N L : ℕ) (hL : Fintype.card Cell = L)
+    (e : Cell → Fin (2 ^ N)) (b : Cell → Bool)
+    (hall : ∀ k, 0 < frac b (block e id k) ∧ frac b (block e id k) < 1) :
+    2 ^ (N + 1) ≤ L :=
+  ceiling_by_outcome (N + 1) L (by omega) hL e b hall
+
 /-- **Strings read in step** (Sec. IV.A, how "measured jointly" is read).  A joint measurement is
-one measurement, so it reads one position, the same on every string of the qubits it measures,
-since the shift carries every string one cell per tick and keeps them in step (Postulate 1); its
-outcome is the bits at that position, and which position is read is not chosen (`cells_read_alike`).
-So the joint outcome of the first `N − 1` qubits that a position `x` of the last string shows is
+one measurement, so its possible outcomes are the positions, each one among the `L`, the same on
+every string of the qubits it measures, since the shift carries every string one cell per tick and
+keeps them in step (Postulate 1); the outcome at a position is the bits there.  So the joint outcome of the first `N − 1` qubits that a position `x` of the last string shows is
 their bits at `x`.  Here `bits i` is the string of the `i`-th qubit, indexed by the common
 positions. -/
 def jointOutcome {N : ℕ} (bits : Fin N → Cell → Bool) (x : Cell) : Fin (N - 1) → Bool :=
@@ -241,53 +308,43 @@ theorem ceiling_in_step (N L : ℕ) (hN : 1 ≤ N) (hL : Fintype.card Cell = L)
   rw [hb]
   exact hall (φ.symm k)
 
-/-- the probability of the outcome `1` when the string's bits are `b` and the cell `x` is read with
-probability `p x`: the sum of `p` over the cells whose bit is `1` -/
-noncomputable def outcomeProb (p : Cell → ℝ) (b : Cell → Bool) : ℝ :=
-  ∑ x ∈ univ.filter (fun x => b x = true), p x
+/-- **The outcome is the bit of a cell of a set with the probability of the set's share of the
+cells** (Secs. IV.A, IV.C): each cell's bit is one possible outcome among the `L` (Postulate 1,
+`halike`), so the outcome is the bit of a cell of `A` with the probability `|A|/L`. -/
+theorem share_read (q : Cell → ℝ) (halike : ∀ x, q x = 1 / Fintype.card Cell)
+    (A : Finset Cell) : ∑ x ∈ A, q x = A.card / Fintype.card Cell := by
+  rw [sum_congr rfl (fun x _ => halike x), sum_const, nsmul_eq_mul]
+  ring
 
-/-- **Every cell is read alike** (Sec. IV.A).  A measurement returns the bit of one cell
-(Postulate 1); let `p x` be the probability that the cell `x` is read, which depends on the state
-and the cell alone.  The arrangement of the bits, which cells carry the 1s with the string where it
-is on its ring, is no part of the state, so exchanging a `1` and a `−1` between two cells must leave
-the probability of the outcome unchanged (`hinv`).  For strings measured jointly the exchange is of
-two positions in all of them at once, which keeps every pairing and every phase (Sec. IV.A).  Then
-every cell is read with the same probability, `1/L` on a string of `L` cells: every probability is a
-frequency over the string's bits, and a string's bit sits at every one of its cells alike
-(Sec. IV.C, `Reg.string_share`).  The proof exchanges the one `1` of a string that reads `1` at `x`
-alone with the `−1` at `y`. -/
-theorem cells_read_alike [DecidableEq Cell] (p : Cell → ℝ)
-    (hinv : ∀ (b : Cell → Bool) (x y : Cell), b x = true → b y = false →
-      outcomeProb p (b ∘ Equiv.swap x y) = outcomeProb p b) :
-    (∀ x y, p x = p y) ∧ ((∑ x, p x) = 1 → ∀ x, p x = 1 / Fintype.card Cell) := by
-  have hxy : ∀ x y, p x = p y := by
-    intro x y
-    by_cases hxy : x = y
-    · rw [hxy]
-    · have h := hinv (fun z => decide (z = x)) x y (by simp) (by simp [Ne.symm hxy])
-      have h1 : outcomeProb p (fun z => decide (z = x)) = p x := by
-        unfold outcomeProb
-        have e : univ.filter (fun z => decide (z = x) = true) = {x} := by
-          ext z; simp
-        rw [e, sum_singleton]
-      have h2 : outcomeProb p ((fun z => decide (z = x)) ∘ Equiv.swap x y) = p y := by
-        unfold outcomeProb
-        have e : univ.filter (fun z => ((fun z => decide (z = x)) ∘ Equiv.swap x y) z = true)
-            = {y} := by
-          ext z
-          simp only [Function.comp_apply, decide_eq_true_eq, mem_filter, mem_univ, true_and,
-            mem_singleton, Equiv.swap_apply_eq_iff, Equiv.swap_apply_left]
-        rw [e, sum_singleton]
-      rw [h2, h1] at h
-      exact h.symm
-  refine ⟨hxy, fun hsum x => ?_⟩
-  have hpos : 0 < Fintype.card Cell := Fintype.card_pos_iff.2 ⟨x⟩
-  have hall : ∑ y, p y = Fintype.card Cell * p x := by
-    rw [sum_congr rfl (fun y _ => hxy y x), sum_const, card_univ, nsmul_eq_mul]
-  rw [hsum] at hall
-  have hc : (Fintype.card Cell : ℝ) ≠ 0 := by exact_mod_cast hpos.ne'
+/-- **The probability of the outcome `1` given a block** (Sec. IV.A): with `q x` the probability
+that the outcome is the bit of the cell `x`, the probability that the outcome is the bit of a cell
+of the block `B` that reads `1`, over the probability that it is the bit of a cell of `B`. -/
+noncomputable def condProb (q : Cell → ℝ) (b : Cell → Bool) (B : Finset Cell) : ℝ :=
+  (∑ x ∈ B.filter (fun x => b x = true), q x) / (∑ x ∈ B, q x)
+
+/-- **A block's fraction is a conditional probability** (Sec. IV.A).  With each cell's bit one
+possible outcome among the `L` (`share_read`), the outcome is the bit of a cell of a set `B` with
+the probability `|B|/L`, and of a cell of `B` with the bit `1` with the probability of the cells of
+`B` that show `1`.  So, given that it is the bit of a cell of `B`, it is `1` with the probability
+`frac b B`, the fraction of 1s on `B` (for an empty block both sides are `0`, by Lean's
+`x/0 = 0`, and the probability given the block is not defined).  For the block of a
+joint outcome this is the probability of the last qubit's outcome `1` given that joint outcome,
+which the ceiling theorems take as the block's fraction (`frac` in `hrandom` and `hall`; `hshare`
+of the theorems of `Coding.lean`). -/
+theorem block_fraction_read (q : Cell → ℝ)
+    (halike : ∀ x, q x = 1 / Fintype.card Cell) (b : Cell → Bool) (B : Finset Cell) :
+    condProb q b B = frac b B := by
+  unfold condProb
+  rcases B.eq_empty_or_nonempty with rfl | hB
+  · simp [frac]
+  rw [share_read q halike, share_read q halike]
+  have hc : (Fintype.card Cell : ℝ) ≠ 0 := by
+    obtain ⟨x, -⟩ := hB
+    have : 0 < Fintype.card Cell := Fintype.card_pos_iff.2 ⟨x⟩
+    exact_mod_cast this.ne'
+  have hB' : (B.card : ℝ) ≠ 0 := by exact_mod_cast hB.card_pos.ne'
+  unfold frac
   field_simp
-  linarith
 
 /-- **The largest `N` with `2^N ≤ L`**: when `2^N₀ ≤ L < 2^(N₀+1)`, `2^N ≤ L` exactly when
 `N ≤ N₀`, so `N_max = ⌊log₂ L⌋ = N₀`. -/

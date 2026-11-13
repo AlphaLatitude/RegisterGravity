@@ -9,17 +9,21 @@ the register is a finite projective plane of order `L/2 − 1` (for `L ≥ 6`), 
 `R` lines."
 
 Points are the opposite pairs, `Horizon.Pt`, a quotient of the cells; lines are the largest rings.
-We build the `Configuration.ProjectivePlane` instance of Mathlib from the fields of `Horizon` (this
-needs `6 ≤ L`, three opposite pairs on a ring, for Mathlib's non-degeneracy condition) and read off
+We build the `Configuration.ProjectivePlane` instance of Mathlib from the fields of `Horizon` (its
+non-degeneracy condition holds for `4 ≤ L`, `nondegenerate`; the instance needs `6 ≤ L`, three
+opposite pairs on a ring, for Mathlib's configuration of three points and three lines,
+`exists_config`) and read off
 the order from the number of rings through a point, `ρ = L/2 = order + 1`.  Mathlib's counting
 theorems then return `R = order² + order + 1` for both points and lines, which agrees with the
 direct count of `Horizon.counts`.
 
 Which orders a finite projective plane can have is the question the paper cites Bruck and Ryser
 for: their theorem excludes orders `1` or `2` modulo `4` that are not sums of two squares.  It is a
-citation, and no derivation uses it.  The converse of this file, a register from every finite
-projective plane, is `Horizon.register_of_plane` (`Models.lean`), and `Planes.lean` gives a plane,
-so a register, for every prime-power order.
+citation, and no derivation uses it.  The converse of this file needs more than a plane, since the
+clause of Postulate 2 that no cell differs from another asks for maps that carry any cell to any
+other: a plane in Singer's
+form, a perfect difference set, gives a register with them (`DiffSet.lean`), and Singer's theorem
+gives one for every prime-power order (`Singer.lean`).
 -/
 
 open Finset Configuration
@@ -52,11 +56,6 @@ abbrev Pt : Type := Quotient H.pairSetoid
 /-- The point of a cell. -/
 def pt (x : H.Cell) : H.Pt := Quotient.mk H.pairSetoid x
 
-lemma pt_eq_pt_iff {x y : H.Cell} : H.pt x = H.pt y ↔ y = x ∨ y = H.opp x :=
-  Quotient.eq
-
-lemma pt_surjective : Function.Surjective H.pt := Quotient.mk_surjective
-
 noncomputable instance : Fintype H.Pt := by
   classical
   exact Quotient.fintype H.pairSetoid
@@ -84,7 +83,7 @@ lemma exists_line_of_ne {p q : H.Pt} (h : p ≠ q) : ∃ l : H.Loop, p ∈ l ∧
 theorem nondegenerate (hL : 4 ≤ L) : Configuration.Nondegenerate H.Pt H.Loop := by
   refine { exists_point := ?_, exists_line := ?_, eq_or_eq := ?_ }
   · intro l
-    obtain ⟨x, hx⟩ := H.exists_cell_not_mem hL l
+    obtain ⟨x, hx⟩ := H.misses l
     exact ⟨H.pt x, fun h => hx ((H.pt_mem_iff x l).1 h)⟩
   · intro p
     refine Quotient.inductionOn p ?_
@@ -114,7 +113,7 @@ noncomputable def projectivePlane (hL : 6 ≤ L) : Configuration.ProjectivePlane
     exists_config := by
       -- a ring `l₁`, a cell `q` off it, three cells `a b c` of `l₁` in distinct pairs
       obtain ⟨l₁, -, -⟩ := H.two_loops
-      obtain ⟨q, hq⟩ := H.exists_cell_not_mem hL4 l₁
+      obtain ⟨q, hq⟩ := H.misses l₁
       have hq' : H.opp q ∉ H.cells l₁ := fun h => hq ((H.opp_mem_iff l₁ q).1 h)
       obtain ⟨a, ha, -, -⟩ := H.exists_mem_notMem_pair hL4 l₁ q q
       obtain ⟨b, hb, hba, hba'⟩ := H.exists_mem_notMem_pair hL4 l₁ a (H.opp a)
@@ -189,14 +188,5 @@ theorem card_loop_eq_order (hL : 6 ≤ L) :
   let _ : ProjectivePlane H.Pt H.Loop := H.projectivePlane hL
   exact ⟨ProjectivePlane.card_lines H.Pt H.Loop,
     ProjectivePlane.card_points_eq_card_lines H.Pt H.Loop⟩
-
-/-- Cross-check: Mathlib's `q² + q + 1` and the direct count `4R = L² − 2L + 4` of
-`Horizon.counts` agree. -/
-theorem order_count_consistent (hL : 6 ≤ L) :
-    4 * (H.order hL ^ 2 + H.order hL + 1) + 2 * L = L ^ 2 + 4 := by
-  have h := H.two_mul_order_add_one hL
-  set q := H.order hL
-  zify at h ⊢
-  linear_combination (2 * (q : ℤ) + (L : ℤ)) * h
 
 end Horizon

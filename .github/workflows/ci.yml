@@ -20,11 +20,34 @@ jobs:
         with:
           build-args: "--wfail"
 
-      # Every main theorem must depend only on propext, Classical.choice and Quot.sound.
+      # Every main theorem must depend on no axiom beyond propext, Classical.choice and Quot.sound.
       - name: Check the axiom ledger
+        shell: bash
         run: |
           lake env lean RegisterGravity/Ledger.lean | tee ledger.txt
           expected=$(grep -c '^#print axioms' RegisterGravity/Ledger.lean)
-          clean=$(grep -c 'depends on axioms: \[propext, Classical.choice, Quot.sound\]' ledger.txt)
-          echo "$clean of $expected main theorems depend only on propext, Classical.choice, Quot.sound"
-          test "$clean" -eq "$expected"
+          reported=$(grep -c "^'.*' \(depends on axioms: \[\|does not depend on any axioms\)" ledger.txt)
+          other=$(grep -o 'depends on axioms: \[[^]]*\]' ledger.txt | sed 's/depends on axioms: \[//; s/\]//' \
+            | tr ',' '\n' | tr -d ' ' | grep -v -x -e propext -e Classical.choice -e Quot.sound | sort -u || true)
+          echo "$reported of $expected main theorems reported; other axioms: ${other:-none}"
+          test "$reported" -eq "$expected"
+          test -z "$other"
+
+      # Every hypothesis of every result in Main.lean must be a definition of Sources.lean (the
+      # command `#premises` fails the build otherwise), and the premise ledger it prints must be
+      # the committed one.
+      - name: Check the premise ledger
+        shell: bash
+        run: |
+          lake env lean RegisterGravity/Main.lean | tee premises.txt
+          diff premises.txt premises_output.txt
+
+      # Every name of the axiom ledger must be reached by a result of Main.lean, a certified number
+      # of Numerics.lean, a model, or one of the statements of the paper that scripts/Reach.lean
+      # names as proved where they stand.
+      - name: Check that every declaration of the ledger is reached
+        shell: bash
+        run: |
+          lake env lean scripts/Reach.lean | tee reach.txt
+          grep -q '^REACH roots' reach.txt
+          if grep -q 'LEDGER NONE\|MISSING-ROOT\|: error' reach.txt; then exit 1; fi

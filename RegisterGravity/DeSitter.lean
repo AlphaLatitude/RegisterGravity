@@ -5,7 +5,7 @@ import Mathlib.Topology.Order.IntermediateValue
 /-!
 # The de Sitter solution: the horizon a quarter lap out, and the horizon drawn in by a mass
 
-Two properties of the solution of `Chain.lean` that Sec. IV.C uses, derived from it.
+Properties of the solution of `Chain.lean` that Secs. III, IV.C and IV.D use, derived from it.
 
 * `proper_distance`: in de Sitter space (the boundary condition `hdS`, no mass) the proper distance
   from the observer along a radial line, the function `s` with `s(0) = 0` and `ds/dr = 1/√f` (the
@@ -15,6 +15,12 @@ Two properties of the solution of `Chain.lean` that Sec. IV.C uses, derived from
 * `sds_outer_horizon`: with a mass, `ε = GM/c²` and `13ε < R_Λ`, the solution has a horizon between
   `R_Λ − ε − 2ε²/R_Λ` and `R_Λ − ε`, and none at or beyond `R_Λ − ε`: the outer horizon lies at
   `R_Λ − GM/c²` to first order in `M`.
+* `horizon_period`, `horizon_temperature`: without a mass, the horizon's surface gravity is
+  `a_Λ = c²/R_Λ`, its thermal period is the lap of the largest ring, `L` ticks, and with `I1` its
+  temperature is `E_c/L`, the Gibbons–Hawking temperature.
+* `surface_gravity_eq`, `thermal_lap`: the horizon of the solution without a mass, at a radius
+  `r_h > 0` where its `f` vanishes, has the surface gravity `−g(r_h) = a_Λ`; so `I1` at that surface
+  gravity, the form in which `Sources.lean` takes it, is `I1` in the form of the lap.
 -/
 
 open Real Set
@@ -69,14 +75,14 @@ theorem proper_distance_exists (G Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) :
   rw [R.fdS_eq G Λ r hdS]
   exact R.hasDerivAt_sdS r hr.1 hr.2
 
-/-- **The horizon is a quarter lap out** (Sec. IV.C).  In de Sitter space the proper distance from
+/-- **The horizon is a quarter lap out** (Sec. IV.D; used in Sec. IV.C).  In de Sitter space the proper distance from
 the observer along a radial line, any `s` with `s(0) = 0`, continuous up to the horizon, and
-`ds/dr = 1/√f` inside it, reaches the horizon at `s(R_Λ) = πR_Λ/2`; with the register's `π` the
-real one, that is `Lℓ_c/4`, a quarter of a largest ring (`quarter_lap`). -/
+`ds/dr = 1/√f` inside it, reaches the horizon at `s(R_Λ) = πR_Λ/2`, which is `Lℓ_c/4`, a quarter
+of a largest ring (`quarter_lap`). -/
 theorem proper_distance (G Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) (s : ℝ → ℝ) (hs0 : s 0 = 0)
     (hcont : ContinuousOn s (Icc 0 R.RL))
     (hds : ∀ r ∈ Ioo 0 R.RL, HasDerivAt s (1 / Real.sqrt (R.fSdS G 0 Λ r)) r) :
-    s R.RL = Real.pi * R.RL / 2 ∧ (R.pi = Real.pi → s R.RL = R.L * R.ℓc / 4) := by
+    s R.RL = Real.pi * R.RL / 2 ∧ s R.RL = R.L * R.ℓc / 4 := by
   have hRL := R.RL_pos
   obtain ⟨h0, hc0, hd0⟩ := R.proper_distance_exists G Λ hdS
   -- `s − s₀` has derivative `0` inside, so it does not change from `0` to `R_Λ`
@@ -99,8 +105,8 @@ theorem proper_distance (G Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) (s : ℝ →
       rw [div_self hRL.ne', Real.arcsin_one]
       ring
     linarith
-  refine ⟨hval, fun hpi => ?_⟩
-  rw [hval, ← hpi]
+  refine ⟨hval, ?_⟩
+  rw [hval, ← R.pi_def]
   exact R.quarter_lap
 
 /-- With the boundary condition, `f(r)·R_Λ²r = R_Λ²r − 2εR_Λ² − r³`, with `ε = GM/c²`. -/
@@ -114,7 +120,8 @@ lemma fSdS_mul (G M Λ r : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) (hr : r ≠ 0) :
   field_simp
 
 /-- **The outer horizon with a mass** (Sec. IV.C).  With `ε = GM/c²` and `13ε < R_Λ`, the solution
-about the mass has a horizon between `R_Λ − ε − 2ε²/R_Λ` and `R_Λ − ε`, and `f < 0` at and beyond
+about the mass, whose constant is that of the solution without it (`hdS`, `lambda_with_mass`), has a
+horizon between `R_Λ − ε − 2ε²/R_Λ` and `R_Λ − ε`, and `f < 0` at and beyond
 `R_Λ − ε`, so there is no horizon farther out: the outer horizon lies at `R_Λ − GM/c²` to first
 order in `M`, within `2ε²/R_Λ`. -/
 theorem sds_outer_horizon (G M Λ : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
@@ -233,32 +240,26 @@ theorem horizon_temperature (G Λ T : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0)
   rw [hL] at I1
   exact R.T_dS T I1
 
-/-- **The horizon's radius** (Sec. IV.D).  A ring is a closed line of translation, a closed geodesic
-of space.  Of the maximally symmetric solutions without a mass, taken simply connected, only
-de Sitter space has one, and the paper's premises exclude their quotients (Sec. IV.D), so `Λ > 0`
-(the hypothesis `hΛ`), and its closed geodesics are circles of radius `√(3/Λ)`, all of length
-`2π√(3/Λ)`, a classical property of the solution taken as known like the solution itself.  A largest
-ring, of length `Lℓ_c`, is one of them: `Lℓ_c = 2π√(3/Λ)` (`hgeo`).  Then the horizon of the
-solution without a mass, at `√(3/Λ)`, is at `R_Λ = Lℓ_c/2π`: the hypothesis `hdS` of the chain
-follows, and with it `Λ = 3/R_Λ²`. -/
-theorem horizon_radius (G Λ : ℝ) (hΛ : 0 < Λ)
-    (hgeo : R.L * R.ℓc = 2 * R.pi * Real.sqrt (3 / Λ)) :
-    R.fSdS G 0 Λ R.RL = 0 ∧ Λ = 3 / R.RL ^ 2 := by
-  reg_facts R
-  have h3 : (0 : ℝ) < 3 / Λ := by positivity
-  -- from `hgeo`: `R_Λ = Lℓ_c/2π = √(3/Λ)`
-  have h2pi : (2 * R.pi : ℝ) ≠ 0 := by positivity
-  have heq : R.RL = Real.sqrt (3 / Λ) := by
-    unfold RL
-    rw [hgeo, mul_div_cancel_left₀ _ h2pi]
-  have hRL2 : R.RL ^ 2 = 3 / Λ := by rw [heq, Real.sq_sqrt h3.le]
-  refine ⟨?_, ?_⟩
-  · unfold fSdS
-    rw [hRL2]
-    field_simp
-    ring
-  · rw [hRL2]
-    field_simp
+/-- **The horizon of the solution without a mass has the surface gravity `a_Λ`** (Secs. III, IV.C
+and IV.D).  With the constant `Λ = 3/R_Λ²` (`hdS`), a radius `r_h > 0` where the metric function of
+the solution without a mass vanishes, its horizon, is `R_Λ` (`horizon_radius_eq`), and the surface
+gravity there, `−g(r_h)`, is `a_Λ = c²/R_Λ` (`horizon_period`).  The premises of thermodynamics that
+speak of this surface gravity take it as `−g(r_h)` (`Sources.Thermo.horizon_thermal` at it,
+`Sources.Thermo.deser_levin`); this derives its value. -/
+theorem surface_gravity_eq (G Λ rh : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) (hrh : 0 < rh)
+    (hf : R.fSdS G 0 Λ rh = 0) : -R.gSdS G 0 Λ rh = R.aΛ := by
+  rw [R.horizon_radius_eq G Λ rh hdS hrh hf, (R.horizon_period G Λ hdS).1, neg_neg]
+
+/-- **`I1` at the horizon's surface gravity is `I1` in the form of the lap** (Sec. III): the
+horizon of the solution without a mass, at `r_h`, is thermal at the temperature of its period
+`2πc/a`, `L_a` ticks, for its surface gravity `a = −g(r_h)`; with `Λ = 3/R_Λ²` that surface gravity
+is `a_Λ` (`surface_gravity_eq`) and the period is the lap, `L_{a_Λ} = L` (`horizon_period`), so
+`k_BT = ℏ/(Lt_c)`. -/
+theorem thermal_lap (G Λ rh T : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) (hrh : 0 < rh)
+    (hf : R.fSdS G 0 Λ rh = 0) (I1 : R.kB * T = R.ℏ / (R.La (-R.gSdS G 0 Λ rh) * R.tc)) :
+    R.kB * T = R.ℏ / (R.L * R.tc) := by
+  rw [R.surface_gravity_eq G Λ rh hdS hrh hf, (R.horizon_period G Λ hdS).2.1] at I1
+  exact I1
 
 end Reg
 end Register

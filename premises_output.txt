@@ -1,0 +1,1346 @@
+Register.Main.count
+  L : object, ℕ
+  H : object, Horizon L
+  rests on: sources none; derived none; structures Horizon
+Register.Main.horizon_entropy
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  [NeZero L] : NeZero (class)
+  T : object, H.Loop → Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  P : object, (H.Loop → Bool) → ℝ
+  q : object, H.Loop → ℝ
+  hfree : Register.Sources.Thermo.free_strings = Thermo.free_strings H P q
+  hq : Register.Sources.Thermo.sense_from_state = Thermo.sense_from_state H T β En q
+  rests on: sources Thermo.free_strings, Thermo.sense_from_state; derived none; structures Horizon, Qubit.Tick
+Register.Main.jacobson_step
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  η : object, H.Cell → H.Loop → ℝ
+  M : object, Register.Einstein.Spacetime
+  dA : object, M.Pt → (Fin 4 → ℝ) → ℝ
+  dS : object, M.Pt → (Fin 4 → ℝ) → ℝ
+  hray : Register.Sources.Geometry.raychaudhuri = Geometry.raychaudhuri M dA
+  hent : Register.Sources.P1.local_entropy = P1.local_entropy H η M dS dA
+  hcl : Register.Sources.Thermo.local_clausius = Thermo.local_clausius R M dS
+  rests on: sources Geometry.raychaudhuri, P1.local_entropy, Thermo.local_clausius; derived none; structures Horizon
+Register.Main.jacobson_G_density
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hη : Register.Sources.Condition.pos  (condition) = Condition.pos (η x₀ l₀)
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  p : object, M.Pt
+  A : object, ℝ
+  ρ : object, ℝ
+  hweak : Register.Sources.Geometry.weak_field = Geometry.weak_field M p A
+  hdust : Register.Sources.Condition.dust  (condition) = Condition.dust R M p ρ
+  hN : Register.Sources.Condition.newton_G  (condition) = Condition.newton_G R G A ρ
+  rests on: sources P2.homogeneous, P2.directions, Geometry.weak_field; derived Derived.clausius; structures Horizon
+Register.Main.jacobson_G
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  Λ : object, ℝ
+  rh : object, ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  hcount : Register.Sources.Approx.count_density  (leading order) = Approx.count_density H R η l₀ x₀ rh
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  p : object, M.Pt
+  A : object, ℝ
+  ρ : object, ℝ
+  hweak : Register.Sources.Geometry.weak_field = Geometry.weak_field M p A
+  hdust : Register.Sources.Condition.dust  (condition) = Condition.dust R M p ρ
+  hN : Register.Sources.Condition.newton_G  (condition) = Condition.newton_G R G A ρ
+  rests on: sources P2.homogeneous, P2.directions, Geometry.weak_field; derived Derived.deSitter_horizon, Derived.clausius; structures Horizon
+Register.Main.jacobson_G_exact
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  Λ : object, ℝ
+  rh : object, ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  [NeZero L] : NeZero (class)
+  T : object, H.Loop → Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  P : object, (H.Loop → Bool) → ℝ
+  q : object, H.Loop → ℝ
+  hfree : Register.Sources.Thermo.free_strings = Thermo.free_strings H P q
+  hq : Register.Sources.Thermo.sense_from_state = Thermo.sense_from_state H T β En q
+  hhor : Register.Sources.P1.horizon_entropy = P1.horizon_entropy H R η l₀ x₀ rh P
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  p : object, M.Pt
+  A : object, ℝ
+  ρ : object, ℝ
+  hweak : Register.Sources.Geometry.weak_field = Geometry.weak_field M p A
+  hdust : Register.Sources.Condition.dust  (condition) = Condition.dust R M p ρ
+  hN : Register.Sources.Condition.newton_G  (condition) = Condition.newton_G R G A ρ
+  rests on: sources P2.homogeneous, P2.directions, Thermo.free_strings, Thermo.sense_from_state, P1.horizon_entropy, Geometry.weak_field; derived Derived.deSitter_horizon, Derived.clausius; structures Horizon, Qubit.Tick
+Register.Main.G_leading_order
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  hJ : Register.Sources.Derived.jacobson_G_exact  (derived in Main.lean) = Derived.jacobson_G_exact R G
+  rests on: sources none; derived Derived.jacobson_G_exact; structures Horizon
+Register.Main.chain
+  L : object, ℕ
+  H : object, Horizon L
+  Slot : object, Type u_1
+  V : object, Type u_2
+  Gm : object, Type u_3
+  Sp : object, Type u_4
+  R : object, Register.Reg
+  Λ : object, ℝ
+  P : object, H.Positions
+  f : object, H.Cell → H.Loop → V
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H f
+  hdir : Register.Sources.P2.directions = P2.directions H f
+  [NeZero L] : NeZero (class)
+  T : object, H.Loop → Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  ρ : object, H.Loop → Register.Qubit.Op
+  hthermal : Register.Sources.Thermo.thermal_state = Thermo.thermal_state H T β En ρ
+  Pst : object, (H.Loop → Bool) → ℝ
+  q : object, H.Loop → ℝ
+  hfree : Register.Sources.Thermo.free_strings = Thermo.free_strings H Pst q
+  read : object, (l : H.Loop) → ↥(H.cells l) → ℝ
+  halike : Register.Sources.P1.bits_alike = P1.bits_alike H read
+  geom : object, Slot → Gm
+  hgeom : Register.Sources.P1.geometry_qubits = P1.geometry_qubits H f ρ read Pst geom
+  Closes : predicate object, Slot → Prop
+  hclose : Register.Sources.P1.slice_qubits = P1.slice_qubits H Closes
+  sp : object, Sp
+  embedSp : object, (K : ℝ) → Space.SpaceForm K → Sp
+  hKH : Register.Sources.Geometry.space_form = Geometry.space_form geom Closes sp embedSp
+  η : object, H.Cell → H.Loop → ℝ
+  hsymη : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdirη : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  rh : object, ℝ
+  hcount : Register.Sources.Approx.count_density  (leading order) = Approx.count_density H R η l₀ x₀ rh
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hbianchi : Register.Sources.Geometry.bianchi = Geometry.bianchi M
+  hnm : Register.Sources.Condition.no_matter  (condition) = Condition.no_matter M
+  hΛ : Register.Sources.Condition.vacuum_constant  (condition) = Condition.vacuum_constant M Λ
+  hcon : Register.Sources.Geometry.constraint = Geometry.constraint M Λ sp embedSp
+  hslice : Register.Sources.P1.slice_form_qubits = P1.slice_form_qubits H R sp embedSp
+  hdrawn : Register.Sources.P2.rings_drawn = P2.rings_drawn H P R sp embedSp x₀
+  G : object, ℝ
+  Mw : object, Register.Einstein.Spacetime
+  hclw : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η Mw
+  pw : object, Mw.Pt
+  A : object, ℝ
+  ρw : object, ℝ
+  hweak : Register.Sources.Geometry.weak_field = Geometry.weak_field Mw pw A
+  hdust : Register.Sources.Condition.dust  (condition) = Condition.dust R Mw pw ρw
+  hN : Register.Sources.Condition.newton_G  (condition) = Condition.newton_G R G A ρw
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  Temp : object, ℝ
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) Temp
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  hq : Register.Sources.Thermo.sense_from_state = Thermo.sense_from_state H T β En q
+  rests on: sources P2.homogeneous, P2.directions, Thermo.thermal_state, Thermo.free_strings, P1.bits_alike, P1.geometry_qubits, P1.slice_qubits, Geometry.space_form, Thermo.first_law_local, Geometry.bianchi, Geometry.constraint, P1.slice_form_qubits, P2.rings_drawn, Geometry.weak_field, Thermo.horizon_thermal, Thermo.sense_from_state; derived Derived.clausius; structures Horizon, Horizon.Positions, Qubit.Op, Qubit.Tick
+Register.Main.deSitter_horizon
+  L : object, ℕ
+  H : object, Horizon L
+  Slot : object, Type u_1
+  V : object, Type u_2
+  Gm : object, Type u_3
+  Sp : object, Type u_4
+  R : object, Register.Reg
+  Λ : object, ℝ
+  P : object, H.Positions
+  f : object, H.Cell → H.Loop → V
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H f
+  hdir : Register.Sources.P2.directions = P2.directions H f
+  [NeZero L] : NeZero (class)
+  T : object, H.Loop → Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  ρ : object, H.Loop → Register.Qubit.Op
+  hthermal : Register.Sources.Thermo.thermal_state = Thermo.thermal_state H T β En ρ
+  Pst : object, (H.Loop → Bool) → ℝ
+  q : object, H.Loop → ℝ
+  hfree : Register.Sources.Thermo.free_strings = Thermo.free_strings H Pst q
+  read : object, (l : H.Loop) → ↥(H.cells l) → ℝ
+  halike : Register.Sources.P1.bits_alike = P1.bits_alike H read
+  geom : object, Slot → Gm
+  hgeom : Register.Sources.P1.geometry_qubits = P1.geometry_qubits H f ρ read Pst geom
+  Closes : predicate object, Slot → Prop
+  hclose : Register.Sources.P1.slice_qubits = P1.slice_qubits H Closes
+  sp : object, Sp
+  embedSp : object, (K : ℝ) → Space.SpaceForm K → Sp
+  hKH : Register.Sources.Geometry.space_form = Geometry.space_form geom Closes sp embedSp
+  η : object, H.Cell → H.Loop → ℝ
+  hsymη : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdirη : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hη : Register.Sources.Condition.pos  (condition) = Condition.pos (η x₀ l₀)
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hbianchi : Register.Sources.Geometry.bianchi = Geometry.bianchi M
+  hnm : Register.Sources.Condition.no_matter  (condition) = Condition.no_matter M
+  hΛ : Register.Sources.Condition.vacuum_constant  (condition) = Condition.vacuum_constant M Λ
+  hcon : Register.Sources.Geometry.constraint = Geometry.constraint M Λ sp embedSp
+  hslice : Register.Sources.P1.slice_form_qubits = P1.slice_form_qubits H R sp embedSp
+  hdrawn : Register.Sources.P2.rings_drawn = P2.rings_drawn H P R sp embedSp x₀
+  G : object, ℝ
+  rests on: sources P2.homogeneous, P2.directions, Thermo.thermal_state, Thermo.free_strings, P1.bits_alike, P1.geometry_qubits, P1.slice_qubits, Geometry.space_form, Thermo.first_law_local, Geometry.bianchi, Geometry.constraint, P1.slice_form_qubits, P2.rings_drawn; derived Derived.clausius; structures Horizon, Horizon.Positions, Qubit.Op, Qubit.Tick
+Register.Main.cell_from_G
+  R : object, Register.Reg
+  G : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  rests on: sources none; derived Derived.jacobson_G; structures none
+Register.Main.entropy_quarter
+  R : object, Register.Reg
+  G : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  rests on: sources none; derived Derived.jacobson_G; structures none
+Register.Main.newton
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  r : object, ℝ
+  a : object, ℝ
+  T : object, ℝ
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  ha0 : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  ha : Register.Sources.Condition.pull_of  (condition) = Condition.pull_of R G M Λ r a
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a T
+  rests on: sources Thermo.horizon_thermal; derived Derived.jacobson_G; structures none
+Register.Main.entropy_removed
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  T : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) T
+  rests on: sources Thermo.horizon_thermal; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.entropy_removed_sphere
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  b : object, ℝ
+  r : object, ℝ
+  ρ : object, ℝ → ℝ
+  D : object, ℝ → ℝ
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hρ : Register.Sources.Condition.areal_radius  (condition) = Condition.areal_radius R G M Λ ρ b r
+  hD : Register.Sources.Condition.shortfall  (condition) = Condition.shortfall R G Λ ρ D b r
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.entropy_removed_leading_order
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  b : object, ℝ
+  r : object, ℝ
+  ρ : object, ℝ → ℝ
+  D : object, ℝ → ℝ
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hρ : Register.Sources.Condition.areal_radius  (condition) = Condition.areal_radius R G M Λ ρ b r
+  hD : Register.Sources.Condition.shortfall  (condition) = Condition.shortfall R G Λ ρ D b r
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.G_Lambda
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.vacuum_density
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.komar_misner_sharp
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.black_hole_quarter
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  rests on: sources none; derived Derived.jacobson_G; structures none
+Register.Main.string_energy
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  T : object, ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) T
+  τ : object, H.Loop → Register.Qubit.Tick L
+  Es : object, H.Loop → ℝ
+  hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R T ((∑ l, Es l) / ↑(Fintype.card H.Loop))
+  hEs : Register.Sources.P1.string_energies = P1.string_energies H R τ Es
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.string_energies; derived Derived.deSitter_horizon; structures Horizon, Qubit.Tick
+Register.Main.vacuum_share
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  T : object, ℝ
+  Ein : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G_exact  (derived in Main.lean) = Derived.jacobson_G_exact R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) T
+  Es : object, H.Loop → ℝ
+  hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R T ((∑ l, Es l) / ↑(Fintype.card H.Loop))
+  hin : Register.Sources.P1.energy_inside_strings = P1.energy_inside_strings H Ein Es
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.energy_inside_strings; derived Derived.jacobson_G_exact, Derived.deSitter_horizon; structures Horizon
+Register.Main.horizon_quarter
+  L : object, ℕ
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  x : object, ℝ
+  σ : object, ℝ → ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  hσ : Register.Sources.Condition.radial_distance  (condition) = Condition.radial_distance R G Λ rh σ
+  hx : Register.Sources.P2.ring_distance = P2.ring_distance R σ rh x
+  rests on: sources P2.ring_distance; derived Derived.deSitter_horizon; structures none
+Register.Main.temperature_floor
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  a : object, ℝ
+  T' : object, ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  hDL : Register.Sources.Thermo.deser_levin = Thermo.deser_levin R G Λ rh a T'
+  rests on: sources Thermo.deser_levin; derived Derived.deSitter_horizon; structures none
+Register.Main.equation_of_state
+  Rt : object, ℝ → Register.Reg
+  hL : Register.Sources.P1.constant_L = P1.constant_L Rt
+  hℓc : Register.Sources.P1.constant_cell = P1.constant_cell Rt
+  hconst : Register.Sources.Units.si_constants  (units) = Units.si_constants Rt
+  a : object, ℝ → ℝ
+  adot : object, ℝ
+  w : object, ℝ
+  t : object, ℝ
+  hH : Register.Sources.Condition.expanding  (condition) = Condition.expanding a adot t
+  hA : Register.Sources.Condition.scale_factor_rate  (condition) = Condition.scale_factor_rate a adot t
+  first_law : Register.Sources.Thermo.first_law = Thermo.first_law Rt a w t
+  rests on: sources P1.constant_L, P1.constant_cell, Thermo.first_law; derived none; structures none
+Register.Main.ceiling
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  N : object, ℕ
+  L : object, ℕ
+  hN : Register.Sources.Condition.one_le  (condition) = Condition.one_le N
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  e : object, Cell → Fin (2 ^ (N - 1))
+  b : object, Cell → Bool
+  pr : object, Fin (2 ^ (N - 1)) → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr e b
+  hrandom : Register.Sources.Condition.random_state  (condition) = Condition.random_state pr
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.einstein
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hη : Register.Sources.Condition.pos  (condition) = Condition.pos (η x₀ l₀)
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hbianchi : Register.Sources.Geometry.bianchi = Geometry.bianchi M
+  rests on: sources P2.homogeneous, P2.directions, Thermo.first_law_local, Geometry.bianchi; derived Derived.clausius; structures Horizon
+Register.Main.matter_geodesic
+  M : object, Register.Einstein.Spacetime
+  p : object, M.Pt
+  u : object, Fin 4 → ℝ
+  A : object, Fin 4 → ℝ
+  ρ : object, ℝ
+  hdust : Register.Sources.Condition.dust_flow  (condition) = Condition.dust_flow M p u ρ
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hleib : Register.Sources.Geometry.leibniz = Geometry.leibniz M p u A
+  rests on: sources Thermo.first_law_local, Geometry.leibniz; derived none; structures none
+Register.Main.light_rays
+  M : object, Register.Einstein.Spacetime
+  p : object, M.Pt
+  k : object, Fin 4 → ℝ
+  A : object, Fin 4 → ℝ
+  hlight : Register.Sources.P1.light = P1.light M p k
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hleib : Register.Sources.Geometry.leibniz = Geometry.leibniz M p k A
+  rests on: sources P1.light, Thermo.first_law_local, Geometry.leibniz; derived none; structures none
+Register.Main.rotation_curve
+  M : object, Register.Einstein.Spacetime
+  wl : object, ℝ → ℝ → M.Pt
+  u : object, ℝ → ℝ → Fin 4 → ℝ
+  A : object, ℝ → ℝ → Fin 4 → ℝ
+  ρ : object, ℝ → ℝ → ℝ
+  hdust : Register.Sources.Condition.dust_orbits  (condition) = Condition.dust_orbits M wl u ρ
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hleib : Register.Sources.Geometry.leibniz_orbits = Geometry.leibniz_orbits M wl u A
+  g : object, ℝ → ℝ
+  x : object, ℝ → ℝ → ℝ × ℝ
+  v : object, ℝ → ℝ
+  horbit : Register.Sources.Condition.circular_orbits  (condition) = Condition.circular_orbits x v
+  hmotion : Register.Sources.Geometry.newtonian_motion = Geometry.newtonian_motion A x g
+  rests on: sources Thermo.first_law_local, Geometry.leibniz_orbits, Geometry.newtonian_motion; derived none; structures none
+Register.Main.schwarzschild_deSitter
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hη : Register.Sources.Condition.pos  (condition) = Condition.pos (η x₀ l₀)
+  M : object, Register.Einstein.Spacetime
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  hfirst : Register.Sources.Thermo.first_law_local = Thermo.first_law_local M
+  hbianchi : Register.Sources.Geometry.bianchi = Geometry.bianchi M
+  pt : object, ℝ → M.Pt
+  α : object, ℝ → ℝ
+  β : object, ℝ → ℝ
+  a : object, ℝ
+  b : object, ℝ
+  ha : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  hss : Register.Sources.Geometry.static_spherical = Geometry.static_spherical M pt α β a b
+  hempty : Register.Sources.Condition.empty_outside  (condition) = Condition.empty_outside M pt a b
+  htime : Register.Sources.Condition.schwarzschild_time  (condition) = Condition.schwarzschild_time α β a b
+  G : object, ℝ
+  hG : Register.Sources.Condition.pos  (condition) = Condition.pos G
+  rests on: sources P2.homogeneous, P2.directions, Thermo.first_law_local, Geometry.bianchi, Geometry.static_spherical; derived Derived.clausius; structures Horizon
+Register.Main.lambda_with_mass
+  R : object, Register.Reg
+  G : object, ℝ
+  η₀ : object, ℝ
+  M : object, ℝ → ℝ
+  Λ : object, ℝ → ℝ
+  r : object, ℝ → ℝ
+  T : object, ℝ → ℝ
+  s₁ : object, ℝ
+  hη₀ : Register.Sources.Condition.pos  (condition) = Condition.pos η₀
+  hJ : Register.Sources.Derived.jacobson_G_density  (derived in Main.lean) = Derived.jacobson_G_density R G η₀
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G (Λ 0)
+  hfam : Register.Sources.Condition.body_family  (condition) = Condition.body_family R G M Λ r s₁
+  I1 : Register.Sources.Thermo.horizon_thermal_family = Thermo.horizon_thermal_family R G M Λ r T s₁
+  hcl : Register.Sources.Thermo.horizon_clausius = Thermo.horizon_clausius R η₀ M r T s₁
+  s : object, ℝ
+  hs : Register.Sources.Condition.member  (condition) = Condition.member s s₁
+  rests on: sources Thermo.horizon_thermal_family, Thermo.horizon_clausius; derived Derived.jacobson_G_density, Derived.deSitter_horizon; structures none
+Register.Main.horizon_drawn_in
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  hΛ : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hε : Register.Sources.Condition.pos  (condition) = Condition.pos (G * M / R.c ^ 2)
+  h13 : Register.Sources.Condition.small_mass  (condition) = Condition.small_mass R G M
+  rests on: sources none; derived Derived.deSitter_horizon; structures none
+Register.Main.register_in_band
+  rests on: sources none; derived none; structures none; states an instance of Horizon
+Register.Main.register_finite
+  L : object, ℕ
+  H : object, Horizon L
+  rests on: sources none; derived none; structures Horizon
+Register.Main.register_even
+  L : object, ℕ
+  H : object, Horizon L
+  P : object, H.Positions
+  rests on: sources none; derived none; structures Horizon, Horizon.Positions
+Register.Main.ring_through_two_cells
+  L : object, ℕ
+  H : object, Horizon L
+  x : object, H.Cell
+  y : object, H.Cell
+  hxy : Register.Sources.Condition.not_opposite  (condition) = Condition.not_opposite H x y
+  ρ : object, ℝ
+  p : object, Quaternion ℝ
+  q : object, Quaternion ℝ
+  hpq : Register.Sources.Condition.two_points  (condition) = Condition.two_points ρ p q
+  rests on: sources none; derived none; structures Horizon
+Register.Main.projective_plane
+  L : object, ℕ
+  H : object, Horizon L
+  h6 : Register.Sources.Condition.six_le  (condition) = Condition.six_le L
+  rests on: sources none; derived none; structures Horizon
+Register.Main.rings_cross_horizon
+  L : object, ℕ
+  [NeZero L] : NeZero (class)
+  H : object, Horizon L
+  Pos : object, H.Positions
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  B : object, H.Cell
+  T : object, H.Loop → Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  P : object, (H.Loop → Bool) → ℝ
+  q : object, H.Loop → ℝ
+  hfree : Register.Sources.Thermo.free_strings = Thermo.free_strings H P q
+  hq : Register.Sources.Thermo.sense_from_state = Thermo.sense_from_state H T β En q
+  rests on: sources Thermo.free_strings, Thermo.sense_from_state; derived none; structures Horizon, Horizon.Positions, Qubit.Tick
+Register.Main.opposite_halfway
+  L : object, ℕ
+  H : object, Horizon L
+  Pos : object, H.Positions
+  B : object, H.Cell
+  l : object, H.Loop
+  hB : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l B
+  rests on: sources none; derived none; structures Horizon, Horizon.Positions
+Register.Main.string_one_bit
+  L : object, ℕ
+  T : object, Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  rests on: sources none; derived none; structures Qubit.Tick
+Register.Main.share_of_bits
+  L : object, ℕ
+  [NeZero L] : NeZero (class)
+  m : object, ℕ
+  n : object, ℕ
+  S : object, Type u_1
+  [Fintype S] : object, Fintype S
+  T : object, Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  ms : object, S → ℕ
+  ns : object, S → ℕ
+  p : object, S → ℝ
+  hmix : Register.Sources.Condition.string_mixture  (condition) = Condition.string_mixture T β En ms ns p
+  rests on: sources none; derived none; structures Qubit.Tick
+Register.Main.area_in_cells
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  rests on: sources none; derived Derived.deSitter_horizon; structures none
+Register.Main.L_from_horizon
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  rests on: sources none; derived Derived.deSitter_horizon; structures none
+Register.Main.temperature_in_cells
+  R : object, Register.Reg
+  a : object, ℝ
+  T : object, ℝ
+  δQ : object, ℝ
+  ha : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a T
+  rests on: sources Thermo.horizon_thermal; derived none; structures none
+Register.Main.newton_in_cells
+  R : object, Register.Reg
+  a : object, ℝ
+  T : object, ℝ
+  r : object, ℝ
+  ha : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  I1 : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a T
+  rests on: sources Thermo.horizon_thermal; derived none; structures none
+Register.Main.quarter_any_count
+  R : object, Register.Reg
+  G : object, ℝ
+  η' : object, ℝ
+  hG : Register.Sources.Condition.pos  (condition) = Condition.pos G
+  hη : Register.Sources.Condition.pos  (condition) = Condition.pos η'
+  hJ : Register.Sources.Derived.jacobson_G_density  (derived in Main.lean) = Derived.jacobson_G_density R G η'
+  rests on: sources none; derived Derived.jacobson_G_density; structures none
+Register.Main.G_mul_eta
+  R : object, Register.Reg
+  G : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  rests on: sources none; derived Derived.jacobson_G; structures none
+Register.Main.komar_mass
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  α : object, ℝ → ℝ
+  β : object, ℝ → ℝ
+  a : object, ℝ
+  b : object, ℝ
+  r : object, ℝ
+  ha : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  hG : Register.Sources.Condition.pos  (condition) = Condition.pos G
+  hsol : Register.Sources.Derived.schwarzschild_deSitter  (derived in Main.lean) = Derived.schwarzschild_deSitter R G M Λ α β a b
+  hr : Register.Sources.Condition.between  (condition) = Condition.between r a b
+  rests on: sources none; derived Derived.schwarzschild_deSitter; structures none
+Register.Main.ceiling_in_step
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  N : object, ℕ
+  L : object, ℕ
+  hN : Register.Sources.Condition.one_le  (condition) = Condition.one_le N
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  bits : object, Fin N → Cell → Bool
+  pr : object, (Fin (N - 1) → Bool) → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr (Register.Capacity.jointOutcome bits) (bits ⟨N - 1, ⋯⟩)
+  hall : Register.Sources.Condition.random_state  (condition) = Condition.random_state pr
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.ceiling_logical
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  N : object, ℕ
+  L : object, ℕ
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  e : object, Cell → Fin (2 ^ N)
+  b : object, Cell → Bool
+  pr : object, Fin (2 ^ N) → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr e b
+  hall : Register.Sources.Condition.random_state  (condition) = Condition.random_state pr
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.one_cell_block
+  Cell : object, Type u_1
+  K : object, Type u_2
+  [Fintype Cell] : object, Fintype Cell
+  [DecidableEq K] : object, DecidableEq K
+  e : object, Cell → K
+  b : object, Cell → Bool
+  pr : object, K → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr e b
+  k : object, K
+  h : Register.Sources.Condition.one_cell  (condition) = Condition.one_cell (Register.Capacity.block e id k)
+  rests on: sources P1.outcomes_at_positions; derived none; structures none
+Register.Main.coding_step
+  n : object, ℕ
+  C₀ : object, AddSubgroup (Register.Coding.Word n)
+  v : object, Register.Coding.Word n
+  K : object, Type u_1
+  W : object, Type u_2
+  Cell : object, Type u_3
+  [Fintype K] : object, Fintype K
+  [Fintype W] : object, Fintype W
+  [Fintype Cell] : object, Fintype Cell
+  N : object, ℕ
+  L : object, ℕ
+  hN : Register.Sources.Condition.one_le  (condition) = Condition.one_le N
+  hK : Register.Sources.Condition.card_outcomes  (condition) = Condition.card_outcomes K N
+  p : object, K → ZMod 2 → ℝ
+  κ : object, W → K
+  g : object, W → ℝ
+  P : object, Finset (Fin n)
+  w : object, W
+  u : object, Register.Coding.Word n
+  j : object, Fin n
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  e : object, Cell → W × Register.Coding.Word n
+  b : object, Cell → Bool
+  pr : object, ℝ → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr (fun x => Register.Coding.jointBitGiven C₀ v p κ g P (e x).1 (e x).2 j) b
+  hcond : Register.Sources.Condition.conditional_states  (condition) = Condition.conditional_states pr fun wu => Register.Coding.jointBitGiven C₀ v p κ g P wu.1 wu.2 j
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.repetition_code
+  n : object, ℕ
+  K : object, Type u_1
+  W : object, Type u_2
+  Cell : object, Type u_3
+  [Fintype K] : object, Fintype K
+  [Fintype W] : object, Fintype W
+  [Fintype Cell] : object, Fintype Cell
+  N : object, ℕ
+  L : object, ℕ
+  hK : Register.Sources.Condition.card_outcomes  (condition) = Condition.card_outcomes K N
+  q : object, ZMod 2 → ℝ
+  p : object, K → ZMod 2 → ℝ
+  κ : object, W → K
+  g : object, W → ℝ
+  P : object, Finset (Fin n)
+  u : object, Register.Coding.Word n
+  j : object, Fin n
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  e : object, Cell → W × Register.Coding.Word n
+  b : object, Cell → Bool
+  pr : object, ℝ → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr (fun x => Register.Coding.jointBitGiven ⊥ (fun x => 1) p κ g P (e x).1 (e x).2 j) b
+  hcond : Register.Sources.Condition.conditional_states  (condition) = Condition.conditional_states pr fun wu => Register.Coding.jointBitGiven ⊥ (fun x => 1) p κ g P wu.1 wu.2 j
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.line_code
+  n : object, ℕ
+  K : object, Type u_1
+  W : object, Type u_2
+  Cell : object, Type u_3
+  [Fintype K] : object, Fintype K
+  [Fintype W] : object, Fintype W
+  [Fintype Cell] : object, Fintype Cell
+  code : object, Register.Coding.LineCode n
+  q : object, ZMod 2 → ℝ
+  s : object, ZMod 2
+  hm : Register.Sources.Condition.line_match  (condition) = Condition.line_match code
+  N : object, ℕ
+  L : object, ℕ
+  hK : Register.Sources.Condition.card_outcomes  (condition) = Condition.card_outcomes K N
+  p : object, K → ZMod 2 → ℝ
+  κ : object, W → K
+  g : object, W → ℝ
+  hrand : Register.Sources.Condition.line_random  (condition) = Condition.line_random N p κ g
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  e : object, Cell → W × Register.Coding.Word n
+  b : object, Cell → Bool
+  pr : object, ℝ → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr (fun x => Register.Coding.jointBitGiven code.C₀ code.v p κ g (code.S.erase code.j) (e x).1 (e x).2 code.j) b
+  hcond : Register.Sources.Condition.conditional_states  (condition) = Condition.conditional_states pr fun wu => Register.Coding.jointBitGiven code.C₀ code.v p κ g (code.S.erase code.j) wu.1 wu.2 code.j
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.massive_horizon
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  hcount : Register.Sources.Approx.count_density  (leading order) = Approx.count_density H R η l₀ x₀ rh
+  l : object, H.Loop
+  x : object, H.Cell
+  hx : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l x
+  rests on: sources P2.homogeneous, P2.directions; derived Derived.jacobson_G, Derived.deSitter_horizon; structures Horizon
+Register.Main.black_hole_horizon
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  η : object, H.Cell → H.Loop → ℝ
+  hsym : Register.Sources.P2.homogeneous = P2.homogeneous H η
+  hdir : Register.Sources.P2.directions = P2.directions H η
+  l₀ : object, H.Loop
+  x₀ : object, H.Cell
+  h₀ : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l₀ x₀
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  hcount : Register.Sources.Approx.count_density  (leading order) = Approx.count_density H R η l₀ x₀ rh
+  l : object, H.Loop
+  x : object, H.Cell
+  hx : Register.Sources.Condition.on_ring  (condition) = Condition.on_ring H l x
+  rests on: sources P2.homogeneous, P2.directions; derived Derived.deSitter_horizon; structures Horizon
+Register.Main.temperature_led
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  a : object, ℝ
+  gN : object, ℝ
+  T' : object, ℝ
+  TdS : object, ℝ
+  TN : object, ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  hDL : Register.Sources.Thermo.deser_levin = Thermo.deser_levin R G Λ rh a T'
+  I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
+  I1N : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R gN TN
+  hled : Register.Sources.Condition.temperature_led  (condition) = Condition.temperature_led T' TdS TN
+  rests on: sources Thermo.deser_levin, Thermo.horizon_thermal; derived Derived.deSitter_horizon; structures none
+Register.Main.carriers_share
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  r : object, ℝ
+  a : object, ℝ
+  TN : object, ℝ
+  Ta : object, ℝ
+  b : object, ℝ
+  Ncar : object, ℝ
+  εc : object, ℝ
+  κ : object, ℝ
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  ha : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  I1N : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (G * M / r ^ 2) TN
+  I1a : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a Ta
+  hcar : Register.Sources.P1.energy_in_carriers = P1.energy_in_carriers R M Ncar εc
+  hNcar : Register.Sources.Condition.carrier_fraction  (condition) = Condition.carrier_fraction R b Ncar r
+  hκ : Register.Sources.Thermo.equipartition = Thermo.equipartition κ εc Ta
+  hκN : Register.Sources.Thermo.equipartition = Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN
+  rests on: sources Thermo.horizon_thermal, P1.energy_in_carriers, Thermo.equipartition; derived Derived.jacobson_G; structures none
+Register.Main.fill_fraction
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  gN : object, ℝ
+  TN : object, ℝ
+  TdS : object, ℝ
+  εs : object, ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  I1N : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R gN TN
+  I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
+  hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal; derived Derived.deSitter_horizon; structures none
+Register.Main.galactic_law
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  rh : object, ℝ
+  M : object, ℝ
+  r : object, ℝ
+  a : object, ℝ
+  TdS : object, ℝ
+  TN : object, ℝ
+  Ta : object, ℝ
+  εs : object, ℝ
+  b : object, ℝ
+  Ncar : object, ℝ
+  εc : object, ℝ
+  κ : object, ℝ
+  surv : object, ℝ → ℝ
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  ha : Register.Sources.Condition.pos  (condition) = Condition.pos a
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
+  I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
+  I1N : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (G * M / r ^ 2) TN
+  I1a : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a Ta
+  hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs
+  hME : Register.Sources.Thermo.max_entropy_threshold = Thermo.max_entropy_threshold surv
+  hb : Register.Sources.P1.carriers_by_amplitude = P1.carriers_by_amplitude R b TN εs surv
+  hcar : Register.Sources.P1.energy_in_carriers = P1.energy_in_carriers R M Ncar εc
+  hNcar : Register.Sources.Condition.carrier_fraction  (condition) = Condition.carrier_fraction R b Ncar r
+  hκ : Register.Sources.Thermo.equipartition = Thermo.equipartition κ εc Ta
+  hκN : Register.Sources.Thermo.equipartition = Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, Thermo.max_entropy_threshold, P1.carriers_by_amplitude, P1.energy_in_carriers, Thermo.equipartition; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.near_limit
+  R : object, Register.Reg
+  a : object, ℝ
+  gN : object, ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hlaw : Register.Sources.Derived.galactic_law  (derived in Main.lean) = Derived.galactic_law R a gN
+  rests on: sources none; derived Derived.galactic_law; structures none
+Register.Main.deep_limit
+  R : object, Register.Reg
+  a : object, ℝ
+  gN : object, ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hh2 : Register.Sources.Condition.at_most_half  (condition) = Condition.at_most_half √(gN / R.a0)
+  hlaw : Register.Sources.Derived.galactic_law  (derived in Main.lean) = Derived.galactic_law R a gN
+  rests on: sources none; derived Derived.galactic_law; structures none
+Register.Main.tully_fisher
+  a0 : object, ℝ
+  G : object, ℝ
+  M : object, ℝ
+  r : object, ℝ
+  v : object, ℝ → ℝ
+  ha0 : Register.Sources.Condition.pos  (condition) = Condition.pos a0
+  hG : Register.Sources.Condition.pos  (condition) = Condition.pos G
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  hv : Register.Sources.Derived.circular_speeds  (derived in Main.lean) = Derived.circular_speeds (fun s => √(a0 * (G * M / s ^ 2))) v
+  rests on: sources none; derived Derived.circular_speeds; structures none
+Register.Main.classical_share
+  a0 : object, ℝ
+  gN : object, ℝ
+  a : object, ℝ
+  b : object, ℝ
+  r : object, ℝ
+  v : object, ℝ → ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hb : Register.Sources.Condition.classical_share  (condition) = Condition.classical_share b gN a0
+  hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
+  hv : Register.Sources.Derived.circular_speeds  (derived in Main.lean) = Derived.circular_speeds (fun x => a) v
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  rests on: sources none; derived Derived.share_acceleration, Derived.circular_speeds; structures none
+Register.Main.scale_mean
+  R : object, Register.Reg
+  gN : object, ℝ
+  a : object, ℝ
+  b : object, ℝ
+  μ : object, ℝ
+  TN : object, ℝ
+  εs : object, ℝ
+  surv : object, ℝ → ℝ
+  hμ : Register.Sources.Condition.pos  (condition) = Condition.pos μ
+  hME : Register.Sources.Condition.threshold_mean  (condition) = Condition.threshold_mean μ surv
+  hb : Register.Sources.P1.carriers_by_amplitude = P1.carriers_by_amplitude R b TN εs surv
+  hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
+  hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
+  rests on: sources P1.carriers_by_amplitude; derived Derived.fill_fraction, Derived.share_acceleration; structures none
+Register.Main.scale
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.push
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  r : object, ℝ
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+Register.Main.zero_gravity
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  rz : object, ℝ
+  hrz : Register.Sources.Condition.pos  (condition) = Condition.pos rz
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hz : Register.Sources.Condition.zero_field  (condition) = Condition.zero_field R G M Λ rz
+  rests on: sources none; derived Derived.deSitter_horizon; structures none
+Register.Main.hubble
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  r : object, ℝ
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.deSitter_horizon; structures none
+Register.Main.G_drift
+  Rt : object, ℝ → Register.Reg
+  G : object, ℝ → ℝ
+  hL : Register.Sources.P1.constant_L = P1.constant_L Rt
+  hconst : Register.Sources.Units.si_constants  (units) = Units.si_constants Rt
+  hJ : Register.Sources.Derived.jacobson_G_in_time  (derived in Main.lean) = Derived.jacobson_G_in_time Rt G
+  a : object, ℝ → ℝ
+  adot : object, ℝ → ℝ
+  addot : object, ℝ
+  t : object, ℝ
+  hq : Register.Sources.Condition.deceleration  (condition) = Condition.deceleration a adot addot t
+  hH : Register.Sources.Condition.hubble_horizon  (condition) = Condition.hubble_horizon Rt a adot
+  rests on: sources P1.constant_L; derived Derived.jacobson_G_in_time; structures none
+Register.Main.constants_in_time
+  Rt : object, ℝ → Register.Reg
+  G : object, ℝ → ℝ
+  Λ : object, ℝ → ℝ
+  hL : Register.Sources.P1.constant_L = P1.constant_L Rt
+  hℓc : Register.Sources.P1.constant_cell = P1.constant_cell Rt
+  hconst : Register.Sources.Units.si_constants  (units) = Units.si_constants Rt
+  hdS : Register.Sources.Derived.deSitter_horizon_in_time  (derived in Main.lean) = Derived.deSitter_horizon_in_time Rt G Λ
+  hJ : Register.Sources.Derived.jacobson_G_in_time  (derived in Main.lean) = Derived.jacobson_G_in_time Rt G
+  rests on: sources P1.constant_L, P1.constant_cell; derived Derived.deSitter_horizon_in_time, Derived.jacobson_G_in_time; structures none
+Register.Main.lambda_rate
+  Rt : object, ℝ → Register.Reg
+  G : object, ℝ → ℝ
+  Λ : object, ℝ → ℝ
+  hL : Register.Sources.P1.constant_L = P1.constant_L Rt
+  hconst : Register.Sources.Units.si_constants  (units) = Units.si_constants Rt
+  hdS : Register.Sources.Derived.deSitter_horizon_in_time  (derived in Main.lean) = Derived.deSitter_horizon_in_time Rt G Λ
+  hJ : Register.Sources.Derived.jacobson_G_in_time  (derived in Main.lean) = Derived.jacobson_G_in_time Rt G
+  G' : object, ℝ
+  Λ' : object, ℝ
+  t : object, ℝ
+  hrates : Register.Sources.Condition.rates_at  (condition) = Condition.rates_at G Λ G' Λ' t
+  rests on: sources P1.constant_L; derived Derived.deSitter_horizon_in_time, Derived.jacobson_G_in_time; structures none
+Register.Main.w_bound
+  ρ : object, ℝ → ℝ
+  a : object, ℝ → ℝ
+  ρdot : object, ℝ
+  adot : object, ℝ
+  w : object, ℝ
+  b : object, ℝ
+  t : object, ℝ
+  hc : Register.Sources.Condition.component  (condition) = Condition.component ρ a ρdot adot t
+  first_law : Register.Sources.Thermo.first_law_component = Thermo.first_law_component ρ a w t
+  hb : Register.Sources.Condition.drift_bound  (condition) = Condition.drift_bound ρ ρdot t b
+  rests on: sources Thermo.first_law_component; derived none; structures none
+Register.Main.gibbs
+  L : object, ℕ
+  Ω : object, Type u_1
+  [Fintype Ω] : object, Fintype Ω
+  [Nonempty Ω] : Nonempty (class)
+  E : object, Ω → ℝ
+  β : object, ℝ
+  P : object, Ω → ℝ
+  hP : Register.Sources.Condition.distribution  (condition) = Condition.distribution P
+  hmean : Register.Sources.Condition.same_mean  (condition) = Condition.same_mean E β P
+  T : object, Register.Qubit.Tick L
+  En : object, ℂ → ℝ
+  β' : object, ℝ
+  rests on: sources none; derived none; structures Qubit.Tick
+Register.Main.sphere_strings
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  ν : object, MeasureTheory.Measure ↑(Metric.sphere 0 1)
+  hν : Register.Sources.P1.no_rotation_preferred = P1.no_rotation_preferred ν
+  Λ : object, ℝ
+  γ : object, H.Loop → Geodesic.Curve ℝ (Quaternion ℝ)
+  hrings : Register.Sources.P2.rings_geodesics = P2.rings_geodesics H R Λ γ
+  s : object, ℝ
+  r : object, ℝ
+  hsph : Register.Sources.Condition.drawn_sphere  (condition) = Condition.drawn_sphere R s r
+  ξ₀ : object, { q // q ∈ Metric.sphere 0 1 }
+  rests on: sources P1.no_rotation_preferred, P2.rings_geodesics; derived none; structures Horizon
+Register.Main.observer_count
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  ν : object, MeasureTheory.Measure ↑(Metric.sphere 0 1)
+  hν : Register.Sources.P1.no_rotation_preferred = P1.no_rotation_preferred ν
+  D : object, Crossing.Drawing H.Loop (Quaternion ℝ) R.RL
+  B : object, H.Cell
+  s : object, ℝ
+  r : object, ℝ
+  hsph : Register.Sources.Condition.drawn_sphere  (condition) = Condition.drawn_sphere R s r
+  ξ₀ : object, { q // q ∈ Metric.sphere 0 1 }
+  rests on: sources P1.no_rotation_preferred; derived none; structures Horizon
+Register.Main.observer_rings
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  ν : object, MeasureTheory.Measure ↑(Metric.sphere 0 1)
+  hν : Register.Sources.P1.no_rotation_preferred = P1.no_rotation_preferred ν
+  D : object, Crossing.Drawing H.Loop (Quaternion ℝ) R.RL
+  B : object, H.Cell
+  s : object, ℝ
+  r : object, ℝ
+  hsph : Register.Sources.Condition.drawn_sphere  (condition) = Condition.drawn_sphere R s r
+  ξ₀ : object, { q // q ∈ Metric.sphere 0 1 }
+  rests on: sources P1.no_rotation_preferred; derived none; structures Horizon
+Register.Main.sphere_areal_radius
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  Λ : object, ℝ
+  γ : object, H.Loop → Geodesic.Curve ℝ (Quaternion ℝ)
+  hrings : Register.Sources.P2.rings_geodesics = P2.rings_geodesics H R Λ γ
+  s : object, ℝ
+  r : object, ℝ
+  hsph : Register.Sources.Condition.drawn_sphere  (condition) = Condition.drawn_sphere R s r
+  p : object, Quaternion ℝ
+  hp : Register.Sources.Condition.on_three_sphere  (condition) = Condition.on_three_sphere R p
+  rests on: sources P2.rings_geodesics; derived none; structures Horizon
+Register.Main.first_law_extended
+  R : object, Register.Reg
+  G : object, ℝ
+  η₀ : object, ℝ
+  M : object, ℝ → ℝ
+  Λ : object, ℝ → ℝ
+  r : object, ℝ → ℝ
+  T : object, ℝ → ℝ
+  s₁ : object, ℝ
+  hη₀ : Register.Sources.Condition.pos  (condition) = Condition.pos η₀
+  hJ : Register.Sources.Derived.jacobson_G_density  (derived in Main.lean) = Derived.jacobson_G_density R G η₀
+  hfam : Register.Sources.Condition.body_family  (condition) = Condition.body_family R G M Λ r s₁
+  I1 : Register.Sources.Thermo.horizon_thermal_family = Thermo.horizon_thermal_family R G M Λ r T s₁
+  s : object, ℝ
+  hs : Register.Sources.Condition.inside_family  (condition) = Condition.inside_family s s₁
+  rests on: sources Thermo.horizon_thermal_family; derived Derived.jacobson_G_density; structures none
+Register.Main.block_fraction
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  read : object, Cell → ℝ
+  halike : Register.Sources.P1.ring_bits_alike = P1.ring_bits_alike read
+  b : object, Cell → Bool
+  B : object, Finset Cell
+  rests on: sources P1.ring_bits_alike; derived none; structures none
+Register.Main.surface_code
+  K : object, Type u_1
+  W : object, Type u_2
+  Cell : object, Type u_3
+  [Fintype K] : object, Fintype K
+  [Fintype W] : object, Fintype W
+  [Fintype Cell] : object, Fintype Cell
+  d : object, ℕ
+  hd : Register.Sources.Condition.two_le  (condition) = Condition.two_le d
+  N : object, ℕ
+  L : object, ℕ
+  hK : Register.Sources.Condition.card_outcomes  (condition) = Condition.card_outcomes K N
+  p : object, K → ZMod 2 → ℝ
+  κ : object, W → K
+  g : object, W → ℝ
+  hrand : Register.Sources.Condition.line_random  (condition) = Condition.line_random N p κ g
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  e : object, Cell → W × Register.Coding.Word (d * d)
+  b : object, Cell → Bool
+  pr : object, ℝ → Bool → ℝ
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions pr (fun x => Register.Coding.jointBitGiven (Register.Coding.surfaceCode d hd).C₀ (Register.Coding.surfaceCode d hd).v p κ g ((Register.Coding.surfaceCode d hd).S.erase (Register.Coding.surfaceCode d hd).j) (e x).1 (e x).2 (Register.Coding.surfaceCode d hd).j) b
+  hcond : Register.Sources.Condition.conditional_states  (condition) = Condition.conditional_states pr fun wu => Register.Coding.jointBitGiven (Register.Coding.surfaceCode d hd).C₀ (Register.Coding.surfaceCode d hd).v p κ g ((Register.Coding.surfaceCode d hd).S.erase (Register.Coding.surfaceCode d hd).j) wu.1 wu.2 (Register.Coding.surfaceCode d hd).j
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.ring_one_string
+  L : object, ℕ
+  H : object, Horizon L
+  rests on: sources none; derived none; structures Horizon
+Register.Main.lap
+  L : object, ℕ
+  H : object, Horizon L
+  P : object, H.Positions
+  l : object, H.Loop
+  x : object, H.Cell
+  rests on: sources none; derived none; structures Horizon, Horizon.Positions
+Register.Main.two_senses
+  L : object, ℕ
+  H : object, Horizon L
+  P : object, H.Positions
+  l : object, H.Loop
+  x : object, H.Cell
+  y : object, H.Cell
+  rests on: sources none; derived none; structures Horizon, Horizon.Positions
+Register.Main.sense_of_state
+  State : object, Type u_1
+  obeys : predicate object, State → Prop
+  sense : object, State → Bool
+  rev : object, State → State
+  σ₀ : object, State
+  hdir : Register.Sources.P2.direction_free = P2.direction_free obeys rev
+  hrev : Register.Sources.Condition.reverses  (condition) = Condition.reverses sense rev
+  h₀ : Register.Sources.Condition.obeys_law  (condition) = Condition.obeys_law obeys σ₀
+  v : object, Bool
+  rests on: sources P2.direction_free; derived none; structures none
+Register.Main.free_tick_hidden
+  L : object, ℕ
+  α : object, Type u_1
+  T : object, Register.Qubit.Tick L
+  law : object, Register.Qubit.Vec → α
+  hhidden : Register.Sources.P1.phase_hidden = P1.phase_hidden law
+  v : object, Register.Qubit.Vec
+  rests on: sources P1.phase_hidden; derived none; structures Qubit.Vec, Qubit.Tick
+Register.Main.bit_kept
+  L : object, ℕ
+  T : object, Register.Qubit.Tick L
+  β : object, ℝ
+  En : object, ℂ → ℝ
+  flip : object, Bool → ℝ
+  hflip : Register.Sources.P2.direction_free = P2.direction_free flip fun s => !s
+  rests on: sources P2.direction_free; derived none; structures Qubit.Tick
+Register.Main.joint_frequency
+  Cell : object, Type u_1
+  K : object, Type u_2
+  [Fintype Cell] : object, Fintype Cell
+  [Fintype K] : object, Fintype K
+  [DecidableEq K] : object, DecidableEq K
+  L : object, ℕ
+  read : object, Cell → ℝ
+  e : object, Cell → K
+  halike : Register.Sources.P1.ring_bits_alike = P1.ring_bits_alike read
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  rests on: sources P1.ring_bits_alike, P1.ring_cells; derived none; structures none
+Register.Main.product_state
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  [DecidableEq Cell] : object, DecidableEq Cell
+  [Nonempty Cell] : Nonempty (class)
+  read : object, Cell → ℝ
+  A : object, Finset Cell
+  B : object, Finset Cell
+  halike : Register.Sources.P1.ring_bits_alike = P1.ring_bits_alike read
+  rests on: sources P1.ring_bits_alike; derived none; structures none
+Register.Main.strings_in_step
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  [Nonempty Cell] : Nonempty (class)
+  N : object, ℕ
+  read : object, Cell → ℝ
+  bits : object, Fin N → Cell → Bool
+  halike : Register.Sources.P1.ring_bits_alike = P1.ring_bits_alike read
+  rests on: sources P1.ring_bits_alike; derived none; structures none
+Register.Main.overlap_bound
+  Cell : object, Type u_1
+  K : object, Type u_2
+  T : object, Type u_3
+  [Fintype Cell] : object, Fintype Cell
+  [Fintype K] : object, Fintype K
+  [DecidableEq K] : object, DecidableEq K
+  [DecidableEq T] : object, DecidableEq T
+  L : object, ℕ
+  held : object, K × Bool → ℂ
+  ψ : object, K × Bool → ℂ
+  χ : object, K → T
+  e : object, Cell → K
+  b : object, Cell → Bool
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions (fun s v => ∑ k with χ k = s, ‖held (k, v)‖ ^ 2) (fun x => χ (e x)) b
+  hχ : Register.Sources.Condition.state_given  (condition) = Condition.state_given ψ χ
+  hdiff : Register.Sources.Condition.all_differ  (condition) = Condition.all_differ ψ
+  hnorm : Register.Sources.Condition.normalized  (condition) = Condition.normalized held
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions; derived none; structures none
+Register.Main.return_bound
+  Cell : object, Type u_1
+  K : object, Type u_2
+  T : object, Type u_3
+  [Fintype Cell] : object, Fintype Cell
+  [Fintype K] : object, Fintype K
+  [DecidableEq K] : object, DecidableEq K
+  [DecidableEq T] : object, DecidableEq T
+  L : object, ℕ
+  held : object, K × Bool → ℂ
+  ψ : object, K × Bool → ℂ
+  init : object, K × Bool → ℂ
+  V : object, (K × Bool → ℂ) → K × Bool → ℂ
+  χ : object, K → T
+  e : object, Cell → K
+  b : object, Cell → Bool
+  F : object, ℝ
+  ret : object, ℝ
+  hL : Register.Sources.P1.ring_cells = P1.ring_cells Cell L
+  hout : Register.Sources.P1.outcomes_at_positions = P1.outcomes_at_positions (fun s v => ∑ k with χ k = s, ‖held (k, v)‖ ^ 2) (fun x => χ (e x)) b
+  hχ : Register.Sources.Condition.state_given  (condition) = Condition.state_given ψ χ
+  hnorm : Register.Sources.Condition.normalized  (condition) = Condition.normalized held
+  hgates : Register.Sources.QM.gates = QM.gates V ψ init held F ret
+  rests on: sources P1.ring_cells, P1.outcomes_at_positions, QM.gates; derived none; structures none
+Register.Main.vacuum_energy_unseen
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  η : object, H.Cell → H.Loop → ℝ
+  M : object, Register.Einstein.Spacetime
+  c : object, ℝ
+  hcl : Register.Sources.Derived.clausius  (derived in Main.lean) = Derived.clausius H R η M
+  rests on: sources none; derived Derived.clausius; structures Horizon
+Register.Main.G_Lambda_bits
+  R : object, Register.Reg
+  G : object, ℝ
+  Λ : object, ℝ
+  s : object, ℝ
+  hs : Register.Sources.Condition.pos  (condition) = Condition.pos s
+  hJ : Register.Sources.Derived.jacobson_G_density  (derived in Main.lean) = Derived.jacobson_G_density R G (s * R.η)
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  rests on: sources none; derived Derived.jacobson_G_density, Derived.deSitter_horizon; structures none
+Register.Main.frame_of_law
+  R : object, Register.Reg
+  g : object, (Fin 3 → ℝ) → Fin 3 → ℝ
+  g' : object, (Fin 3 → ℝ) → Fin 3 → ℝ
+  x : object, Fin 3 → ℝ
+  ab : object, Fin 3 → ℝ
+  ab' : object, Fin 3 → ℝ
+  ap : object, Fin 3 → ℝ
+  ap' : object, Fin 3 → ℝ
+  a : object, ℝ
+  a' : object, ℝ
+  T : object, ℝ
+  T' : object, ℝ
+  gN : object, ℝ
+  b : object, ℝ
+  b' : object, ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hap : Register.Sources.Condition.proper_acceleration  (condition) = Condition.proper_acceleration g x ab ap a
+  hap' : Register.Sources.Condition.proper_acceleration  (condition) = Condition.proper_acceleration g' x ab' ap' a'
+  I1a : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a T
+  I1a' : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a' T'
+  hb : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
+  hb' : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a' gN b'
+  hlaw : Register.Sources.Derived.galactic_law  (derived in Main.lean) = Derived.galactic_law R a gN
+  rests on: sources Thermo.horizon_thermal; derived Derived.share_acceleration, Derived.galactic_law; structures none
+Register.Main.pull_and_push
+  R : object, Register.Reg
+  G : object, ℝ
+  M : object, ℝ
+  Λ : object, ℝ
+  r : object, ℝ
+  a : object, ℝ
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hr : Register.Sources.Condition.pos  (condition) = Condition.pos r
+  hJ : Register.Sources.Derived.jacobson_G  (derived in Main.lean) = Derived.jacobson_G R G
+  hdS : Register.Sources.Derived.deSitter_horizon  (derived in Main.lean) = Derived.deSitter_horizon R G Λ
+  hlaw : Register.Sources.Derived.galactic_law  (derived in Main.lean) = Derived.galactic_law R a (G * M / r ^ 2)
+  rests on: sources none; derived Derived.jacobson_G, Derived.deSitter_horizon, Derived.galactic_law; structures none
+Register.Main.simple_interpolation
+  R : object, Register.Reg
+  a : object, ℝ
+  gN : object, ℝ
+  hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
+  hlaw : Register.Sources.Derived.galactic_law  (derived in Main.lean) = Derived.galactic_law R a gN
+  rests on: sources none; derived Derived.galactic_law; structures none
+derived Derived.circular_speeds : concluded by Register.Main.rotation_curve
+derived Derived.clausius : concluded by Register.Main.jacobson_step
+derived Derived.deSitter_horizon : concluded by Register.Main.deSitter_horizon
+derived Derived.deSitter_horizon_in_time : Derived.deSitter_horizon at every time
+derived Derived.fill_fraction : concluded by Register.Main.fill_fraction
+derived Derived.galactic_law : concluded by Register.Main.galactic_law
+derived Derived.jacobson_G : concluded by Register.Main.jacobson_G
+derived Derived.jacobson_G_density : concluded by Register.Main.jacobson_G_density
+derived Derived.jacobson_G_exact : concluded by Register.Main.jacobson_G_exact
+derived Derived.jacobson_G_in_time : Derived.jacobson_G at every time
+derived Derived.schwarzschild_deSitter : concluded by Register.Main.schwarzschild_deSitter
+derived Derived.share_acceleration : concluded by Register.Main.carriers_share
+97 results checked, every theorem of Register.Main before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type; every result takes something from a source or states an instance of a structure of the postulates; each of the 12 derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above 100, in its statement or in a definition under it, but for those that state an instance: Register.Main.register_in_band; the largest whole number that the others name is 21, in Register.Main.simple_interpolation
