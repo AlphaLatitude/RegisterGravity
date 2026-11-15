@@ -36,9 +36,8 @@ is `k_B` times the entropy of the state of the register's strings (`hhor` of
 `Main.jacobson_G_exact`, `Sources.P1.horizon_entropy`, a `physical`); the energy inside the horizon
 is the energy of its strings (`hin` of `Main.vacuum_share`, `P1.energy_inside_strings`); a body's energy is
 held by the strings that carry its information (`hcar` of `Main.carriers_share` and
-`Main.galactic_law`, `Sources.P1.energy_in_carriers`); the energy of light goes with the light, its current along its ray for every observer
-(`hlight` of `Main.light_rays`, `Sources.P1.light`, a `physical` whose register side is the ray's
-direction only, with Postulate 1's light crossing a cell in one tick); a law is a function of the register, of the crossing of a ring with a cell (the type
+`Main.galactic_law`, `Sources.P1.energy_in_carriers`); a law is a function of the register, of the
+crossing of a ring with a cell (the type
 of `f` in `laws_same`, Sec. II's definition of a law, of which Postulate 2's clauses speak); a
 horizon's state is a state of its strings and of nothing else (the type of `Bridge.horizonEntropy`,
 Postulate 1's second sentence); and the number of strings a sphere holds about a body does not

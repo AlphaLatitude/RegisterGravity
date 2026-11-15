@@ -8,7 +8,13 @@ import Lean
 in the namespace `Register.Sources`, or the class `NeZero` or `Nonempty`; and every object (a binder whose type is
 not a proposition) must have a type whose head, and the heads of the domains of its function
 types, are among the object types listed in `allowedObjects` below.  Anything else fails the build
-with an error that names the binder.  The output, one line per binder, is the premise ledger
+with an error that names the binder.  A hypothesis takes a proposition, a predicate or a set only
+as a variable of the result, that is, as one of its binders.  Some premises are stated for any
+predicate, as `Condition.obeys_law` is for any law that a state obeys, and such a premise taken at
+a predicate that the statement builds would be a hypothesis that `Sources.lean` does not hold; the
+build fails on it as well.  The other arguments of a hypothesis, numbers, functions and the
+objects of the result, are the things the premise is taken at, and the ledger prints them.  The
+output, one line per binder, is the premise ledger
 (`premises_output.txt`), which the continuous integration compares with the build's.  Each
 hypothesis's line gives the definition it is and, after it, its full type, so the ledger shows the
 instantiation of the definition (the field a premise speaks of, the acceleration a temperature is
@@ -29,8 +35,13 @@ The command makes four more checks, on the results taken together.
   that carries clauses of the postulates: an object whose type is one of `carriers`, or a family
   of such objects.  The one other kind of result takes nothing and states that such a structure
   has an instance, as `Main.register_in_band` states that a register exists.  A result that takes
-  nothing from a source and states no such instance fails the build.  The block of each result
-  ends with a line `rests on:` that names what was found.
+  nothing from a source and states no such instance fails the build.  A premise of the namespace
+  `Open` of `Sources.lean` is none of these: no source states it, and the files do not derive
+  it.  Its line in the ledger is marked "(OPEN)", and it counts for nothing in this check,
+  so a result that takes an open premise must take something from a source as well.  The block of
+  each result ends with a line `rests on:` that names what was found: the premises from a source,
+  then the open premises, after `open`, when the result takes any, then the derived statements
+  and the structures.
 * **Every derived statement is concluded.**  Each definition of the namespace `Derived` must be a
   conjunct of the conclusion of a result that takes something from a source and whose own derived
   premises are concluded before it, so that no derived statement rests on itself; or it must be,
@@ -108,8 +119,8 @@ def sourcesNamespace : Name := `Register.Sources
 
 /-- the namespaces of the sources from which the files take premises: the two postulates (with
 Sec. II's definitions), thermodynamics, quantum mechanics and the cited geometry.  A premise of
-one of them is a premise from a source; a condition, the step at leading order and the choice of
-units are not.  Quantum mechanics, which the paper's Sec. III lists for the gates of Sec. IV.A,
+one of them is a premise from a source; a condition, a step at leading order, the choice of
+units and a premise of the namespace `Open` (premises that no source states) are not.  Quantum mechanics, which the paper's Sec. III lists for the gates of Sec. IV.A,
 has the one premise `QM.gates`, which `Main.return_bound` takes. -/
 def sourceNamespaces : List Name :=
   [`Register.Sources.P1, `Register.Sources.P2, `Register.Sources.Thermo, `Register.Sources.QM,
@@ -175,6 +186,19 @@ partial def heads (e : Expr) : MetaM (Array Name) := do
 
 /-- whether a name lies in a namespace -/
 def inNamespace (ns n : Name) : Bool := ns.isPrefixOf n
+
+/-- whether a type is `Prop` or, once its definitions are unfolded, a function type that ends in
+`Prop`: the type of a proposition, of a predicate or relation, or of a set -/
+def endsInProp (ty : Expr) : MetaM Bool :=
+  forallTelescopeReducing ty fun _ body => do
+    return (← whnf body).isProp
+
+/-- whether an argument of a hypothesis is a proposition, a predicate or a set that the statement
+builds: one that is not a variable of the result -/
+def builtPredicate (a : Expr) : MetaM Bool := do
+  let a := (← instantiateMVars a).headBeta.eta
+  if a.isFVar then return false
+  endsInProp (← inferType a)
 
 /-- the derived statements that a conclusion states: the conjuncts of the conclusion, under its
 existential quantifiers, whose head is a definition of the namespace `Derived` (the first argument
@@ -300,13 +324,15 @@ def numbersNamed (fuel : Nat) (n : Name) : CoreM (Array Name × Nat × Name) := 
     throwError "the check of the numbers that `{n}` names did not end within its bound"
   return (bad, big, bigAt)
 
-/-- check one theorem: list its binders, fail on any that is not a listed premise or object, and
+/-- check one theorem: list its binders, fail on any that is not a listed premise or object, fail
+on a hypothesis that takes a proposition, a predicate or a set built in the statement, and
 collect what the theorem takes from the sources and what it concludes -/
 def checkTheorem (n : Name) : TermElabM Taken := do
   let info ← getConstInfo n
   forallTelescope info.type fun xs body => do
     let mut lines : Array String := #[s!"{n}"]
     let mut sources : Array Name := #[]
+    let mut opens : Array Name := #[]
     let mut derived : Array Name := #[]
     let mut structures : Array Name := #[]
     for x in xs do
@@ -320,6 +346,9 @@ def checkTheorem (n : Name) : TermElabM Taken := do
         match fn with
         | .const c _ =>
           if inNamespace sourcesNamespace c then
+            for a in ty.headBeta.getAppArgs do
+              if ← builtPredicate a then
+                throwError "premise `{name}` of `{n}` has the type `{ty}`, in which `{a}` is a proposition, a predicate or a set that the statement builds: a hypothesis takes such an object only as a variable of the result"
             let tag :=
               if inNamespace (sourcesNamespace ++ `Open) c then "  (OPEN)"
               else if inNamespace (sourcesNamespace ++ `Units) c then "  (units)"
@@ -329,6 +358,8 @@ def checkTheorem (n : Name) : TermElabM Taken := do
               else ""
             if sourceNamespaces.any (fun ns => inNamespace ns c) && !sources.contains c then
               sources := sources.push c
+            if inNamespace (sourcesNamespace ++ `Open) c && !opens.contains c then
+              opens := opens.push c
             if inNamespace derivedNamespace c && !derived.contains c then
               derived := derived.push c
             lines := lines.push s!"  {name} : {c}{tag} = {tyLine}"
@@ -354,7 +385,8 @@ def checkTheorem (n : Name) : TermElabM Taken := do
     let instances ← instanced 64 body
     let tail := if instances.isEmpty then ""
       else s!"; states an instance of {listed (instances.map shortStructure)}"
-    lines := lines.push s!"  rests on: sources {listed (sources.map short)}; derived {listed (derived.map short)}; structures {listed (structures.map shortStructure)}{tail}"
+    let openPart := if opens.isEmpty then "" else s!"; open {listed (opens.map short)}"
+    lines := lines.push s!"  rests on: sources {listed (sources.map short)}{openPart}; derived {listed (derived.map short)}; structures {listed (structures.map shortStructure)}{tail}"
     let (numbers, numeral, numeralAt) ← numbersNamed 1000000 n
     return { lines, sources, derived, structures, instances, concludes, numbers, numeral, numeralAt }
 
@@ -439,7 +471,7 @@ elab "#premises " ids:ident+ : command => do
     match done.find? (fun p => p.1 == d) with
     | some p => all := all.push s!"derived {short d} : {p.2}"
     | none => pure ()
-  all := all.push s!"{ids.size} results checked, every theorem of {resultsNamespace} before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type; every result takes something from a source or states an instance of a structure of the postulates; each of the {derivedAll.size} derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above {numeralBound}, in its statement or in a definition under it, but for those that state an instance: {listed named}; the largest whole number that the others name is {largest}, in {largestAt}"
+  all := all.push s!"{ids.size} results checked, every theorem of {resultsNamespace} before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type, every proposition, predicate or set that a hypothesis takes a variable of the result; every result takes something from a source or states an instance of a structure of the postulates; each of the {derivedAll.size} derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above {numeralBound}, in its statement or in a definition under it, but for those that state an instance: {listed named}; the largest whole number that the others name is {largest}, in {largestAt}"
   logInfo m!"{String.intercalate "\n" all.toList}"
 
 end Register.Premises

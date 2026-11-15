@@ -8,8 +8,19 @@ the statement of the theorem that uses it, and so is the thesis of the paper whe
 that the energy inside the horizon is the strings' and nothing else's (`hin` of
 `Reg.vacuum_share`; Postulate 1's first sentence, every physical quantity defined by qubits,
 `Sources.P1.energy_inside_strings`), that a body's energy is held by the strings that carry its
-information (`Sources.P1.energy_in_carriers`), and that the body's share at a string enters as an
-amplitude (`Sources.P1.carriers_by_amplitude`).  `Qubit.lean` holds the quantum mechanics of one qubit
+information (`Sources.P1.energy_in_carriers`).  So are the paper's applications of Postulate 1 to
+a body's share at a string: that the share enters as an amplitude, in units of the matter a
+string holds on average (`Sources.P1.share_amplitude`), that it reaches the string in equal
+parts, one per tick for each of the string's `L` bits, which add as amplitudes
+(`Sources.P1.share_in_parts`), and that the string carries the body's information when its global
+phase holds against the share, whatever the turn of its free tick
+(`Sources.P1.carriers_hold_phase`).  From the last two and the spread of the strings' energies
+the files derive the rule of Sec. IV.C that they took as a premise up to v18-68
+(`Main.carriers_exact`, with `Law.steady_phase_all_turns`, `Reg.carriers_fraction` and
+`Reg.carriers_rule_iff`); its leading order in `1/L` is a named
+step with its error bounded (`Sources.Approx.carriers_leading`, `Main.carriers_leading_order`,
+`Main.law_bounds`), and the namespace `Sources.Open` holds no premise.  `Qubit.lean` holds the quantum
+mechanics of one qubit
 that the energy of a free string and the bit per ring rest on: the two outcomes of a free string's
 qubit are its two senses, and the free tick keeps each string of one sense up to one and the same
 phase (the field `hsense` of `Qubit.Tick`, Sec. II's sentence: the shift leaves a string of one
@@ -553,8 +564,40 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Law.gibbsMean_eq
 #print axioms Register.Law.gibbsLadder_eq
 #print axioms Register.Law.gibbsLadder_within_step
+#print axioms Register.Law.gibbsAbove_eq
+#print axioms Register.Law.keepsPhase
+#print axioms Register.Law.steady_phase_iff
+#print axioms Register.Law.keepsPhase_add_turns
+#print axioms Register.Law.steady_phase_requires
+#print axioms Register.Law.near_whole_turn_iff
+#print axioms Register.Law.steady_phase_all_turns
+#print axioms Register.Law.steady_phase_iff_turns
+#print axioms Register.Law.steady_phase_iff_turns_nat
+#print axioms Register.Law.phase_ranges
+#print axioms Register.Law.measure_Icc_of_above
+#print axioms Register.Law.gibbs_measure_exists
+#print axioms Register.Law.whole_turns_sum
+#print axioms Register.Law.range_fractions
+#print axioms Register.Law.phase_fraction
+#print axioms Register.Law.arcsin_bounds
+#print axioms Register.Law.exponent_bounds
+#print axioms Register.Law.first_range_bounds
+#print axioms Register.Law.inv_sqrt_le
+#print axioms Register.Law.first_range_leading_order
+#print axioms Register.Law.whole_turns_le
+#print axioms Register.Law.whole_turns_bounds
+#print axioms Register.Law.fraction_bounds
+#print axioms Register.Law.fraction_leading_order
+#print axioms Register.Law.law_bounds
 #print axioms Register.Reg.string_energy
 #print axioms Register.Reg.fill_fraction
+#print axioms Register.Reg.threshold_from_spread
+#print axioms Register.Reg.phase_all_turns
+#print axioms Register.Reg.fraction_above_turn
+#print axioms Register.Reg.carriers_fraction
+#print axioms Register.Reg.carriers_rule_iff
+#print axioms Register.Reg.threshold_bounds
+#print axioms Register.Reg.carriers_model
 #print axioms Register.Reg.law
 #print axioms Register.Reg.law_scale_mean
 #print axioms Register.Reg.scale_over_time
@@ -713,7 +756,10 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Main.temperature_led
 #print axioms Register.Main.carriers_share
 #print axioms Register.Main.fill_fraction
+#print axioms Register.Main.carriers_exact
+#print axioms Register.Main.carriers_leading_order
 #print axioms Register.Main.galactic_law
+#print axioms Register.Main.law_bounds
 #print axioms Register.Main.near_limit
 #print axioms Register.Main.deep_limit
 #print axioms Register.Main.tully_fisher

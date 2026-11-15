@@ -150,11 +150,23 @@ The energy of a string (`Carriers.lean`, `Cosmo.lean`):
   `Sources.Thermo.equipartition`), so `a = g_N/b` (`Carriers.share_acceleration`); the body's
   energy per string of the sphere, in units of the matter a string holds on average, is `f = g_N/a₀` with
   `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)` (`Carriers.fill_fraction`); a string that carries the body's
-  information is one of its qubits, so the share enters as the amplitude `√f` (`hb`,
-  `Sources.P1.carriers_by_amplitude`), and the threshold of a string, a positive quantity
-  with one qubit as its only scale, is exponential with mean one by maximum entropy (`hME`,
-  `Sources.Thermo.max_entropy_threshold`), so the carriers are the fraction `1 − e^{−√f}` and
-  `a = g_N/(1 − e^{−√(g_N/a₀)})` (`Carriers.law`, `Carriers.radial_acceleration_relation`).
+  information is one of its qubits, so the share enters as the amplitude `h = √f`
+  (`Sources.P1.share_amplitude`); the share reaches a string in equal parts, one per tick for
+  each of the string's `L` bits, so each tick adds the amplitude `h/L`
+  (`Sources.P1.share_in_parts`); and the string carries the body's information when its global
+  phase holds against the share, whatever the turn of its free tick
+  (`Sources.P1.carriers_hold_phase`).  The phase holds where that turn lies within
+  `arcsin(h/L)` of a whole number of turns: up to the energy `(ℏ/t_c) arcsin(h/L)`, and within
+  that energy of `2πkℏ/t_c` for a whole number `k ≥ 1` (`Carriers.steady_phase_all_turns`,
+  `Carriers.phase_all_turns`).  With the Gibbs spread of the strings' energies the carriers are
+  the fraction `(1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))`
+  (`Carriers.carriers_fraction`, `Main.carriers_exact`), which is
+  `1 − e^{−√f}` to leading order in `1/L` (`Sources.Approx.carriers_leading`,
+  `Main.carriers_leading_order`), and at that order
+  `a = g_N/(1 − e^{−√(g_N/a₀)})` (`Carriers.law`, `Carriers.radial_acceleration_relation`).  Up
+  to v18-68 the files took the carriers as a premise, the strings whose threshold the amplitude
+  `√f` exceeds (`Sources.P1.carriers_by_amplitude`), and the threshold of a string as
+  exponential with mean one by maximum entropy (`Sources.Thermo.max_entropy_threshold`).
 
 ## The readings of earlier versions, derived
 

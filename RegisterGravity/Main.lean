@@ -18,8 +18,18 @@ the manifold's geometry, mathematics cited (`Geometry.`), a condition that defin
 the quantity the result treats (`Condition.`), a result derived here from those (`Derived.`,
 each with its own theorem below, or that theorem at every time), a step at leading order in `1/L`
 whose exact form a theorem below
-derives (`Approx.`), or the units the results are stated in (`Units.`); no premise is listed as open
-(`Open.`).  The gates of Sec. IV.A, the paper's input from quantum mechanics, are the premise
+derives (`Approx.`), the units the results are stated in (`Units.`), or a premise that no source
+states and the files do not derive, listed as open (`Open.`), a namespace that holds none.  The
+rule of Sec. IV.C by which a string carries a body's information, which the files up to v18-68
+took as a premise (`P1.carriers_by_amplitude`), with the distribution of a string's threshold as
+a premise of thermodynamics (`Thermo.max_entropy_threshold`), is derived in `carriers_exact`.  Its premises are the share's
+equal parts, one per tick for each of the string's `L` bits (`P1.share_in_parts`), the rule that
+a string carries when its global phase holds against the share, whatever the turn of its free
+tick (`P1.carriers_hold_phase`), and the spread of the strings' energies
+(`Thermo.energies_thermal`).  `galactic_law` and `scale_mean` take the rule to leading order in
+`1/L` (`Approx.carriers_leading`), with the amplitude of the share (`P1.share_amplitude`), and
+`carriers_leading_order` and `law_bounds` bound that step.  The gates of Sec. IV.A, the paper's
+input from quantum mechanics, are the premise
 of `return_bound`.
 The proofs apply
 the theorems of the other files, with short arguments joining them.
@@ -479,8 +489,8 @@ radius of that horizon. -/
 theorem string_energy (H : Horizon L) (R : Reg) (G Λ rh T : ℝ)
     (hdS : Derived.deSitter_horizon R G Λ)
     (hrh : Condition.horizon_radius R G Λ rh) (I1 : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) T)
-    (τ : H.Loop → Qubit.Tick L) (Es : H.Loop → ℝ)
-    (hGibbs : Thermo.energies_thermal R T ((∑ l, Es l) / Fintype.card H.Loop))
+    (τ : H.Loop → Qubit.Tick L) (Es : H.Loop → ℝ) (above : ℝ → ℝ)
+    (hGibbs : Thermo.energies_thermal R T ((∑ l, Es l) / Fintype.card H.Loop) above)
     (hEs : P1.string_energies H R τ Es) :
     (∑ l, Es l) / Fintype.card H.Loop = R.kB * T ∧
     (∑ l, Es l) / Fintype.card H.Loop = R.ℏ / (R.L * R.tc) ∧
@@ -489,7 +499,7 @@ theorem string_energy (H : Horizon L) (R : Reg) (G Λ rh T : ℝ)
       (∑ l, φ l) / Fintype.card H.Loop = 1 / R.L) ∧
     R.ln2 * (R.kB * T) = R.EΛ / R.Rhor ∧ 0 < (1 - R.ln2) * (R.kB * T) := by
   have I1' := R.thermal_lap G Λ rh T hdS hrh.1 hrh.2 I1
-  have hE : (∑ l, Es l) / Fintype.card H.Loop = R.kB * T := R.string_energy _ T hGibbs I1'
+  have hE : (∑ l, Es l) / Fintype.card H.Loop = R.kB * T := R.string_energy _ T hGibbs.1 I1'
   refine ⟨hE, hE.trans I1', ⟨fun l => Es l * R.tc / R.ℏ, fun l => hEs l, ?_⟩,
     (R.string_split T (R.kB * T) I1' rfl).1, (R.string_split T (R.kB * T) I1' rfl).2.2⟩
   -- the mean decrease of the global phase per tick is the mean energy times `t_c/ℏ`: `1/L`
@@ -519,13 +529,13 @@ theorem vacuum_share (H : Horizon L) (R : Reg)
     (hRL : Condition.same_L R L) (G Λ rh T Ein : ℝ)
     (hJ : Derived.jacobson_G_exact R G) (hdS : Derived.deSitter_horizon R G Λ)
     (hrh : Condition.horizon_radius R G Λ rh) (I1 : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) T)
-    (Es : H.Loop → ℝ)
-    (hGibbs : Thermo.energies_thermal R T ((∑ l, Es l) / Fintype.card H.Loop))
+    (Es : H.Loop → ℝ) (above : ℝ → ℝ)
+    (hGibbs : Thermo.energies_thermal R T ((∑ l, Es l) / Fintype.card H.Loop) above)
     (hin : P1.energy_inside_strings H Ein Es) :
     R.EMS G Λ R.RL / Ein = R.ln2 := by
   have hL : 4 ≤ L := H.four_le
   have I1' := R.thermal_lap G Λ rh T hdS hrh.1 hrh.2 I1
-  have hE := R.string_energy _ T hGibbs I1'
+  have hE := R.string_energy _ T hGibbs.1 I1'
   exact R.vacuum_share H hL hRL G Λ T Ein hJ hdS I1' Es hE hin
 
 /-- **The count's horizon is a quarter lap out** (Secs. IV.C and IV.D).  The count's horizon, `x`
@@ -625,17 +635,21 @@ theorem matter_geodesic (M : Einstein.Spacetime) (p : M.Pt) (u A : Fin 4 → ℝ
   exact Einstein.flow_geodesic hu hρ hD hleib.2 (Einstein.eq_zero_of_timelike _ (hfirst p))
 
 /-- **Light moves on null geodesics** (Sec. III): where light passes, the direction `k` of its ray
-is null (restated from the premise), and its change along the ray is a multiple of `k` itself, so
-the rays are null geodesics.
+is null (restated from the premise), and, for light whose energy moves with it along its ray, its
+change along the ray is a multiple of `k` itself, so the rays are null geodesics.
 Its stress tensor is `ρ k_a k_b` (`Einstein.null_dust_of_current`, from the energy current along
 the ray for every observer), and the first law makes the rays geodesics (`Einstein.null_geodesic`).
-Sources: light crossing a cell in one tick in every direction, with its energy moving with it
-(Postulate 1, with Postulate 2's last sentence; `P1.light`); the first law for every observer
-(thermodynamics); the Leibniz rule for the flow (Lorentzian geometry). -/
+Sources: light crossing a cell in one tick in every direction (Postulate 1, with Postulate 2's last
+sentence; `P1.light`); the first law for every observer (thermodynamics); the Leibniz rule for the
+flow (Lorentzian geometry); and the condition: light whose energy moves with it along its ray, for
+every observer (`Condition.light_flow`), the case the result treats, as `matter_geodesic` treats
+dust. -/
 theorem light_rays (M : Einstein.Spacetime) (p : M.Pt) (k A : Fin 4 → ℝ)
-    (hlight : P1.light M p k) (hfirst : Thermo.first_law_local M) (hleib : Geometry.leibniz M p k A) :
+    (hlight : P1.light k) (hflow : Condition.light_flow M p k) (hfirst : Thermo.first_law_local M)
+    (hleib : Geometry.leibniz M p k A) :
     Einstein.IsNull k ∧ ∃ l : ℝ, A = l • Matrix.mulVec Einstein.eta k := by
-  obtain ⟨hnull, hk, hT0, hcur⟩ := hlight
+  obtain ⟨hnull, hk⟩ := hlight
+  obtain ⟨hT0, hcur⟩ := hflow
   refine ⟨hnull, ?_⟩
   obtain ⟨ρ, hρ⟩ := Einstein.null_dust_of_current (Einstein.symmPart_isSymm _)
     (Einstein.eta_mulVec_ne_zero hk) fun u hu => (hcur u hu).imp fun _ hs => hs
@@ -1390,21 +1404,25 @@ Gibbs distribution at the horizon's temperature (`hGibbs`; `Carriers.string_ener
 `f = g_N/a₀` with `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`, Eq. (f).  The second part is the definition of
 `a₀` and takes no premise.  The third part: the body's energy per string exceeds the matter a
 string holds on average exactly where `g_N > a₀` ("Nearer the body `f > 1`, and farther out
-`f < 1`").  Sources: the strings' energies spread at the horizon's temperature,
-and the thermal horizons (thermodynamics); the constant `Λ = 3/R_Λ²` (`Derived`); and the
+`f < 1`").  The fourth and fifth parts: the amplitude of the body's share against a string's one
+whole qubit, `h = √(E/u)` (`hh`), is `h = √(g_N/a₀)`, and it is positive.  Sources: the strings'
+energies spread at the horizon's temperature,
+and the thermal horizons (thermodynamics); the amplitude of the body's share, in units of the
+matter a string holds on average (Postulate 1); the constant `Λ = 3/R_Λ²` (`Derived`); and the
 conditions: `g_N > 0`, `r_h` the radius of the horizon. -/
-theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs : ℝ) (hgN : Condition.pos gN)
+theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ → ℝ)
+    (hgN : Condition.pos gN)
     (hdS : Derived.deSitter_horizon R G Λ) (hrh : Condition.horizon_radius R G Λ rh)
     (I1N : Thermo.horizon_thermal R gN TN) (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
-    (hGibbs : Thermo.energies_thermal R TdS εs) :
+    (hGibbs : Thermo.energies_thermal R TdS εs above) (hh : P1.share_amplitude R h TN εs) :
     Derived.fill_fraction R gN TN εs ∧
     R.a0 = (1 - R.ln2) * R.c ^ 2 / (2 * R.ln2 * R.RL) ∧
-    (R.a0 < gN ↔ R.matter εs < 2 * R.kB * TN * R.ln2) := by
+    (R.a0 < gN ↔ R.matter εs < 2 * R.kB * TN * R.ln2) ∧
+    h = Real.sqrt (gN / R.a0) ∧ 0 < h := by
   have I1' := R.thermal_lap G Λ rh TdS hdS hrh.1 hrh.2 I1dS
-  have hεs := R.string_energy εs TdS hGibbs I1'
+  have hεs := R.string_energy εs TdS hGibbs.1 I1'
   have hff : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 :=
     R.fill_fraction gN TN TdS εs hgN I1N I1' hεs
-  refine ⟨hff, rfl, ?_⟩
   have hu : 0 < R.matter εs := by
     reg_facts R
     have hm : 0 < 1 - R.ln2 := by linarith [R.ln2_lt_one]
@@ -1413,27 +1431,162 @@ theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs : ℝ) (hgN : Condition.p
     unfold Reg.matter
     rw [hεs]
     exact mul_pos hm hTpos
-  rw [← one_lt_div R.a0_pos, ← hff, one_lt_div hu]
+  -- the amplitude of the share, `√(E/u)`, is `√(g_N/a₀)`
+  have hh' : h = Real.sqrt (gN / R.a0) := by
+    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    rw [h1, hff]
+  refine ⟨hff, rfl, ?_, hh', ?_⟩
+  · rw [← one_lt_div R.a0_pos, ← hff, one_lt_div hu]
+  · rw [hh']
+    exact Real.sqrt_pos.2 (div_pos hgN R.a0_pos)
 
-/-- **The galactic law, Eq. (law)** (Sec. IV.C), from its sources and nothing else: about all the
+/-- **The strings that carry a body's information: the rule, derived** (Sec. IV.C).  The body's
+share has the amplitude `h` against a string's one whole qubit, with `0 < h < L`.  It reaches the
+string in equal parts, one per tick for each of the string's bits, and the parts add as
+amplitudes (`hparts`).  A largest ring has `L` cells (`Horizon.card_ring`), so each tick adds the
+amplitude `ε = h/L`: the second part.  A free tick turns the global phase of a string of energy
+`E` by `Et_c/ℏ`, and the string carries the body's information when its phase holds against the
+share, whatever that turn is (`hcarry`).  For every turn the phase holds exactly when the turn
+lies within `arcsin(h/L)` of a whole number of turns (`Law.steady_phase_all_turns`,
+`Reg.phase_all_turns`): the third part.  So the carriers are the strings of energy at most
+`E_thr = (ℏ/t_c) arcsin(h/L)`, the first range, and the strings of energy within `E_thr` of
+`2πkℏ/t_c` for a whole number `k ≥ 1`.  The first range's threshold `E_thr` lies between
+`h k_BT_dS` and `h k_BT_dS/√(1 − (h/L)²)` (`Reg.threshold_bounds`): the fourth and fifth parts.
+The strings' energies are spread at the horizon's temperature (`hGibbs`), whose thermal energy
+is `ℏ/(Lt_c)` (`I1dS`, `Reg.thermal_lap`), and `b` is the fraction that every distribution of
+the energies with that spread gives to the carriers (`hcarry`).  Such a distribution exists
+(`Law.gibbs_measure_exists`), and it gives the carriers the fraction
+`b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))`
+(`Reg.carriers_rule_iff`): the first part.  That fraction is at least `1 − e^{−h}`, Eq. (b), and
+at most `(1 − e^{−h/√(1 − (h/L)²)})(1 + 4e^{−3πL/2})` (`Law.fraction_bounds`): the sixth and
+seventh parts.  The eighth and ninth parts: `b` exceeds the first range's fraction
+`1 − e^{−L arcsin(h/L)}` by the fraction of the strings whose turn lies near one or more whole
+turns (`Law.range_fractions`), which is positive and below `e^{−3πL/2}`
+(`Law.whole_turns_bounds`).  Sec. IV.C: "The exceptions are the strings that a tick turns to
+within `arcsin(h/L)` of one or more whole turns."  "A whole turn is no turn, so they carry the
+body's information too; they are a fraction below `e^{−3πL/2}` of the strings."  The seventh
+part uses `L ≥ 1`, which the count's `4 ≤ L` gives (`Horizon.four_le`).  Up to v18-68 the files
+took the carriers as a premise, the strings whose threshold the amplitude of the share exceeds
+(`P1.carriers_by_amplitude`), with the threshold's distribution as a premise
+(`Thermo.max_entropy_threshold`); `carriers_leading_order` bounds the step from the derived rule
+to Eq. (b).  Sources: the share's parts per tick and the rule of the phase (Postulate 1, with
+Sec. II's definition of energy); the strings' energies spread at the horizon's temperature, and
+the horizon thermal at the temperature of its period (thermodynamics); the constant
+`Λ = 3/R_Λ²` (`Derived`); Sec. II's largest ring of `L` cells and Postulate 2's fourth clause,
+which gives `4 ≤ L` (the structure `Horizon`); and the conditions: `R.L = L`, `0 < h < L`, `r_h`
+the radius of the horizon. -/
+theorem carriers_exact (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
+    (G Λ rh TdS εs h ε b : ℝ) (above : ℝ → ℝ) (hrange : Condition.share_below_L R h)
+    (hdS : Derived.deSitter_horizon R G Λ) (hrh : Condition.horizon_radius R G Λ rh)
+    (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
+    (hGibbs : Thermo.energies_thermal R TdS εs above)
+    (hparts : P1.share_in_parts H h ε) (hcarry : P1.carriers_hold_phase R b ε above) :
+    Derived.carriers_exact R b h ∧ ε = h / R.L ∧
+    (∀ E : ℝ, 0 ≤ E → (Law.keepsPhase (E * R.tc / R.ℏ) ε ↔
+      ∃ k : ℕ, |E * R.tc / R.ℏ - 2 * Real.pi * k| ≤ Real.arcsin (h / R.L))) ∧
+    h * (R.kB * TdS) ≤ R.ℏ / R.tc * Real.arcsin (h / R.L) ∧
+    R.ℏ / R.tc * Real.arcsin (h / R.L) ≤ h * (R.kB * TdS) / Real.sqrt (1 - (h / R.L) ^ 2) ∧
+    1 - Real.exp (-h) ≤ b ∧
+    b ≤ (1 - Real.exp (-(h / Real.sqrt (1 - (h / R.L) ^ 2)))) *
+      (1 + 4 * Real.exp (-(3 * Real.pi / 2 * R.L))) ∧
+    0 < b - (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) ∧
+    b - (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) < Real.exp (-(3 * Real.pi / 2 * R.L)) := by
+  obtain ⟨hh0, hhL⟩ := hrange
+  have hLpos := R.L_pos
+  -- the count's `4 ≤ L`
+  have hL1 : (1 : ℝ) ≤ R.L := by
+    have hL' : 4 ≤ L := H.four_le
+    have hRL' : R.L = L := hRL
+    have h4 : (4 : ℝ) ≤ (L : ℝ) := by exact_mod_cast hL'
+    rw [hRL']
+    linarith
+  have I1' := R.thermal_lap G Λ rh TdS hdS hrh.1 hrh.2 I1dS
+  -- a largest ring has `L` cells, so each tick adds the amplitude `h/L`
+  have hε : ε = h / R.L := by
+    obtain ⟨l⟩ := H.exists_ring
+    have h1 : ((Fintype.card {x // x ∈ H.cells l} : ℕ) : ℝ) * ε = h := hparts l
+    have hc : Fintype.card {x // x ∈ H.cells l} = L := H.card_ring l
+    have hRL' : R.L = L := hRL
+    rw [hc, ← hRL'] at h1
+    rw [← h1]
+    field_simp
+  have hε0 : 0 < ε := by rw [hε]; exact div_pos hh0 hLpos
+  have hε1 : ε < 1 := by rw [hε, div_lt_one hLpos]; exact hhL
+  -- the rule of the phase over every turn, with the spread of the strings' energies
+  have hb : b = (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) *
+      (1 + (Real.exp (R.L * Real.arcsin (h / R.L)) + 1) /
+        (Real.exp (2 * Real.pi * R.L) - 1)) := by
+    have h1 := (R.carriers_rule_iff TdS b ε above hε0 hε1 I1' hGibbs.2).1 hcarry
+    rwa [hε] at h1
+  -- the carriers at every turn
+  have hturns : ∀ E : ℝ, 0 ≤ E → (Law.keepsPhase (E * R.tc / R.ℏ) ε ↔
+      ∃ k : ℕ, |E * R.tc / R.ℏ - 2 * Real.pi * k| ≤ Real.arcsin (h / R.L)) := by
+    intro E hE
+    rw [← hε]
+    exact (R.phase_all_turns ε E hε0 hε1 hE).1
+  obtain ⟨ht1, ht2⟩ := R.threshold_bounds TdS h I1' hh0.le hhL
+  obtain ⟨hb1, hb2⟩ := Law.fraction_bounds R.L h b hL1 hh0.le hhL hb
+  obtain ⟨-, hw1, hw2⟩ := Law.whole_turns_bounds R.L h b hLpos hh0 hb
+  exact ⟨hb, hε, hturns, ht1, ht2, hb1, hb2, hw1, hw2⟩
+
+/-- **The carriers' fraction at leading order** (Sec. IV.C, Eq. (b)): the exact fraction of
+`carriers_exact`, `b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))`
+(`hb`), is at least `1 − e^{−h}`, the fraction of Eq. (b); and where `h ≤ L/2` it exceeds
+`1 − e^{−h}` by at most the fraction `(h/L)² + 5e^{−3πL/2}` of it, and by at most
+`h((h/L)² + 5e^{−3πL/2})` (`Law.fraction_leading_order`).  Eq. (b) is the paper's step at leading
+order (Sec. IV.C: "To leading order in `1/L` the share can therefore turn the string's global
+phase by at most `h/L` per tick."), and this result bounds its error.  The term `(h/L)²` bounds what the
+step changes in the first range's threshold, and the term `5e^{−3πL/2}` bounds the strings whose
+turn lies near one or more whole turns, which the step leaves out.  So much the step
+`Approx.carriers_leading` changes `b`, as `G_leading_order` bounds what the step
+`Approx.count_density` changes in `G`.  Sources: the carriers' exact fraction (`Derived`,
+`carriers_exact`); Postulate 2's fourth clause, which gives the count's `4 ≤ L`
+(`Horizon.four_le`); and the conditions: `R.L = L`, `h > 0` and `h/L ≤ 1/2`. -/
+theorem carriers_leading_order (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
+    (b h : ℝ) (hh : Condition.pos h) (hhalf : Condition.at_most_half (h / R.L))
+    (hb : Derived.carriers_exact R b h) :
+    0 ≤ b - (1 - Real.exp (-h)) ∧
+    b - (1 - Real.exp (-h)) ≤
+      ((h / R.L) ^ 2 + 5 * Real.exp (-(3 * Real.pi / 2 * R.L))) * (1 - Real.exp (-h)) ∧
+    b - (1 - Real.exp (-h)) ≤
+      h * ((h / R.L) ^ 2 + 5 * Real.exp (-(3 * Real.pi / 2 * R.L))) := by
+  have hh0 : 0 < h := hh
+  have hLpos := R.L_pos
+  -- the count's `4 ≤ L`
+  have hL1 : (1 : ℝ) ≤ R.L := by
+    have hL' : 4 ≤ L := H.four_le
+    have hRL' : R.L = L := hRL
+    have h4 : (4 : ℝ) ≤ (L : ℝ) := by exact_mod_cast hL'
+    rw [hRL']
+    linarith
+  have hhL : h ≤ R.L / 2 := by
+    have h1 : h / R.L ≤ 1 / 2 := hhalf
+    rw [div_le_iff₀ hLpos] at h1
+    linarith
+  exact Law.fraction_leading_order R.L h b hL1 hh0.le hhL hb
+
+/-- **The galactic law, Eq. (law)** (Sec. IV.C), from its sources, with the carriers' fraction at
+leading order in `1/L`: about all the
 mass `M` inside a sphere of radius `r`, the acceleration is `a = g_N/(1 − e^{−√(g_N/a₀)})` with
 `g_N = GM/r²` and `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`, `R_Λ = √(3/Λ)`; Newton's equal share is
 Eq. (newton) at `g_N`; and a string's share is `κT` with `κ = 2k_B ln 2`
 (`Reg.radial_acceleration_relation`).  Sources: `G` (`Derived`, Jacobson); the constant
 `Λ = 3/R_Λ²` (`Derived`); the thermal horizons, the cosmological one and those of `g_N` and of `a`
-(thermodynamics); the strings' energies spread at the horizon's temperature (thermodynamics); a
-body's energy held by its carriers, and the carriers as the strings whose threshold the amplitude
-exceeds (Postulate 1); maximum entropy for the threshold and equipartition (thermodynamics); and
-the conditions:
+(thermodynamics); a body's energy held by its carriers (Postulate 1); the strings' energies spread
+at the horizon's temperature, for the mean and for the fraction above an energy, and equipartition
+(thermodynamics); the amplitude of the body's share, in units of the matter a string holds on
+average (Postulate 1, `hh`); the carriers as the strings of energy at most `hℏ/(Lt_c)`, the
+leading order in `1/L` of the rule that `carriers_exact` derives (`Approx`, `hb`;
+`carriers_leading_order` and `law_bounds` bound the step); and the conditions:
 `M, r, a > 0`, `r_h` the radius of the horizon, the carrier fraction. -/
-theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs b Ncar εc κ : ℝ)
-    (surv : ℝ → ℝ) (hM : Condition.pos M) (hr : Condition.pos r) (ha : Condition.pos a)
+theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : ℝ)
+    (above : ℝ → ℝ) (hM : Condition.pos M) (hr : Condition.pos r) (ha : Condition.pos a)
     (hJ : Derived.jacobson_G R G) (hdS : Derived.deSitter_horizon R G Λ)
     (hrh : Condition.horizon_radius R G Λ rh)
     (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
     (I1N : Thermo.horizon_thermal R (G * M / r ^ 2) TN) (I1a : Thermo.horizon_thermal R a Ta)
-    (hGibbs : Thermo.energies_thermal R TdS εs)
-    (hME : Thermo.max_entropy_threshold surv) (hb : P1.carriers_by_amplitude R b TN εs surv)
+    (hGibbs : Thermo.energies_thermal R TdS εs above)
+    (hh : P1.share_amplitude R h TN εs) (hb : Approx.carriers_leading R b h above)
     (hcar : P1.energy_in_carriers R M Ncar εc) (hNcar : Condition.carrier_fraction R b Ncar r)
     (hκ : Thermo.equipartition κ εc Ta) (hκN : Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN) :
     Derived.galactic_law R a (G * M / r ^ 2) ∧
@@ -1446,8 +1599,79 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs b Ncar εc κ : ℝ)
   have hκN' : M * R.c ^ 2 = R.Ns r * (κ * TN) := by
     have h : M * R.c ^ 2 / R.Ns r = κ * TN := hκN
     rw [← h]; field_simp
-  exact R.radial_acceleration_relation G hJ Λ hdS TdS I1' εs hGibbs M r hM hr TN I1N a Ta
-    ha I1a surv hME b hb Ncar εc κ hcar hNcar hκ hκN'
+  -- the threshold's survival function: to leading order in `1/L` a string's phase does not hold
+  -- against a share of amplitude `x` when its energy exceeds `xℏ/(Lt_c)`, and the Gibbs spread
+  -- makes it `e^{−x}`
+  have hME : ∀ x, 0 ≤ x → (fun y => above (y * (R.ℏ / (R.L * R.tc)))) x = Real.exp (-x) :=
+    R.threshold_from_spread TdS above I1' hGibbs.2
+  -- the carriers at leading order, with the amplitude of the share
+  have hb' : b = 1 - above (Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) *
+      (R.ℏ / (R.L * R.tc))) := by
+    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h1 : b = 1 - above (h * (R.ℏ / (R.L * R.tc))) := hb
+    rw [h0] at h1
+    exact h1
+  exact R.radial_acceleration_relation G hJ Λ hdS TdS I1' εs hGibbs.1 M r hM hr TN I1N a Ta
+    ha I1a (fun y => above (y * (R.ℏ / (R.L * R.tc)))) hME b hb' Ncar εc κ hcar hNcar hκ hκN'
+
+/-- **The law with the carriers' exact fraction, and Eq. (law) as its leading order**
+(Sec. IV.C).  The acceleration is `a = g_N/b`, Eq. (share) (`hab`, `carriers_share`); the
+carriers are the exact fraction
+`b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))` (`hb`,
+`carriers_exact`); and the amplitude of the share is `h = √(g_N/a₀)` (`hh` with Eq. (f), `hf`).
+So the acceleration is `g_N` over that fraction at `h = √(g_N/a₀)`: the first part.  It is at
+least `g_N/((1 − e^{−h/√(1 − (h/L)²)})(1 + 4e^{−3πL/2}))` and at most `g_N/(1 − e^{−h})`, the
+acceleration of Eq. (law): the second and third parts (`Law.law_bounds`).  The fourth part:
+where `h ≤ L/2` it falls short of the acceleration of Eq. (law) by at most the fraction
+`(h/L)² + 5e^{−3πL/2}` of it.  So much the step `Approx.carriers_leading` changes the law that
+`galactic_law` states.  The bounds are those of the carriers' fraction alone: `a = g_N/b` is
+taken as `carriers_share` derives it, with `G` from the count at leading order
+(`Derived.jacobson_G`).  Sources: the amplitude of the body's share (Postulate 1); Eq. (f), the
+carriers' exact fraction and `a = g_N/b` (`Derived`); Postulate 2's fourth clause, which gives
+the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L` and `0 < h < L`. -/
+theorem law_bounds (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
+    (gN a b h TN εs : ℝ) (hrange : Condition.share_below_L R h)
+    (hh : P1.share_amplitude R h TN εs) (hf : Derived.fill_fraction R gN TN εs)
+    (hb : Derived.carriers_exact R b h) (hab : Derived.share_acceleration a gN b) :
+    a = gN / ((1 - Real.exp (-(R.L * Real.arcsin (Real.sqrt (gN / R.a0) / R.L)))) *
+      (1 + (Real.exp (R.L * Real.arcsin (Real.sqrt (gN / R.a0) / R.L)) + 1) /
+        (Real.exp (2 * Real.pi * R.L) - 1))) ∧
+    gN / ((1 - Real.exp (-(Real.sqrt (gN / R.a0) /
+      Real.sqrt (1 - (Real.sqrt (gN / R.a0) / R.L) ^ 2)))) *
+        (1 + 4 * Real.exp (-(3 * Real.pi / 2 * R.L)))) ≤ a ∧
+    a ≤ gN / (1 - Real.exp (-Real.sqrt (gN / R.a0))) ∧
+    (Real.sqrt (gN / R.a0) / R.L ≤ 1 / 2 →
+      (1 - (Real.sqrt (gN / R.a0) / R.L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * R.L))) *
+        (gN / (1 - Real.exp (-Real.sqrt (gN / R.a0)))) ≤ a) := by
+  obtain ⟨hh0, hhL⟩ := hrange
+  -- the count's `4 ≤ L`
+  have hL1 : (1 : ℝ) ≤ R.L := by
+    have hL' : 4 ≤ L := H.four_le
+    have hRL' : R.L = L := hRL
+    have h4 : (4 : ℝ) ≤ (L : ℝ) := by exact_mod_cast hL'
+    rw [hRL']
+    linarith
+  -- the amplitude of the share is `√(g_N/a₀)`
+  have hh' : h = Real.sqrt (gN / R.a0) := by
+    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h2 : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
+    rw [h1, h2]
+  -- `g_N > 0`, since the amplitude is positive
+  have hgN : 0 < gN := by
+    have hpos : 0 < gN / R.a0 := by
+      by_contra hneg
+      push Not at hneg
+      rw [hh', Real.sqrt_eq_zero_of_nonpos hneg] at hh0
+      exact lt_irrefl 0 hh0
+    have h3 := mul_pos hpos R.a0_pos
+    rwa [div_mul_cancel₀ _ R.a0_pos.ne'] at h3
+  have hb' : b = (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) *
+      (1 + (Real.exp (R.L * Real.arcsin (h / R.L)) + 1) /
+        (Real.exp (2 * Real.pi * R.L) - 1)) := hb
+  have hab' : a = gN / b := hab
+  obtain ⟨h1, h2, h3⟩ := Law.law_bounds gN R.L h a b hgN hL1 hh0 hhL hb' hab'
+  rw [hh'] at h1 h2 h3 hb'
+  exact ⟨by rw [hab', hb'], h1, h2, h3⟩
 
 /-- **Near the body** (Sec. IV.C): with `h = √(g_N/a₀)`, the acceleration of the law, Eq. (law)
 (`hlaw`), exceeds Newton's by `g_N e^{−h}/(1 − e^{−h})`, more than `g_N e^{−h}`, and
@@ -1510,19 +1734,37 @@ theorem classical_share (a0 gN a b r : ℝ) (v : ℝ → ℝ) (hgN : Condition.p
     a = a0 ∧ v r ^ 2 = a0 * r :=
   Law.classical_limit a0 gN a b r (v r) hgN hb hab (hv r hr)
 
-/-- **The scale goes as the square of the threshold's mean** (Sec. IV.C): with the threshold
-exponential of mean `μ` (`Condition.threshold_mean`) in place of one qubit, the law keeps its form
-with the scale `μ²a₀`, so the measured scale fixes `μ`.  Sources: Postulate 1 for the carriers by
-amplitude; Eq. (f) and `a = g_N/b` (`Derived`); the conditions: `μ > 0` and the threshold's mean. -/
-theorem scale_mean (R : Reg) (gN a b μ TN εs : ℝ) (surv : ℝ → ℝ) (hμ : Condition.pos μ)
-    (hME : Condition.threshold_mean μ surv) (hb : P1.carriers_by_amplitude R b TN εs surv)
+/-- **The scale goes as the square of the threshold's mean** (Sec. IV.C): with the strings'
+energies spread at `μ` times the horizon's thermal energy (`Condition.threshold_mean`), so that the
+threshold has the mean `μ` in place of one qubit, the law keeps its form with the scale `μ²a₀`, so
+the measured scale fixes `μ`.  The result is stated at leading order in `1/L`, as `galactic_law`
+is.  Sources: Eq. (f) and `a = g_N/b` (`Derived`); the amplitude of the body's share
+(Postulate 1, `hh`); the carriers as the strings of energy at most `hℏ/(Lt_c)`, the rule of
+`carriers_exact` at leading order in `1/L` (`Approx`, `hb`); the conditions: `μ > 0` and the
+threshold's mean. -/
+theorem scale_mean (R : Reg) (gN a b h μ TN εs : ℝ) (above : ℝ → ℝ) (hμ : Condition.pos μ)
+    (hME : Condition.threshold_mean R μ above) (hh : P1.share_amplitude R h TN εs)
+    (hb : Approx.carriers_leading R b h above)
     (hf : Derived.fill_fraction R gN TN εs) (hab : Derived.share_acceleration a gN b) :
     a = gN / (1 - Real.exp (-Real.sqrt (gN / (μ ^ 2 * R.a0)))) := by
-  have hb' : b = 1 - surv (Real.sqrt (gN / R.a0)) := by
-    have h1 : b = 1 - surv (Real.sqrt (2 * R.kB * TN * R.ln2 / ((1 - R.ln2) * εs))) := hb
-    have h2 : 2 * R.kB * TN * R.ln2 / ((1 - R.ln2) * εs) = gN / R.a0 := hf
-    rw [h1, h2]
-  exact R.law_scale_mean gN a b μ hμ surv hME hb' hab
+  -- the threshold's survival function, `e^{−x/μ}` with the spread of `hME`
+  have hθ : 0 < R.ℏ / (R.L * R.tc) := by
+    reg_facts R
+    have htc : 0 < R.tc := by unfold Reg.tc; positivity
+    positivity
+  have hμ' : 0 < μ := hμ
+  have hsurv : ∀ x, 0 ≤ x →
+      (fun y => above (y * (R.ℏ / (R.L * R.tc)))) x = Real.exp (-x / μ) := by
+    intro x hx
+    show above (x * (R.ℏ / (R.L * R.tc))) = Real.exp (-x / μ)
+    rw [hME _ (mul_nonneg hx hθ.le), ← neg_mul, mul_div_mul_right _ _ hθ.ne']
+  have hb' : b = 1 - (fun y => above (y * (R.ℏ / (R.L * R.tc)))) (Real.sqrt (gN / R.a0)) := by
+    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h1 : b = 1 - above (h * (R.ℏ / (R.L * R.tc))) := hb
+    have h2 : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
+    rw [h0, h2] at h1
+    exact h1
+  exact R.law_scale_mean gN a b μ hμ' _ hsurv hb' hab
 
 /-- **The scale at every epoch, and `Λ` from it** (Secs. V and VI): with Jacobson's `G` and the
 constant `Λ = 3/R_Λ²`, `a₀ = (1 − ln 2)√π/((ln 2)^{3/2}L) · √(c⁷/ℏG)`, a fixed fraction of the Planck
@@ -2361,7 +2603,9 @@ end Register.Main
   Register.Main.coding_step Register.Main.repetition_code Register.Main.line_code
   Register.Main.massive_horizon Register.Main.black_hole_horizon
   Register.Main.temperature_led Register.Main.carriers_share Register.Main.fill_fraction
-  Register.Main.galactic_law Register.Main.near_limit Register.Main.deep_limit
+  Register.Main.carriers_exact Register.Main.carriers_leading_order
+  Register.Main.galactic_law Register.Main.law_bounds
+  Register.Main.near_limit Register.Main.deep_limit
   Register.Main.tully_fisher Register.Main.classical_share Register.Main.scale_mean
   Register.Main.scale
   Register.Main.push Register.Main.zero_gravity Register.Main.hubble Register.Main.G_drift

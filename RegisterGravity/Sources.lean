@@ -10,8 +10,23 @@ import RegisterGravity.Matter
 /-!
 # The sources: every premise of the paper's results, named by its source (Secs. II–VI)
 
-The paper derives its results from four sources and nothing else: the two postulates with the
-definitions of Sec. II, and the three that Sec. III lists beyond them.  These are thermodynamics;
+The paper derives its results from four sources: the two postulates with the definitions of
+Sec. II, and the three that Sec. III lists beyond them.  The files take no premise beyond them:
+the namespace `Open`, for a premise that no source states, holds none.  The rule of
+Sec. IV.C by which a string carries a body's information, which the files up to v18-68 took as a
+premise of Postulate 1 (`P1.carriers_by_amplitude`), with the distribution of a string's
+threshold as a premise of thermodynamics (`Thermo.max_entropy_threshold`), is derived
+(`Main.carriers_exact`).  Its inputs are two applications of Postulate 1 that Sec. IV.C makes,
+the spread of the strings' energies, and mathematics that the files prove (`Carriers.lean`).  The
+applications are the share's equal parts, one per tick for each of the string's `L` bits, which
+add as amplitudes (`P1.share_in_parts`), and the rule that a string carries the body's
+information when its global phase holds against the share, with the turn of a free tick that
+Sec. II's definition of energy gives, whatever that turn is (`P1.carriers_hold_phase`).  The
+spread is thermodynamics (`Thermo.energies_thermal`).  A third application of Postulate 1, the
+amplitude of the body's share in units of the matter a string holds on average
+(`P1.share_amplitude`), ties the amplitude `h` to the body where the law takes the rule.  The
+paper's Eq. (b) is the leading order of the derived rule in `1/L`, a named step
+(`Approx.carriers_leading`) whose error `Main.carriers_leading_order` bounds.  The three sources beyond the postulates are thermodynamics;
 quantum mechanics, which gives the gates of Sec. IV.A (namespace `QM`): a circuit acts on what
 the register holds as on any state, so the return above the ceiling is at most the probability
 that the random state gives the outcomes that remain (`Main.return_bound`), and the
@@ -77,12 +92,14 @@ definition named by its source, with the sentence of the paper it is quoted in i
 command `#premises` there checks, at build time, that every hypothesis of every result is one of
 them (or a side condition from the namespace `Condition`, a result derived from them in
 `Main.lean`, namespace `Derived`, a step at leading order whose exact form `Main.lean` derives,
-namespace `Approx`, or the units the results are stated in, namespace `Units`), and
+namespace `Approx`, the units the results are stated in, namespace `Units`, or a premise that no
+source states, listed as open, namespace `Open`, which holds none), and
 that every object a result speaks of has a type that `Premises.allowedObjects` allows.  So a premise that is not in this file cannot enter a result without failing the build.
 The command checks four things more.  Every result must take something from a source: a premise
 of the postulates (the namespaces `P1` and `P2`), of thermodynamics (`Thermo`), of quantum
 mechanics (`QM`) or of the cited geometry (`Geometry`), a derived statement, or an object of a
-structure of the list below that carries clauses of the postulates.  The one other kind of result takes nothing and states that such a
+structure of the list below that carries clauses of the postulates; an open premise is none of
+these.  The one other kind of result takes nothing and states that such a
 structure has an instance (`Main.register_in_band`).  Every derived statement must be the
 conclusion of a result that takes something from a source and whose own derived premises are
 concluded before it, or, by its definition, such a statement at every time.  And every theorem
@@ -184,28 +201,28 @@ quantity take in the files.
 * A **quantity to which another description assigns a value**, the manifold or thermodynamics,
   has the register's value, since the register defines it: `physical manifold register`, the two
   values are equal, a difference being a physical quantity not defined by qubits; the quantity may
-  be a number or a current.  Applied to the energy inside the horizon (`energy_inside_strings`),
+  be of any type.  Applied to the energy inside the horizon (`energy_inside_strings`),
   to the entropy of the cosmological horizon (`horizon_entropy`) and of a local horizon
-  (`local_entropy`), to the energy current of light (`light`), and to a body's energy
-  (`energy_in_carriers`); the second, the third and the fourth are written with `physical`, the
-  first and the last as the equation it unfolds to.
+  (`local_entropy`), and to a body's energy (`energy_in_carriers`); the second and the third are
+  written with `physical`, the first and the last as the equation it unfolds to.
 Space enters through Postulate 2's last sentence, which places the cells on the geodesics, and
 through `rings_along`: the geometry of space is a quantity, so a geodesic along which no ring runs
 would be a feature of a quantity not defined by qubits.  Light crossing a cell in one tick
-(`light`) is another sentence of Postulate 1, with the energy of light an application of the first.
-Which cited definition is the manifold's value of a quantity, the Misner–Sharp energy, the entropy
-of Clausius' relation and the energy current `T_ab u^b`, the sources of the geometry and of
-thermodynamics state; which definition of Sec. II is the register's, the generator of the tick and
-the entropy of the strings' state, the paper states; for the energy current of light the register
-defines no energy at a cell, and its side enters as the direction of the ray only (`light`). -/
+(`light`) is another sentence of Postulate 1.  The energy of light is not an application of the
+first sentence: Sec. II gives energy to a state and does not place it in cells, so the light whose
+energy moves with it along its ray is the case a result treats, a condition
+(`Condition.light_flow`), as dust is (`Condition.dust_flow`).  Which cited definition is the
+manifold's value of a quantity, the Misner–Sharp energy and the entropy of Clausius' relation, the
+sources of the geometry and of thermodynamics state; which definition of Sec. II is the
+register's, the entropy of the strings' state, the paper states. -/
 def qubits {ι C α : Type*} (content : ι → C) (q : ι → α) : Prop := Symmetry.IsQubits content q
 
 /-- **A quantity defined by qubits has one value, the register's** (Postulate 1's first sentence,
 for a quantity to which another description, the manifold or thermodynamics, assigns a value):
 the value that description assigns, `manifold`, is the value the register defines, `register`.
 Were the two different, the difference would be a physical quantity not defined by qubits.  The
-quantity may be a number, as the entropy of a horizon (`local_entropy`), or a current, as the
-energy current of light (`light`), so the values are of any one type. -/
+quantity may be a number, as the entropy of a horizon (`local_entropy`), and the values are of
+any one type. -/
 def physical {α : Type*} (manifold register : α) : Prop := manifold = register
 
 /-- Postulate 1: "The bits are the possible outcomes of one measurement of the qubit", with
@@ -387,21 +404,89 @@ body's energy `Mc²`, `M` all the mass inside the sphere, is held by the `N_car`
 shares `ε_c` by equipartition (`Law.share_of_equipartition` gives the sum in finite form). -/
 def energy_in_carriers (R : Reg) (M Ncar εc : ℝ) : Prop := M * R.c ^ 2 = Ncar * εc
 
-/-- **The carriers are the strings whose threshold the amplitude exceeds** (`hb`; Sec. IV.C).  A
-string that carries the body's information is one of its qubits (Postulate 1), part of the body
-itself; a whole qubit holds the matter `u = (1 − ln 2)ε_s` on average (`Reg.matter`), and "The
-body is a mass, and a mass is matter, not heat, so we count the body's energy per string of the
-sphere in units of the matter a string holds on average, `f = E/u`".  The unit is the paper's,
-taken here with that sentence; the files do not derive it.  So the body's share at a string,
-`E = 2k_BT_N ln 2` (Eq. (E)), is the fraction `f = E/u` of a whole qubit, and by the probability
-rule of Sec. IV.A its amplitude is `√f`, in units of one whole qubit.  A string carries the body's
-information when this amplitude exceeds the string's threshold `θ`.  The threshold is one for the
-string: its ring crosses the sphere at two cells, its receiving cells, and the string, one qubit,
-carries the information at both or at neither.  So the carriers are the fraction
-`b = P(θ < √f) = 1 − surv(√f)` of the sphere's strings, with `surv` the threshold's survival
-function (`Thermo.max_entropy_threshold`). -/
-def carriers_by_amplitude (R : Reg) (b TN εs : ℝ) (surv : ℝ → ℝ) : Prop :=
-  b = 1 - surv (Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs))
+/-- **The amplitude of a body's share at a string, and its unit** (`hh`; Sec. IV.C), an
+application of Postulate 1.  A body at rest, treated as a point, one cell, has a share at each
+string of a sphere about it.  The share is the body's energy per string of the sphere, two
+Landauer energies at the Unruh temperature `T_N` of Newton's field, `E = 2k_BT_N ln 2`
+(Eq. (E)).  A string that carries the body's information is one of the body's qubits, and a
+string is one whole qubit, which holds the matter `u = (1 − ln 2)ε_s` on average (`Reg.matter`,
+with `ε_s` the strings' mean energy).  The body is a mass, and a mass is matter, so its share is
+counted in that unit: the share is the fraction `f = E/u` of one whole qubit, and it has the
+amplitude `h = √f` against the string's one whole qubit.  The statement is that definition of
+`h`.  Sec. IV.C uses it at each tick: "The share has the amplitude `h` against the string's one
+whole qubit, and its `L` parts add up to it, so each tick adds the amplitude `h/L`."
+`Main.fill_fraction` derives `f = g_N/a₀`, Eq. (f), and with it `h = √(g_N/a₀)`.  Up to v18-68
+the definition stood inside the premise of the carriers (`P1.carriers_by_amplitude`). -/
+def share_amplitude (R : Reg) (h TN εs : ℝ) : Prop :=
+  h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs)
+
+/-- **A body's share reaches a string in equal parts, one per tick, which add as amplitudes**
+(`hparts`; Sec. IV.C), an application of Postulate 1.  Sec. IV.C: "Treated as a point (above),
+the body is one cell, so in one tick its share reaches one cell of the string, which holds one of
+the string's `L` bits: each tick brings `1/L` of the share."  "As the injected signal adds to the
+laser's field, these parts add as amplitudes: they arrive with the same phase at every tick, and
+a state is a linear combination of outcomes (Postulate 1)."  "The share has the amplitude `h`
+against the string's one whole qubit, and its `L` parts add up to it, so each tick adds the
+amplitude `h/L`."  The statement counts the parts by the cells of the string's ring, one bit on
+each: each tick adds to the string one and the same amplitude `ε`, and the parts add up to the
+amplitude `h` of the share (`share_amplitude`), so the number of the ring's cells times `ε` is
+`h`, for the string of every largest ring `l`.  A largest ring has `L` cells (`Horizon.card_ring`,
+`Main.ring_one_string`), so `ε = h/L` (`Main.carriers_exact`): the factor `1/L` is the count of
+the string's bits, which the structure `Horizon` carries.  Up to v18-68 the files stated no
+share per tick: they took the carriers as a premise, the strings whose threshold the amplitude
+of the share exceeds (`P1.carriers_by_amplitude`). -/
+def share_in_parts (H : Horizon L) (h ε : ℝ) : Prop :=
+  ∀ l : H.Loop, (Fintype.card {x // x ∈ H.cells l} : ℝ) * ε = h
+
+/-- **A string carries a body's information when its global phase holds against the body's
+share** (`hcarry`; Sec. IV.C), an application of Postulate 1 with Sec. II's definition of energy.
+The rule speaks of a string as a whole.  Sec. IV.C: "A string is one qubit (Postulate 1), so it
+carries the quantum information of the body's mass, the body's information for short, at both its
+receiving cells or at neither."  The statement does not name the receiving cells; it counts the
+strings that carry.  Sec. IV.C: "A string that carries it takes its phase from the body's state,
+as a laser locked to an injected signal takes its phase from the signal."  The condition is that
+of one tick.  Sec. IV.C: "For a string the round trip is one tick."  A free tick turns the global
+phase of a string of energy `E` by `Δ = Et_c/ℏ`: Sec. II's definition of energy, which
+`string_energies` states for the strings of the register, whose tick is the factor
+`e^{−iEt_c/ℏ}`.  The turn `Δ` is the slip against the body's share.  Sec. IV.C: "The body is at
+rest, so its share is the same at every tick, and the turn is the slip of the string's global
+phase against the body's."  The same tick adds to the string the amplitude `ε` of the body's
+share, at a fixed phase (`share_in_parts`).  The string's global phase holds against the share
+when the tick leaves some phase of the string unchanged (`Law.keepsPhase Δ ε`): a state of unit
+amplitude with that phase, turned by `Δ` and with the amplitude `ε` added, has that phase again.
+Sec. IV.C: "Where the slip per tick is larger, the global phase slips at every tick and the
+string takes no phase from the body."  The rule is that a string carries the body's information
+when its phase holds, whatever the turn `Δ` of its free tick is, so every turn counts.  The
+condition is the same after a whole turn more (`Law.keepsPhase_add_turns`), and
+`string_energies` names no turn, so the strings whose turn lies near one or more whole turns
+carry as well as the strings whose turn is small.  Sec. IV.C: "The exceptions are the strings
+that a tick turns to within `arcsin(h/L)` of one or more whole turns."  "A whole turn is no turn,
+so they carry the body's information too; they are a fraction below `e^{−3πL/2}` of the
+strings."
+
+The statement gives the carriers' fraction `b` through the spread of the strings' energies, with
+`above x` the fraction of the strings whose energy exceeds `x` (`Thermo.energies_thermal`).
+Whatever distribution `μ` of the strings' energies, a probability measure on the energies, has
+the fraction `above x` above each energy `x ≥ 0`, `b` is the fraction that `μ` gives to the
+strings of energy `E ≥ 0` whose phase holds.  The statement names no threshold and no range of
+turns, and the files derive both.  Where `0 < ε < 1` the phase holds exactly when the turn lies
+within `arcsin ε` of a whole number of turns (`Law.steady_phase_all_turns`,
+`Law.steady_phase_iff_turns`).  So the carriers are the strings of energy at most
+`(ℏ/t_c) arcsin ε` and the strings of energy within `(ℏ/t_c) arcsin ε` of `2πkℏ/t_c` for a
+whole number `k ≥ 1` (`Reg.phase_all_turns`).  With the spread of `Thermo.energies_thermal` at
+the horizon's temperature a distribution with these fractions exists
+(`Law.gibbs_measure_exists`), and the statement holds exactly when
+`b = (1 − e^{−L arcsin ε})(1 + (e^{L arcsin ε} + 1)/(e^{2πL} − 1))` (`Reg.carriers_rule_iff`).
+It can then be met, together with the share's parts and the spread (`Reg.carriers_model`), and
+it fixes `b`.  The strings whose turn lies near one or more whole turns are a fraction below
+`e^{−3πL/2}` of the strings (`Main.carriers_exact`).  Up to v18-68 the files took the carriers
+as a premise, the strings whose threshold the amplitude of the share exceeds
+(`P1.carriers_by_amplitude`), with the distribution of the threshold as a premise of
+thermodynamics (`Thermo.max_entropy_threshold`). -/
+def carriers_hold_phase (R : Reg) (b ε : ℝ) (above : ℝ → ℝ) : Prop :=
+  ∀ (μ : MeasureTheory.Measure ℝ) [MeasureTheory.IsProbabilityMeasure μ],
+    (∀ x : ℝ, 0 ≤ x → (μ (Set.Ioi x)).toReal = above x) →
+    b = (μ {E : ℝ | 0 ≤ E ∧ Law.keepsPhase (E * R.tc / R.ℏ) ε}).toReal
 
 /-- Postulate 1: "The global phase of a state is hidden: no law depends on its value"
 (`hhidden`), for a law of a string's qubit.  `law v` is what the law reads off the state `v`, and
@@ -419,37 +504,16 @@ def constant_L (Rt : ℝ → Reg) : Prop := ∀ s, (Rt s).L = (Rt 0).L
 /-- Postulate 1: "each cell of length `ℓ_c`", one length at every time (`hℓc`). -/
 def constant_cell (Rt : ℝ → Reg) : Prop := ∀ s, (Rt s).ℓc = (Rt 0).ℓc
 
-/-- **Light crosses a cell in one tick, and its energy moves with it** (`hlight`; Secs. II and
-III).  Two sentences of Postulate 1, each read on the manifold with Postulate 2's last sentence.
-* **The ray.** Each cell has the length `ℓ_c`, "which light crosses in one tick" (Postulate 1), the
-  tick being the time light takes to cross a cell (Sec. II), and a cell is a segment of length
-  `ℓ_c` of a geodesic of space (Postulate 2's last sentence), so light moves `ℓ_c` of proper length
-  per tick along a geodesic, at `c`, and in every direction, since a largest ring runs through any
-  place in any direction (Sec. II).  In the frame the files use at a point, where the metric is
-  `diag(−1, 1, 1, 1)`, a direction of speed `c` is a null direction: at a point `p` where light
-  passes, the direction `k` of its ray is null and not zero.
-* **The energy.** The energy of light is a quantity, defined by its qubits (Postulate 1's first
-  sentence), and the light crosses a cell in one tick.  The files read this as the energy of the
-  light going with the light, from cell to cell, one per tick along the ring, whichever strings
-  carry it.  That reading is the step the premise takes: Sec. II defines the energy of a state,
-  the generator of its tick, and does not place it in cells, so the register has no energy at a
-  cell of its own, and its side enters here as the direction of the ray only.  On the manifold a
-  quantity carried along the ray has its current along the ray: the energy current of the light for
-  an observer `u`, `T_ab u^b`, is a multiple of `k_a = η_ab k^b`, and for every `u`, since the
-  events of the ray are the same for every observer (`physical`: the manifold's current and the
-  register's, along the ray).  The point `p` is one where this light alone passes, so that
-  `M.stress p` is its stress tensor, as the `p` of `Condition.dust_flow` is one where matter moves
-  as dust: the situation is a condition of the result.  Light carries energy, so its stress tensor
-  is not zero.  `k` is a vector of the frame at `p`; that it is the ring's direction there is the
-  same reading.
-From these `Einstein.null_dust_of_current` derives `T_ab = ρ k_a k_b` with `ρ ≠ 0`, and with the
-first law and the Leibniz rule `Main.light_rays` derives that the rays are null geodesics; the
-null direction is restated in its conclusion. -/
-def light (M : Einstein.Spacetime) (p : M.Pt) (k : Fin 4 → ℝ) : Prop :=
-  Einstein.IsNull k ∧ k ≠ 0 ∧ Einstein.symmPart (M.stress p) ≠ 0 ∧
-    ∀ u, Einstein.IsTimelike u →
-      ∃ s : ℝ, physical (Matrix.mulVec (Einstein.symmPart (M.stress p)) u)
-        (s • Matrix.mulVec Einstein.eta k)
+/-- **Light crosses a cell in one tick** (`hlight`; Secs. II and III.B), a sentence of Postulate 1
+read on the manifold with Postulate 2's last sentence.  Each cell has the length `ℓ_c`, "which light
+crosses in one tick" (Postulate 1), the tick being the time light takes to cross a cell (Sec. II),
+and a cell is a segment of length `ℓ_c` of a geodesic of space (Postulate 2's last sentence), so
+light moves `ℓ_c` of proper length per tick, at `c`, and in every direction, since a largest ring
+runs through any place in any direction (Sec. II).  In the frame the files use at a point, where
+the metric is `diag(−1, 1, 1, 1)`, a direction of speed `c` is a null direction: the direction `k`
+of a ray of light is null and not zero.  What the energy of light does is no part of this premise:
+the result on light takes it as the case it treats (`Condition.light_flow`). -/
+def light (k : Fin 4 → ℝ) : Prop := Einstein.IsNull k ∧ k ≠ 0
 
 /-- `qubits` for the weighting of the drawing's rotations (`hν`; Sec. II: "the drawing is
 no part of the state and no rotation of it is preferred: the rotations are weighted by a weighting
@@ -712,13 +776,6 @@ coefficient is `κ = 2k_B ln 2`, two Landauer energies per string
 (`Reg.radial_acceleration_relation`). -/
 def equipartition (κ ε T : ℝ) : Prop := ε = κ * T
 
-/-- **Maximum entropy for the threshold** (`hME`; Sec. IV.C): the threshold `θ` of a string
-is a positive quantity of which only the mean is fixed, at one qubit, the unit of the amplitude;
-the distribution that assumes nothing more is the exponential of mean one [E. T. Jaynes, Phys.
-Rev. **106**, 620 (1957)], so the survival function is `P(θ > x) = e^{−x}` (thermodynamics, the
-principle that Sec. IV.E applies to the Gibbs distribution, `Entropy.shannon_le_shannon_gibbs`). -/
-def max_entropy_threshold (surv : ℝ → ℝ) : Prop := ∀ x, 0 ≤ x → surv x = Real.exp (-x)
-
 /-- **The strings' energies are spread at the horizon's temperature and do not change** (`hGibbs`;
 Secs. III and IV.E: "The energies the strings hold are spread at that temperature and, for matter
 that stays put, do not change").  A string's energy is the same for all its states, since
@@ -728,14 +785,19 @@ mass the string holds, from zero up.  Thermodynamics spreads the energies over t
 Gibbs distribution at the horizon's temperature `T`, the weight `e^{−E/k_BT}` on the energy `E`, so
 their mean `ε̄` is the mean of that distribution, `Law.gibbsMean (k_BT)`, which `Law.gibbsMean_eq`
 evaluates as `k_BT`; on a ladder of equal steps the mean lies within one step of it
-(`Law.gibbsLadder_within_step`).  The energies do not change, since the paper treats matter that
-stays put, with interactions negligible (Sec. II), so their spread, a difference between strings
-and not a change in time, is no part of the entropy that the horizon exchanges: that entropy
+(`Law.gibbsLadder_within_step`).  The fraction of the strings whose energy exceeds `x` is that
+distribution's too, `above x = Law.gibbsAbove (k_BT) x`, which `Law.gibbsAbove_eq` evaluates as
+`e^{−x/k_BT}`; `Main.carriers_exact` and `Main.galactic_law` take it for the strings whose phase
+holds against a body's share.  The energies do not change, since the paper treats matter that
+stays put, with
+interactions negligible (Sec. II), so their spread, a difference between strings and not a change
+in time, is no part of the entropy that the horizon exchanges: that entropy
 counts what can change, the sense, one bit per ring (`Bridge.horizon_entropy`).  The heat of a
 string, the horizon's temperature times that bit, is derived separately (`Reg.vacuum_per_string`,
 `Reg.string_split`).  This premise takes the place of Penrose's relation and the reduction clock
 of the versions up to v18-56. -/
-def energies_thermal (R : Reg) (T εbar : ℝ) : Prop := εbar = Law.gibbsMean (R.kB * T)
+def energies_thermal (R : Reg) (T εbar : ℝ) (above : ℝ → ℝ) : Prop :=
+  εbar = Law.gibbsMean (R.kB * T) ∧ ∀ x, 0 ≤ x → above x = Law.gibbsAbove (R.kB * T) x
 
 end Thermo
 
@@ -920,17 +982,34 @@ def schwarzschild_deSitter (R : Reg) (G M Λ : ℝ) (α β : ℝ → ℝ) (a b :
 
 /-- The acceleration is `g_N/b`, Eq. (share): fewer carriers, the same energy, a higher temperature
 (`hab`; derived in `Main.carriers_share`).  `Main.scale_mean` and `Main.classical_share` take it
-with an alternative threshold or share in place of `b`. -/
+with an alternative threshold or share in place of `b`, and `Main.law_bounds` with the carriers'
+exact fraction. -/
 def share_acceleration (a gN b : ℝ) : Prop := a = gN / b
 
 /-- The body's energy per string in units of the mean string's matter (`Reg.matter`) is `g_N/a₀`,
-Eq. (f) (`hf`; derived in `Main.fill_fraction`); `Main.scale_mean` takes it. -/
+Eq. (f) (`hf`; derived in `Main.fill_fraction`); `Main.scale_mean` and `Main.law_bounds` take
+it. -/
 def fill_fraction (R : Reg) (gN TN εs : ℝ) : Prop :=
   2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0
 
+/-- The carriers are the fraction
+`b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))` of the sphere's
+strings, with `h` the amplitude of the body's share (`hb`).  It is the fraction of the strings
+whose phase holds against the share, over every turn of the phase per tick, exactly;
+`Main.carriers_exact` derives it from the share's parts per tick, the rule of the phase and the
+spread of the strings' energies.  The first factor is the fraction of the strings whose energy
+is at most the threshold `(ℏ/t_c) arcsin(h/L)`.  The second factor adds the strings whose turn
+per tick lies within `arcsin(h/L)` of one or more whole turns, a fraction below `e^{−3πL/2}`
+of the strings.  The leading order of `b` in `1/L` is `1 − e^{−h}`, Eq. (b)
+(`Approx.carriers_leading`).  `Main.carriers_leading_order` and `Main.law_bounds` take it. -/
+def carriers_exact (R : Reg) (b h : ℝ) : Prop :=
+  b = (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) *
+    (1 + (Real.exp (R.L * Real.arcsin (h / R.L)) + 1) / (Real.exp (2 * Real.pi * R.L) - 1))
+
 /-- The acceleration about a mass is that of Eq. (law), `a = g_N/(1 − e^{−√(g_N/a₀)})`, with `g_N`
-Newton's field of the mass (`hlaw`; derived in `Main.galactic_law`).  `Main.near_limit` and
-`Main.deep_limit` take it. -/
+Newton's field of the mass (`hlaw`; derived in `Main.galactic_law`, with the carriers' fraction
+to leading order in `1/L`, `Approx.carriers_leading`).  `Main.near_limit` and
+`Main.deep_limit` take it, and `Main.law_bounds` bounds the step to leading order. -/
 def galactic_law (R : Reg) (a gN : ℝ) : Prop :=
   a = gN / (1 - Real.exp (-Real.sqrt (gN / R.a0)))
 
@@ -1074,6 +1153,22 @@ def dust_flow (M : Einstein.Spacetime) (p : M.Pt) (u : Fin 4 → ℝ) (ρ : ℝ)
     Einstein.symmPart (M.stress p) =
       ρ • Matrix.vecMulVec (Matrix.mulVec Einstein.eta u) (Matrix.mulVec Einstein.eta u)
 
+/-- **Light whose energy moves with it along its ray, for every observer**, at the point `p`, with
+`k` the direction of its ray: the case that `Main.light_rays` treats, as `dust_flow` is the case of
+dust (Sec. III.B: "For light whose energy moves with it along its ray, for every observer, the
+stress tensor is `ρk_μk_ν`, with `k` the tangent of the ray, and conservation makes its rays null
+geodesics").  For every timelike
+observer `u` the energy current of the light, `T_ab u^b`, is a multiple of `k_a = η_ab k^b`; light
+carries energy, so its stress tensor is not zero; and `p` is a point where this light alone passes,
+so that `M.stress p` is its stress tensor.  Sec. II gives energy to a state, the generator of its
+tick, and does not place it in cells, so the files do not derive this from the postulates: it is a
+condition of the result.  From it `Einstein.null_dust_of_current` derives `T_ab = ρk_ak_b` with
+`ρ ≠ 0`. -/
+def light_flow (M : Einstein.Spacetime) (p : M.Pt) (k : Fin 4 → ℝ) : Prop :=
+  Einstein.symmPart (M.stress p) ≠ 0 ∧
+    ∀ u, Einstein.IsTimelike u →
+      ∃ s : ℝ, Matrix.mulVec (Einstein.symmPart (M.stress p)) u = s • Matrix.mulVec Einstein.eta k
+
 /-- the bodies on the orbits of radius `r` move as dust (`dust_flow`) along their worldlines
 `wl r`, at every time -/
 def dust_orbits (M : Einstein.Spacetime) (wl : ℝ → ℝ → M.Pt) (u : ℝ → ℝ → Fin 4 → ℝ)
@@ -1202,12 +1297,21 @@ body with the probability `f = g_N/a₀` in place of the amplitude, so that the 
 fraction `b = f` far from the body -/
 def classical_share (b gN a0 : ℝ) : Prop := b = gN / a0
 
-/-- the threshold exponential with the mean `μ` instead of one qubit, the alternative whose scale
-the measured `a₀` fixes (Sec. IV.C) -/
-def threshold_mean (μ : ℝ) (surv : ℝ → ℝ) : Prop := ∀ x, 0 ≤ x → surv x = Real.exp (-x / μ)
+/-- the strings' energies spread at `μ` times the horizon's thermal energy `ℏ/(Lt_c)`, so that a
+string's threshold is exponential with the mean `μ` instead of one qubit: the alternative whose
+scale the measured `a₀` fixes (Sec. IV.C) -/
+def threshold_mean (R : Reg) (μ : ℝ) (above : ℝ → ℝ) : Prop :=
+  ∀ x, 0 ≤ x → above x = Real.exp (-x / (μ * (R.ℏ / (R.L * R.tc))))
 
-/-- `h ≤ 1/2`: the deep regime of Eq. (deep), where the bound of `Main.deep_limit` is stated -/
+/-- `h ≤ 1/2`: the deep regime of Eq. (deep), where the bound of `Main.deep_limit` is stated; and,
+taken at `h/L`, the range `h ≤ L/2` in which `Main.carriers_leading_order` bounds the step to
+leading order in `1/L` -/
 def at_most_half (h : ℝ) : Prop := h ≤ 1 / 2
+
+/-- the amplitude `h` of the body's share is positive and below `L`, `0 < h < L`: the amplitude
+`h/L` that one tick adds to a string is then positive and below one, the amplitude of the
+string's one whole qubit; the case that `Main.carriers_exact` and `Main.law_bounds` treat -/
+def share_below_L (R : Reg) (h : ℝ) : Prop := 0 < h ∧ h < R.L
 
 /-- `φ` is a state: the probabilities `|φ_ω|²` that it gives its outcomes sum to one -/
 def normalized {Ω : Type*} [Fintype Ω] (φ : Ω → ℂ) : Prop := ∑ ω, ‖φ ω‖ ^ 2 = 1
@@ -1297,6 +1401,30 @@ def count_density (H : Horizon L) (R : Reg) (η : H.Cell → H.Loop → ℝ) (l�
     (x₀ : H.Cell) (rh : ℝ) : Prop :=
   η x₀ l₀ = R.kB * (R.Rhor * R.ln2) / (4 * R.pi * rh ^ 2)
 
+/-- **The carriers' fraction, to leading order in `1/L`** (`hb`; Sec. IV.C, Eq. (b)), a step at
+leading order.  Sec. IV.C: "To leading order in `1/L` the share can therefore turn the string's
+global phase by at most `h/L` per tick."  "A string therefore carries the body's information when
+`E_st_c/ℏ ≤ h/L`, that is, when `E_s ≤ h k_BT_dS`, by Eq. (T)."  The step takes the carriers as
+the strings whose energy is at most `hℏ/(Lt_c)`, which is `h` times the horizon's thermal energy
+`k_BT_dS`, with `h` the amplitude of the body's share (`P1.share_amplitude`).  So they are
+the fraction `b = 1 − above(hℏ/(Lt_c))` of the sphere's strings, with `above x` the fraction of
+the strings whose energy exceeds `x` (`Thermo.energies_thermal`).  The exact carriers are the
+strings whose phase holds against the share, whatever the turn of their free tick:
+`Main.carriers_exact` derives them from the share's parts per tick and the rule of the phase
+(`P1.share_in_parts`, `P1.carriers_hold_phase`).  They are the strings of energy at most the
+threshold `(ℏ/t_c) arcsin(h/L)` and the strings whose turn per tick lies within `arcsin(h/L)`
+of one or more whole turns.  The step puts `h/L` for `arcsin(h/L)` in the threshold, its leading
+order in `1/L`, and it leaves out the strings near the whole turns, a fraction below
+`e^{−3πL/2}` of the strings.  With the Gibbs spread the step gives `b = 1 − e^{−h}`, Eq. (b),
+where the exact fraction is
+`(1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))`
+(`Derived.carriers_exact`), and the exact fraction exceeds `1 − e^{−h}` by at most the fraction
+`(h/L)² + 5e^{−3πL/2}` of it where `h ≤ L/2` (`Main.carriers_leading_order`).
+`Main.galactic_law` and `Main.scale_mean` take this step and are stated at leading order, as the
+paper's Eq. (law) is; `Main.law_bounds` bounds what the step changes in the law. -/
+def carriers_leading (R : Reg) (b h : ℝ) (above : ℝ → ℝ) : Prop :=
+  b = 1 - above (h * (R.ℏ / (R.L * R.tc)))
+
 end Approx
 
 /-! ## Units: the system of units the files state their results in -/
@@ -1317,8 +1445,21 @@ def si_constants (Rt : ℝ → Reg) : Prop :=
 
 end Units
 
-/-! ## Open: premises that are none of the four sources and no choice of units, listed as open.
-At present there are none. -/
+/-! ## Open: the premises that no source states and the files do not derive
+
+A premise here is none of the four sources, no condition and no choice of units, and the files do
+not derive it.  The namespace holds none, as at v18-68.  Up to v18-68 the files took the rule of Sec. IV.C by which a string carries a body's information as one premise
+of Postulate 1 (`P1.carriers_by_amplitude`), with the distribution of a string's threshold as a
+premise of thermodynamics (`Thermo.max_entropy_threshold`).  The files derive that rule
+(`Main.carriers_exact`) from two applications of Postulate 1 (`P1.share_in_parts`,
+`P1.carriers_hold_phase`), the spread of the strings' energies (`Thermo.energies_thermal`) and
+mathematics that they prove.  A third application, the amplitude of the body's share
+(`P1.share_amplitude`), ties `h` to the body where `Main.law_bounds`, `Main.galactic_law` and
+`Main.scale_mean` take the rule.  Its leading order in `1/L` is a
+named step (`Approx.carriers_leading`), with its error bounded
+(`Main.carriers_leading_order`).  The check of `#premises` reads the namespace: a result that
+took a premise of it would show it in the premise ledger, where its line would be marked
+"(OPEN)" and the line `rests on:` of the result would name it after the sources. -/
 namespace Open
 
 end Open

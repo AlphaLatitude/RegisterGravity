@@ -32,6 +32,11 @@ def paperRoots : Array Name := #[
   `Register.Law.gibbsLadder_eq, `Register.Law.gibbsLadder_within_step, `Register.Reg.string_tick,
   -- Sec. IV.C, the carriers' share in finite form, and Eq. (law)
   `Register.Law.share_of_equipartition, `Register.Reg.law,
+  -- Sec. IV.C, "A state of unit amplitude that a tick turns by `Δ`, and to which the tick adds
+  -- the smaller amplitude `h/L` at a fixed phase, has a phase that the tick leaves unchanged
+  -- exactly when `Δ` is within `arcsin(h/L)` of a whole number of turns, as the Lean files
+  -- prove.", with the condition at every turn that gives it
+  `Register.Law.steady_phase_iff_turns, `Register.Law.steady_phase_all_turns,
   -- Sec. IV.A, which states a pairing shows exactly, most product states not among them, the
   -- pairing not fixed by the strings, the probability of a joint outcome as the product of the
   -- frequencies on its blocks, what a block resolves, the state from the strings and their
@@ -53,9 +58,12 @@ def paperRoots : Array Name := #[
   `Register.Strings.unscattered, `Register.Reg.radii_agree,
   -- Sec. IV.B, an accelerated observer's own horizon
   `Register.Reg.La_lt_L,
-  -- Sec. IV.C, the two points where a ring crosses a sphere, its two receiving cells, and the
-  -- bit that unequal energies of the two senses would take
-  `Crossing.two_crossings, `Register.Qubit.entropy_lt_of_energies_ne,
+  -- Sec. IV.C, the two points where a ring crosses a sphere, its two receiving cells
+  `Crossing.two_crossings,
+  -- Sec. II, "the string holds one bit, `k_B ln 2`, the most a qubit holds": a thermal state of
+  -- two unequal energies holds less than one bit (the paper's -6-38-75 stated this in Sec. IV.C;
+  -- the -6-38-76 states the direct form only)
+  `Register.Qubit.entropy_lt_of_energies_ne,
   -- Secs. III and IV.D, the limit up to which the solution with a mass has a horizon
   `Register.Reg.horizon_limit,
   -- Secs. IV.C and IV.E, the matter a string holds on average, and the split of a string's energy,

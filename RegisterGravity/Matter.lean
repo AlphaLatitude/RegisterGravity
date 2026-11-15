@@ -12,8 +12,8 @@ energy per string (`Reg.string_split`, `Reg.vacuum_per_string`).  The rest is ma
 
 Sec. IV.C counts a body's energy per string of the sphere in this unit: "The body is a mass, and
 a mass is matter, not heat, so we count the body's energy per string of the sphere in units of the
-matter a string holds on average, `f = E/u`".  The premise for the carriers and the derived
-Eq. (f) are stated with `Reg.matter` (`Sources.P1.carriers_by_amplitude`,
+matter a string holds on average, `f = E/u`".  The premise for the amplitude of a body's share
+and the derived Eq. (f) are stated with `Reg.matter` (`Sources.P1.share_amplitude`,
 `Sources.Derived.fill_fraction`), so the unit is named where it enters.
 
 * `Reg.matter`, `Reg.matter_eq`: the matter a string holds on average is its mean energy less its
@@ -21,9 +21,11 @@ Eq. (f) are stated with `Reg.matter` (`Sources.P1.carriers_by_amplitude`,
 * `Reg.radii_agree`: "For `r ≪ R_Λ` the two agree" (Sec. II).  In the solution without a mass the
   proper distance from the observer along a radial line lies between the areal radius `r` and
   `r/√(1 − r²/R_Λ²)`.
-* `Qubit.entropy_lt_of_energies_ne`: "The two senses have the same energy (Sec. II), and making
-  them differ would take from each string part of the bit" (Sec. IV.C).  A qubit whose two states
-  have different energies holds less than one bit in its thermal state.
+* `Qubit.entropy_lt_of_energies_ne`: Sec. II, "the string holds one bit, `k_B ln 2`, the most a
+  qubit holds".  A qubit whose two states have different energies holds less than one bit in its
+  thermal state.  The paper's -6-38-75 stated this in Sec. IV.C, where it read "The two senses
+  have the same energy (Sec. II), and making them differ would take from each string part of the
+  bit"; the -6-38-76 states the direct form only, in Sec. II.
 * `Reg.split_not_stringwise`: "The split is of the strings' energy as a whole, not string by
   string" (Sec. IV.E).  A string of energy `E` has the heat `k_BT_dS ln 2` of its one bit, so what
   it holds beyond its heat is `E − k_BT_dS ln 2`.  That is the fraction `1 − ln 2` of `E` only for
@@ -39,7 +41,7 @@ variable (R : Reg)
 the part that is not heat, `u = (1 − ln 2) ε_s`.  The string's heat, the horizon's temperature
 times its one bit, is `ε_s ln 2`, the vacuum's energy per string (`string_split`).  A body is a
 mass, and a mass is matter, not heat, so the body's energy per string of a sphere is counted in
-this unit (`Sources.P1.carriers_by_amplitude`, `Sources.Derived.fill_fraction`). -/
+this unit (`Sources.P1.share_amplitude`, `Sources.Derived.fill_fraction`). -/
 noncomputable def matter (εs : ℝ) : ℝ := (1 - R.ln2) * εs
 
 /-- the matter a string holds on average is its mean energy less its heat -/
@@ -97,8 +99,11 @@ end Reg
 
 namespace Qubit
 
-/-- **Unequal energies would take part of the bit** (Sec. IV.C: "The two senses have the same
-energy (Sec. II), and making them differ would take from each string part of the bit").  A qubit
+/-- **Unequal energies would take part of the bit** (Sec. II: "the string holds one bit, `k_B ln 2`,
+the most a qubit holds").  The paper's -6-38-75 stated this in Sec. IV.C, where it read "The two
+senses have the same energy (Sec. II), and making them differ would take from each string part of
+the bit"; the -6-38-76 states the direct form only, that a string whose two senses have one energy
+holds one bit.  A qubit
 whose two states have different energies, at an inverse temperature `β ≠ 0`, has a thermal weight
 other than `1/2` on each, and its entropy is below `ln 2`, one bit. -/
 theorem entropy_lt_of_energies_ne (β E₁ E₂ : ℝ) (hβ : β ≠ 0) (hE : E₁ ≠ E₂) :

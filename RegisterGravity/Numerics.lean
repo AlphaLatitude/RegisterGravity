@@ -1878,55 +1878,49 @@ theorem galactic_tide : 7.5e-31 < ge₀ / R₀ ∧ ge₀ / R₀ < 7.52e-31 ∧ g
   unfold ge₀ R₀
   refine ⟨?_, ?_, ?_⟩ <;> norm_num
 
-/-- **A test body's excess at `g_N = 10⁻¹⁰ m/s²`** (Sec. IV.C, Appendix A): `1/(1 − e^{−h})` with
-`h = √(10⁻¹⁰/a₀) = 0.913` is `1.67`, against the `1.43 ± 0.06` one analysis of the Gaia wide
-binaries reads and the `1.0` of another. -/
+/-- **A test body's excess at `g_N = 10^{−10.15} m/s²`** (Sec. IV.C, Appendix A): `1/(1 − e^{−h})`
+with `h = √(g_N/a₀) = 0.768` is `1.87`, against the `1.43 ± 0.06` that one analysis of the Gaia
+wide binaries reads at that acceleration and the `1.0` of another. -/
 theorem test_body_excess :
-    1.665 < 1 / (1 - Real.exp (-Real.sqrt (1e-10 / a0v))) ∧
-    1 / (1 - Real.exp (-Real.sqrt (1e-10 / a0v))) < 1.675 := by
+    1.865 < 1 / (1 - Real.exp (-Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v))) ∧
+    1 / (1 - Real.exp (-Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v))) < 1.866 := by
   obtain ⟨a1, a2⟩ := a0_tight
   have ha := a0v_pos
-  -- h = √(10⁻¹⁰/a₀) between 0.91300 and 0.91302
-  have hs1 : (0.913 : ℝ) < Real.sqrt (1e-10 / a0v) := by
+  -- g_N = 10^{−10.15} between 7.07945e-11 and 7.07947e-11, from (g_N)^20 = 10^{−203}
+  have hx0 : 0 < (10 : ℝ) ^ (-(10.15 : ℝ)) := Real.rpow_pos_of_pos (by norm_num) _
+  have hx20 : ((10 : ℝ) ^ (-(10.15 : ℝ))) ^ (20 : ℕ) = ((10 : ℝ) ^ (203 : ℕ))⁻¹ := by
+    rw [← Real.rpow_natCast, ← Real.rpow_mul (by norm_num)]
+    norm_num [Real.rpow_neg]
+  have hx1 : (7.07945e-11 : ℝ) < (10 : ℝ) ^ (-(10.15 : ℝ)) := by
+    refine lt_of_pow_lt_pow_left₀ 20 hx0.le ?_
+    rw [hx20]; norm_num
+  have hx2 : (10 : ℝ) ^ (-(10.15 : ℝ)) < 7.07947e-11 := by
+    refine lt_of_pow_lt_pow_left₀ 20 (by norm_num) ?_
+    rw [hx20]; norm_num
+  -- h = √(g_N/a₀) between 0.7682 and 0.76821
+  have hs1 : (0.7682 : ℝ) < Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v) := by
     rw [Real.lt_sqrt (by norm_num), lt_div_iff₀ ha]
-    have : (0.913 : ℝ) ^ 2 * 1.199638e-10 < 1e-10 := by norm_num
-    exact (mul_lt_mul_of_pos_left a2 (by norm_num)).trans this
-  have hs2 : Real.sqrt (1e-10 / a0v) < 0.91302 := by
+    have : (0.7682 : ℝ) ^ 2 * 1.199638e-10 < 7.07945e-11 := by norm_num
+    nlinarith
+  have hs2 : Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v) < 0.76821 := by
     rw [Real.sqrt_lt' (by norm_num), div_lt_iff₀ ha]
-    have : (1e-10 : ℝ) < (0.91302 : ℝ) ^ 2 * 1.1996372e-10 := by norm_num
-    exact this.trans (mul_lt_mul_of_pos_left a1 (by norm_num))
-  -- e^{0.087} between its quadratic lower bound and its fourth-order upper bound
-  have q1 : (1 : ℝ) + 0.087 + 0.087 ^ 2 / 2 ≤ Real.exp 0.087 :=
-    Real.quadratic_le_exp_of_nonneg (by norm_num)
-  have q2 : Real.exp 0.087 ≤ (∑ i ∈ Finset.range 4, (0.087 : ℝ) ^ i / (Nat.factorial i)) +
-      (0.087 : ℝ) ^ 4 * (4 + 1) / (Nat.factorial 4 * 4) :=
+    have : (7.07947e-11 : ℝ) < (0.76821 : ℝ) ^ 2 * 1.1996372e-10 := by norm_num
+    nlinarith
+  -- e^h between Taylor bounds at the interval's ends
+  have q1 : ∑ i ∈ Finset.range 8, (0.7682 : ℝ) ^ i / (Nat.factorial i) ≤ Real.exp 0.7682 :=
+    Real.sum_le_exp_of_nonneg (by norm_num) 8
+  have q2 : Real.exp 0.76821 ≤
+      (∑ i ∈ Finset.range 12, (0.76821 : ℝ) ^ i / (Nat.factorial i)) +
+      (0.76821 : ℝ) ^ 12 * (12 + 1) / (Nat.factorial 12 * 12) :=
     Real.exp_bound' (by norm_num) (by norm_num) (by norm_num)
-  have q2' : Real.exp 0.087 ≤ 1.0909 := by
-    refine q2.trans ?_
+  have hE1 : (2.1558 : ℝ) < Real.exp (Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v)) := by
+    refine lt_of_lt_of_le ?_ ((q1.trans_lt (Real.exp_lt_exp.2 hs1)).le)
     simp only [Finset.sum_range_succ, Finset.sum_range_zero, Nat.factorial]
     norm_num
-  have e1 := Real.exp_one_gt_d9; have e2 := Real.exp_one_lt_d9
-  have hmul : Real.exp (Real.sqrt (1e-10 / a0v)) * Real.exp 0.087 = Real.exp (Real.sqrt (1e-10 / a0v) + 0.087) := by
-    rw [Real.exp_add]
-  -- e^h = e^{h + 0.087} / e^{0.087}, with e^{h + 0.087} between e^{1} and e^{1.00002}
-  have hE1 : (2.4906 : ℝ) < Real.exp (Real.sqrt (1e-10 / a0v)) := by
-    have hp : Real.exp 1 ≤ Real.exp (Real.sqrt (1e-10 / a0v) + 0.087) := Real.exp_le_exp.2 (by linarith)
-    have hq : 0 < Real.exp 0.087 := Real.exp_pos _
-    rw [← hmul] at hp
-    have : (2.4906 : ℝ) * 1.0909 < Real.exp 1 := by linarith
-    nlinarith [Real.exp_pos (Real.sqrt (1e-10 / a0v))]
-  have hE2 : Real.exp (Real.sqrt (1e-10 / a0v)) < 2.4922 := by
-    have hp : Real.exp (Real.sqrt (1e-10 / a0v) + 0.087) ≤ Real.exp 1.00002 := Real.exp_le_exp.2 (by linarith)
-    have hb : Real.exp 1.00002 < 1.0000201 * Real.exp 1 := by
-      have : Real.exp 1.00002 = Real.exp 1 * Real.exp 0.00002 := by rw [← Real.exp_add]; norm_num
-      rw [this, mul_comm]
-      have := Real.exp_bound_div_one_sub_of_interval' (x := 0.00002) (by norm_num) (by norm_num)
-      have hpos := Real.exp_pos (1 : ℝ)
-      have : Real.exp 0.00002 < 1.0000201 := by linarith [show (1 : ℝ) / (1 - 0.00002) < 1.0000201 by norm_num]
-      nlinarith
-    rw [← hmul] at hp
-    have hq : (1 : ℝ) + 0.087 + 0.087 ^ 2 / 2 > 1.0907 := by norm_num
-    nlinarith [Real.exp_pos (Real.sqrt (1e-10 / a0v)), Real.exp_pos (0.087 : ℝ)]
+  have hE2 : Real.exp (Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v)) < 2.15592 := by
+    refine (Real.exp_lt_exp.2 hs2).trans_le (q2.trans ?_)
+    simp only [Finset.sum_range_succ, Finset.sum_range_zero, Nat.factorial]
+    norm_num
   rw [rar_eq _ (by linarith)]
   constructor
   · rw [lt_div_iff₀ (by linarith)]; linarith
