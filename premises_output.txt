@@ -844,6 +844,34 @@ Register.Main.carriers_share
   hκ : Register.Sources.Thermo.equipartition = Thermo.equipartition κ εc Ta
   hκN : Register.Sources.Thermo.equipartition = Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN
   rests on: sources Thermo.horizon_thermal, P1.energy_in_carriers, Thermo.equipartition; derived Derived.jacobson_G; structures none
+Register.Main.share_amplitude
+  Cell : object, Type u_1
+  [Fintype Cell] : object, Fintype Cell
+  [DecidableEq Cell] : object, DecidableEq Cell
+  [Nonempty Cell] : Nonempty (class)
+  R : object, Register.Reg
+  held : object, Finset Cell → ℝ
+  read : object, Cell → ℝ
+  h : object, ℝ
+  TN : object, ℝ
+  εs : object, ℝ
+  hu : Register.Sources.Condition.pos  (condition) = Condition.pos (R.matter εs)
+  hTN : Register.Sources.Condition.pos  (condition) = Condition.pos TN
+  hmass : Register.Sources.P1.mass_in_bits = P1.mass_in_bits held
+  hcells : Register.Sources.P2.cells_hold_alike = P2.cells_hold_alike held
+  hstring : Register.Sources.P1.string_matter_in_bits = P1.string_matter_in_bits R held εs
+  halike : Register.Sources.P1.ring_bits_alike = P1.ring_bits_alike read
+  hbits : Register.Sources.P1.share_bits = P1.share_bits R held read h TN εs
+  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
+  rests on: sources P1.mass_in_bits, P2.cells_hold_alike, P1.string_matter_in_bits, P1.ring_bits_alike, P1.share_bits; derived none; structures none
+Register.Main.share_leading_order
+  R : object, Register.Reg
+  n : object, ℕ
+  h : object, ℝ
+  TN : object, ℝ
+  εs : object, ℝ
+  hh : Register.Sources.Derived.share_amplitude_exact  (derived in Main.lean) = Derived.share_amplitude_exact R n h TN εs
+  rests on: sources none; derived Derived.share_amplitude_exact; structures none
 Register.Main.fill_fraction
   R : object, Register.Reg
   G : object, ℝ
@@ -861,8 +889,8 @@ Register.Main.fill_fraction
   I1N : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R gN TN
   I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
-  hh : Register.Sources.P1.share_amplitude = P1.share_amplitude R h TN εs
-  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.share_amplitude; derived Derived.deSitter_horizon; structures none
+  hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal; derived Derived.deSitter_horizon; structures none
 Register.Main.carriers_exact
   L : object, ℕ
   H : object, Horizon L
@@ -885,6 +913,17 @@ Register.Main.carriers_exact
   hparts : Register.Sources.P1.share_in_parts = P1.share_in_parts H h ε
   hcarry : Register.Sources.P1.carriers_hold_phase = P1.carriers_hold_phase R b ε above
   rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.share_in_parts, P1.carriers_hold_phase; derived Derived.deSitter_horizon; structures Horizon
+Register.Main.phase_under_tick
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  h : object, ℝ
+  ε : object, ℝ
+  E : object, ℝ
+  hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
+  hparts : Register.Sources.P1.share_in_parts = P1.share_in_parts H h ε
+  rests on: sources P1.share_in_parts; derived none; structures Horizon
 Register.Main.carriers_leading_order
   L : object, ℕ
   H : object, Horizon L
@@ -924,13 +963,13 @@ Register.Main.galactic_law
   I1N : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (G * M / r ^ 2) TN
   I1a : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a Ta
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
-  hh : Register.Sources.P1.share_amplitude = P1.share_amplitude R h TN εs
+  hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
   hb : Register.Sources.Approx.carriers_leading  (leading order) = Approx.carriers_leading R b h above
   hcar : Register.Sources.P1.energy_in_carriers = P1.energy_in_carriers R M Ncar εc
   hNcar : Register.Sources.Condition.carrier_fraction  (condition) = Condition.carrier_fraction R b Ncar r
   hκ : Register.Sources.Thermo.equipartition = Thermo.equipartition κ εc Ta
   hκN : Register.Sources.Thermo.equipartition = Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN
-  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.share_amplitude, P1.energy_in_carriers, Thermo.equipartition; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.energy_in_carriers, Thermo.equipartition; derived Derived.jacobson_G, Derived.deSitter_horizon; structures none
 Register.Main.law_bounds
   L : object, ℕ
   H : object, Horizon L
@@ -943,11 +982,28 @@ Register.Main.law_bounds
   TN : object, ℝ
   εs : object, ℝ
   hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
-  hh : Register.Sources.P1.share_amplitude = P1.share_amplitude R h TN εs
+  hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hb : Register.Sources.Derived.carriers_exact  (derived in Main.lean) = Derived.carriers_exact R b h
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
-  rests on: sources P1.share_amplitude; derived Derived.fill_fraction, Derived.carriers_exact, Derived.share_acceleration; structures Horizon
+  rests on: sources none; derived Derived.fill_fraction, Derived.carriers_exact, Derived.share_acceleration; structures Horizon
+Register.Main.law_whole_bits
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  gN : object, ℝ
+  a : object, ℝ
+  b : object, ℝ
+  h : object, ℝ
+  TN : object, ℝ
+  εs : object, ℝ
+  hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
+  hh : Register.Sources.Derived.share_amplitude_exact  (derived in Main.lean) = Derived.share_amplitude_exact R L h TN εs
+  hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
+  hb : Register.Sources.Derived.carriers_exact  (derived in Main.lean) = Derived.carriers_exact R b h
+  hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
+  rests on: sources none; derived Derived.share_amplitude_exact, Derived.fill_fraction, Derived.carriers_exact, Derived.share_acceleration; structures Horizon
 Register.Main.near_limit
   R : object, Register.Reg
   a : object, ℝ
@@ -1000,11 +1056,11 @@ Register.Main.scale_mean
   above : object, ℝ → ℝ
   hμ : Register.Sources.Condition.pos  (condition) = Condition.pos μ
   hME : Register.Sources.Condition.threshold_mean  (condition) = Condition.threshold_mean R μ above
-  hh : Register.Sources.P1.share_amplitude = P1.share_amplitude R h TN εs
+  hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
   hb : Register.Sources.Approx.carriers_leading  (leading order) = Approx.carriers_leading R b h above
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
-  rests on: sources P1.share_amplitude; derived Derived.fill_fraction, Derived.share_acceleration; structures none
+  rests on: sources none; derived Derived.fill_fraction, Derived.share_acceleration; structures none
 Register.Main.scale
   R : object, Register.Reg
   G : object, ℝ
@@ -1403,4 +1459,5 @@ derived Derived.jacobson_G_exact : concluded by Register.Main.jacobson_G_exact
 derived Derived.jacobson_G_in_time : Derived.jacobson_G at every time
 derived Derived.schwarzschild_deSitter : concluded by Register.Main.schwarzschild_deSitter
 derived Derived.share_acceleration : concluded by Register.Main.carriers_share
-100 results checked, every theorem of Register.Main before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type, every proposition, predicate or set that a hypothesis takes a variable of the result; every result takes something from a source or states an instance of a structure of the postulates; each of the 13 derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above 100, in its statement or in a definition under it, but for those that state an instance: Register.Main.register_in_band; the largest whole number that the others name is 21, in Register.Main.simple_interpolation
+derived Derived.share_amplitude_exact : concluded by Register.Main.share_amplitude
+104 results checked, every theorem of Register.Main before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type, every proposition, predicate or set that a hypothesis takes a variable of the result; every result takes something from a source or states an instance of a structure of the postulates; each of the 14 derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above 100, in its statement or in a definition under it, but for those that state an instance: Register.Main.register_in_band; the largest whole number that the others name is 21, in Register.Main.simple_interpolation

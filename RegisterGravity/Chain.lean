@@ -150,9 +150,15 @@ The energy of a string (`Carriers.lean`, `Cosmo.lean`):
   `Sources.Thermo.equipartition`), so `a = g_N/b` (`Carriers.share_acceleration`); the body's
   energy per string of the sphere, in units of the matter a string holds on average, is `f = g_N/a₀` with
   `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)` (`Carriers.fill_fraction`); a string that carries the body's
-  information is one of its qubits, so the share enters as the amplitude `h = √f`
-  (`Sources.P1.share_amplitude`); the share reaches a string in equal parts, one per tick for
-  each of the string's `L` bits, so each tick adds the amplitude `h/L`
+  information is one of its qubits, so the share enters as an amplitude `h`: the amplitude of
+  the whole bits that the share fills, where one string can hold the share, and `√f` beyond, the
+  paper's definition of `h` on the same scale, which the files take as a condition
+  (`Sources.Condition.same_scale`; `Sources.Derived.share_amplitude_exact`,
+  `Main.share_amplitude`, `Carriers.share_amplitude`); `h = √f` is its leading order in `1/L`
+  (`Sources.Approx.share_amplitude`, with `Main.share_leading_order` for what the step changes
+  in `h` and `Main.law_whole_bits` for what it changes in the law; up to v18-69 the files took
+  `h = √f` as one premise, `Sources.P1.share_amplitude`); the share reaches a string in equal
+  parts, one per tick for each of the string's `L` bits, so each tick adds the amplitude `h/L`
   (`Sources.P1.share_in_parts`); and the string carries the body's information when its global
   phase holds against the share, whatever the turn of its free tick
   (`Sources.P1.carriers_hold_phase`).  The phase holds where that turn lies within

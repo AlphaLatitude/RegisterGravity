@@ -8,18 +8,45 @@ the statement of the theorem that uses it, and so is the thesis of the paper whe
 that the energy inside the horizon is the strings' and nothing else's (`hin` of
 `Reg.vacuum_share`; Postulate 1's first sentence, every physical quantity defined by qubits,
 `Sources.P1.energy_inside_strings`), that a body's energy is held by the strings that carry its
-information (`Sources.P1.energy_in_carriers`).  So are the paper's applications of Postulate 1 to
-a body's share at a string: that the share enters as an amplitude, in units of the matter a
-string holds on average (`Sources.P1.share_amplitude`), that it reaches the string in equal
-parts, one per tick for each of the string's `L` bits, which add as amplitudes
-(`Sources.P1.share_in_parts`), and that the string carries the body's information when its global
-phase holds against the share, whatever the turn of its free tick
-(`Sources.P1.carriers_hold_phase`).  From the last two and the spread of the strings' energies
+information (`Sources.P1.energy_in_carriers`).  So are the paper's applications of the
+postulates to a body's share at a string: that mass energy is found in the bits of its cells and
+adds over cells (`Sources.P1.mass_in_bits`), the same in every cell
+(`Sources.P2.cells_hold_alike`), that a string holds its matter on all its bits
+(`Sources.P1.string_matter_in_bits`), that a share which one string can hold fills whole bits of
+the string, with the amplitude of those bits (`Sources.P1.share_bits`), that the share
+reaches the string in equal parts, one per tick for each of the string's `L` bits, which add as
+amplitudes (`Sources.P1.share_in_parts`), and that the string carries the body's information
+when its global phase holds against the share, whatever the turn of its free tick
+(`Sources.P1.carriers_hold_phase`).  From the first four and the bits as the possible outcomes
+(`Sources.P1.ring_bits_alike`) the files derive the exact amplitude of the share where one
+string can hold the share (`Main.share_amplitude`, with `Law.mass_counts_bits`,
+`Law.mass_of_cells`, `Law.filled_bits` and `Law.fills_exists`); the paper's `h = √(E/u)`, in
+units of the matter `u` a string holds on average, is its leading order in `1/L`, a named step
+with its error bounded in `h` (`Sources.Approx.share_amplitude`, `Law.share_leading_order`,
+`Main.share_leading_order`) and in the law (`Main.law_whole_bits`, with
+`Law.carriers_fraction_mono`, `Law.one_sub_exp_concave` and `Law.law_whole_bits`); for a larger
+share no count of bits gives an amplitude, and the files take the paper's definition of `h` on
+the same scale as a condition, which they do not derive and no sentence of the postulates
+states (`Sources.Condition.same_scale`); and `Law.share_bits_model` shows that the premises can
+hold at once.  Up to v18-69 the files took `h = √(E/u)` as one premise,
+`Sources.P1.share_amplitude`.
+From the
+share's parts per tick, the rule of the phase and the spread of the strings' energies
 the files derive the rule of Sec. IV.C that they took as a premise up to v18-68
 (`Main.carriers_exact`, with `Law.steady_phase_all_turns`, `Reg.carriers_fraction` and
 `Reg.carriers_rule_iff`); its leading order in `1/L` is a named
 step with its error bounded (`Sources.Approx.carriers_leading`, `Main.carriers_leading_order`,
-`Main.law_bounds`), and the namespace `Sources.Open` holds no premise.  `Qubit.lean` holds the quantum
+`Main.law_bounds`), and the namespace `Sources.Open` holds no premise.  `Carriers.lean` also
+follows the phase of a unit state through one tick, at every phase.  Where the added amplitude
+is smaller than the sine of the turn, the phase moves in one sense at every tick
+(`Law.phase_slips`).  Inside the range the tick keeps the phase `φ₀ = arcsin(sin Δ/ε)` and the
+phase `π − φ₀` (`Law.kept_phases`); from every other phase the phase moves toward `φ₀`
+(`Law.phase_drawn`) without passing it (`Law.tick_between`), the repeated tick converges to
+`φ₀` (`Law.tick_converges`), and a small gap shrinks per tick by the factor
+`cos Δ/(cos Δ + ε cos φ₀)` (`Law.tick_contracts`).  For a string of the register, whose free
+tick turns its phase by `Et_c/ℏ` and adds the amplitude `h/L`, `Reg.phase_under_tick` and
+`Main.phase_under_tick` state both: outside the range the phase slips at every tick, and inside
+it the repeated tick converges to a kept phase.  `Qubit.lean` holds the quantum
 mechanics of one qubit
 that the energy of a free string and the bit per ring rest on: the two outcomes of a free string's
 qubit are its two senses, and the free tick keeps each string of one sense up to one and the same
@@ -556,6 +583,15 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 -- Sec. IV.C, the carriers and the law (Carriers.lean)
 #print axioms Register.Law.share_of_equipartition
 #print axioms Register.Law.exp_neg_taylor
+#print axioms Register.Law.mass_empty
+#print axioms Register.Law.mass_counts_bits
+#print axioms Register.Law.mass_of_cells
+#print axioms Register.Law.bits_of_share
+#print axioms Register.Law.filled_bits
+#print axioms Register.Law.fills_exists
+#print axioms Register.Law.share_amplitude
+#print axioms Register.Law.share_leading_order
+#print axioms Register.Law.share_bits_model
 #print axioms Register.Reg.ln2_lt_one
 #print axioms Register.Reg.a0_pos
 #print axioms Register.Reg.a0_depends_on_product
@@ -574,6 +610,25 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Law.steady_phase_iff_turns
 #print axioms Register.Law.steady_phase_iff_turns_nat
 #print axioms Register.Law.phase_ranges
+#print axioms Register.Law.tick_components
+#print axioms Register.Law.tick_turn
+#print axioms Register.Law.tick_polar
+#print axioms Register.Law.keepsPhaseAt
+#print axioms Register.Law.keepsPhaseAt_iff
+#print axioms Register.Law.keepsPhase_iff_kept
+#print axioms Register.Law.phase_slips
+#print axioms Register.Law.kept_phase_bounds
+#print axioms Register.Law.kept_phases
+#print axioms Register.Law.phase_drawn
+#print axioms Register.Law.tickPhase
+#print axioms Register.Law.tickPhase_spec
+#print axioms Register.Law.tickPhase_kept
+#print axioms Register.Law.tick_between
+#print axioms Register.Law.iterate_tendsto_lower
+#print axioms Register.Law.iterate_tendsto_upper
+#print axioms Register.Law.tickPhase_continuousAt
+#print axioms Register.Law.tick_converges
+#print axioms Register.Law.tick_contracts
 #print axioms Register.Law.measure_Icc_of_above
 #print axioms Register.Law.gibbs_measure_exists
 #print axioms Register.Law.whole_turns_sum
@@ -589,10 +644,15 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Law.fraction_bounds
 #print axioms Register.Law.fraction_leading_order
 #print axioms Register.Law.law_bounds
+#print axioms Register.Law.carriers_fraction_mono
+#print axioms Register.Law.one_sub_exp_concave
+#print axioms Register.Law.inv_sqrt_one_sub_le
+#print axioms Register.Law.law_whole_bits
 #print axioms Register.Reg.string_energy
 #print axioms Register.Reg.fill_fraction
 #print axioms Register.Reg.threshold_from_spread
 #print axioms Register.Reg.phase_all_turns
+#print axioms Register.Reg.phase_under_tick
 #print axioms Register.Reg.fraction_above_turn
 #print axioms Register.Reg.carriers_fraction
 #print axioms Register.Reg.carriers_rule_iff
@@ -755,11 +815,15 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Main.black_hole_horizon
 #print axioms Register.Main.temperature_led
 #print axioms Register.Main.carriers_share
+#print axioms Register.Main.share_amplitude
+#print axioms Register.Main.share_leading_order
 #print axioms Register.Main.fill_fraction
 #print axioms Register.Main.carriers_exact
+#print axioms Register.Main.phase_under_tick
 #print axioms Register.Main.carriers_leading_order
 #print axioms Register.Main.galactic_law
 #print axioms Register.Main.law_bounds
+#print axioms Register.Main.law_whole_bits
 #print axioms Register.Main.near_limit
 #print axioms Register.Main.deep_limit
 #print axioms Register.Main.tully_fisher
@@ -863,6 +927,7 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Numerics.deep_radii
 #print axioms Register.Numerics.solar_system
 #print axioms Register.Numerics.neptune_departure
+#print axioms Register.Numerics.sun_departure
 #print axioms Register.Numerics.rar_table
 #print axioms Register.Numerics.cassini_total_field
 #print axioms Register.Numerics.galactic_tide

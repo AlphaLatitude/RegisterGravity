@@ -1,4 +1,5 @@
 import RegisterGravity.Chain
+import RegisterGravity.Capacity
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
@@ -36,6 +37,23 @@ those names.
   at the Unruh temperature of `g_N`, counted in units of the matter a string holds on average,
   `u = (1 − ln 2)k_BT_dS`,
   is `f = g_N/a₀` with `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`.
+* The amplitude of the body's share (Sec. IV.C), derived from the count of bits where one string
+  can hold the share.  The mass energy that a measurement finds in cells adds over them, and the
+  bit of each cell holds the same, so a set of cells holds the number of its cells times what
+  one cell's bit holds (`Law.mass_empty`, `Law.mass_counts_bits`).  A string holds the matter
+  `u` on all its bits, so a set of `m` of its `n` cells holds `(m/n)u` (`Law.mass_of_cells`).
+  A share `E ≤ u` fills whole bits: a set of cells whose bits hold at most the share and, with
+  one bit more, more than the share (`Law.fills_exists`).  Each cell's bit is one possible
+  outcome among the ring's, so the probability `p` of those bits is a whole number of bits over
+  `n` with `E/u − 1/n < p ≤ E/u`, and `p = E/u` where some set of cells holds the share exactly
+  (`Law.filled_bits`, `Law.bits_of_share`).  The amplitude of the share is the square root of
+  that probability, and for a share larger than `u` it is `√(E/u)`, the paper's definition of
+  `h` on the same scale, taken as a condition (`Law.share_amplitude`).  The paper's `h = √(E/u)`
+  is the leading order in `1/n`:
+  the exact amplitude falls short of it by at most `1/√n`, and by at most `1/(n√(E/u))` where
+  the share is at least one bit; where the share is below one bit the exact amplitude is zero
+  (`Law.share_leading_order`).  `Law.share_bits_model` shows that the hypotheses can hold at
+  once, for every share.
 * The rule by which a string carries the body's information (Sec. IV.C), derived, for every turn
   of the string's phase per tick.  Each tick adds to a string the amplitude `ε = h/L` of the
   body's share, and a free tick turns the global phase of a string of energy `E` by
@@ -66,6 +84,27 @@ those names.
   `Law.first_range_leading_order` and `Law.whole_turns_le`), and `Law.law_bounds` gives the
   bounds on `a = g_N/b`.  `Reg.carriers_model` shows that the hypotheses of the rule can hold at
   once.
+* The law with the exact amplitude of whole bits (Sec. IV.C).  The carriers' exact fraction `b`
+  increases with the amplitude `h` (`Law.carriers_fraction_mono`), and `1 − e^{−t}` is concave
+  in `t` and vanishes at `t = 0` (`Law.one_sub_exp_concave`).  With the amplitude of whole bits
+  on a string of `L` bits, `0 < h < L` and `f − 1/L < h² ≤ f`, the acceleration `a = g_N/b` is
+  at least `1 − (√f/L)² − 5e^{−3πL/2}` times the value `g_N/(1 − e^{−√f})` of Eq. (law) where
+  `√f ≤ L/2`, at most that value over `√(1 − 1/(L·f))` where `f > 1/L`, and at most
+  `1 + 1/(L·f)` times it where `f ≥ 2/L` (`Law.law_whole_bits`, with
+  `Law.inv_sqrt_one_sub_le`).
+* The phase of a unit state under one tick (Sec. IV.C), at every phase `φ`.  A state of unit
+  amplitude at the phase `φ` is turned by `Δ`, and the amplitude `ε` is added at the phase zero.
+  The new state has the component `cos Δ + ε cos φ` along the old direction and
+  `sin Δ − ε sin φ` across it (`Law.tick_components`, `Law.tick_turn`, `Law.tick_polar`).  The
+  tick keeps the phase `φ` exactly when the component across vanishes and the component along
+  is positive (`Law.keepsPhaseAt`, `Law.keepsPhaseAt_iff`, `Law.keepsPhase_iff_kept`).  Where
+  `ε < |sin Δ|` the component across has the sign of `sin Δ` at every phase, so the phase moves
+  in one sense at every tick (`Law.phase_slips`).  Where `|sin Δ| < ε` and `cos Δ > 0` the kept
+  phases are `φ₀ = arcsin(sin Δ/ε)` and `π − φ₀` up to whole turns (`Law.kept_phases`), and from
+  every other phase the phase moves toward `φ₀` and away from `π − φ₀` (`Law.phase_drawn`).  The
+  phase after the tick, taken nearest to the phase before (`Law.tickPhase`), does not pass `φ₀`
+  (`Law.tick_between`), the repeated tick converges to `φ₀` (`Law.tick_converges`), and a small
+  gap shrinks per tick by the factor `cos Δ/(cos Δ + ε cos φ₀)` (`Law.tick_contracts`).
 * `Reg.law`, Eq. (law), at leading order in `1/L`: with the threshold exponential with mean one in
   amplitude (`hME`: the string's slip per tick against the turn per tick `h/L`, the leading order
   of `arcsin(h/L)`, exponential with mean one by the Gibbs spread, `Law.gibbsAbove_eq` and
@@ -95,13 +134,19 @@ those names.
 * `Reg.radial_acceleration_relation`: the law chained from its inputs, each a named hypothesis,
   and `Reg.hypotheses_consistent`, which shows that the hypotheses can hold at once.
 
-The amplitude `h = √f` is an application of Postulate 1 that Sec. IV.C makes
-(`Sources.P1.share_amplitude`): a string that carries the body's information is one of its qubits,
-so its share of the body is the fraction `f` of a whole qubit, and the amplitude of that share is
-`√f`, in units of one whole qubit.  In `Reg.law` it is the argument of the threshold's survival
-function (`hb`).  At leading order in `1/L` the fraction `b` of carriers is the probability that
-a string's threshold lies below `h`, and so the fraction of the sphere's strings that carry the
-body's information.
+Up to v18-69 the files took the amplitude `h = √f` of the body's share, `h = √(E/u)`, as one
+premise (`Sources.P1.share_amplitude`).  The exact amplitude is derived for `f ≤ 1`
+(`Law.share_amplitude`, `Main.share_amplitude`): a string that carries the body's information is
+one of its qubits and holds the matter `u` on all its bits, so its share of the body fills whole
+bits of the string, and the amplitude of the share is the square root of the probability of
+those bits.  That amplitude is `√f` to leading order in `1/L`, in units of one whole qubit
+(`Sources.Approx.share_amplitude`, `Law.share_leading_order`, `Main.share_leading_order`), and
+`Law.law_whole_bits` and `Main.law_whole_bits` bound what the step to `√f` changes in the law.
+For `f > 1` the amplitude `√f` is the paper's definition of `h` on the same scale, which the
+files take as a condition (`Sources.Condition.same_scale`).  In
+`Reg.law` the amplitude is the argument of the threshold's survival function (`hb`).  At leading
+order in `1/L` the fraction `b` of carriers is the probability that a string's threshold lies
+below `h`, and so the fraction of the sphere's strings that carry the body's information.
 -/
 
 open Real Finset
@@ -149,6 +194,328 @@ lemma exp_neg_taylor {h : ℝ} (hh : 0 ≤ h) (h1 : h ≤ 1) :
   rw [hs, hc] at hb
   obtain ⟨b1, b2⟩ := abs_le.mp hb
   constructor <;> linarith
+
+/-! ### The amplitude of a body's share, from the count of bits (Sec. IV.C) -/
+
+/-- **The empty set of cells holds no mass energy** (Sec. IV.C).  `held S` is the mass energy
+that a measurement on the manifold finds in the cells of `S`, and it adds over sets of cells
+with no cell in common (`hadd`, `Sources.P1.mass_in_bits`).  The empty set has no cell in common
+with itself, so it holds twice what it holds, which is nothing.  Sec. IV.C: "The measurement finds the bits in those cells and nothing else (Postulate 1), so mass energy is
+counted in bits: cells without such bits show no mass." -/
+theorem mass_empty {Cell : Type*} [DecidableEq Cell] (held : Finset Cell → ℝ)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T) :
+    held ∅ = 0 := by
+  have h := hadd ∅ ∅ disjoint_bot_left
+  rw [Finset.union_self] at h
+  linarith
+
+/-- **Mass energy counts the bits** (Sec. IV.C).  The mass energy that a measurement finds in
+cells adds over them (`hadd`, `Sources.P1.mass_in_bits`), and the bit of each cell holds the
+same (`hcell`, `Sources.P2.cells_hold_alike`).  So a set `S` of cells holds the number of its
+cells times what the bit of one cell `x` holds, whichever cell `x` is.  The proof adds the cells
+of `S` one after another.  Sec. IV.C: "No cell differs from another (Postulate 2), so every bit counts the same." -/
+theorem mass_counts_bits {Cell : Type*} [DecidableEq Cell] (held : Finset Cell → ℝ)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (S : Finset Cell) (x : Cell) :
+    held S = S.card * held {x} := by
+  induction S using Finset.induction_on with
+  | empty => rw [mass_empty held hadd, Finset.card_empty, Nat.cast_zero, zero_mul]
+  | insert a s ha ih =>
+    rw [Finset.insert_eq, hadd _ _ (Finset.disjoint_singleton_left.2 ha), ih, hcell a x,
+      ← Finset.insert_eq, Finset.card_insert_of_notMem ha]
+    push_cast
+    ring
+
+/-- **What a set of a string's cells holds** (Sec. IV.C).  With the count of `mass_counts_bits`
+and the string's matter `u` on all the cells of its ring (`hall`,
+`Sources.P1.string_matter_in_bits`), for a ring that is not empty: the bit of each of its `n`
+cells holds `u/n`, so a set of `m` cells holds `(m/n)u`, its share of the cells times the
+string's matter.  Sec. IV.C: "The strings hold the matter `u` per string, on the `L` bits of one whole qubit, so for `f ≤ 1` a
+string's share of the body, `E = fu`, fills the fraction `f` of its bits, to within one bit." -/
+theorem mass_of_cells {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
+    (held : Finset Cell → ℝ)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (u : ℝ) (hall : held univ = u)
+    (S : Finset Cell) :
+    held S = (S.card / Fintype.card Cell) * u := by
+  obtain ⟨x⟩ := ‹Nonempty Cell›
+  have hL : (Fintype.card Cell : ℝ) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+  have h1 := mass_counts_bits held hadd hcell univ x
+  rw [hall, Finset.card_univ] at h1
+  rw [mass_counts_bits held hadd hcell S x, h1]
+  field_simp
+
+/-- **A set of cells that holds a share exactly: its fraction, its probability and its
+amplitude** (Sec. IV.C).  A set `S` of the string's cells holds the share `E`, no more and no
+less (`hS`), and the string holds the matter `u ≠ 0` on all its cells.  The first part: by
+`mass_of_cells` the set is the fraction `E/u` of the string's cells, so the share is that
+fraction of the string's bits, and it is a whole number of bits, the number of the cells of
+`S`.  The second part: each cell's bit is one possible outcome among the ring's (`halike`,
+`Sources.P1.ring_bits_alike`), so the probability that the outcome is the bit of a cell of `S`
+is the set's share of the cells (`Capacity.share_read`), which is `E/u`.  The third part: the
+square root of that probability, the amplitude of those bits, is `√(E/u)`. -/
+theorem bits_of_share {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
+    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E u : ℝ) (hu : u ≠ 0)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u)
+    (halike : ∀ x, read x = 1 / Fintype.card Cell) (S : Finset Cell) (hS : held S = E) :
+    (S.card : ℝ) / Fintype.card Cell = E / u ∧ ∑ x ∈ S, read x = E / u ∧
+      Real.sqrt (∑ x ∈ S, read x) = Real.sqrt (E / u) := by
+  have hfrac : (S.card : ℝ) / Fintype.card Cell = E / u := by
+    rw [← hS, mass_of_cells held hadd hcell u hall S, mul_div_assoc, div_self hu, mul_one]
+  have hprob : ∑ x ∈ S, read x = E / u := by
+    rw [Capacity.share_read read halike S, hfrac]
+  exact ⟨hfrac, hprob, by rw [hprob]⟩
+
+/-- **The bits that a share fills** (Sec. IV.C).  The string holds the matter `u > 0` on all
+its cells, and the share is one that the string can hold, `E ≤ u`.  The share fills a set `S`
+of the string's cells and not one cell more: the bits of `S` hold at most the share (`hS`), and
+with the bit of any further cell they would hold more than the share (`hnext`; the two are the
+first part of `Sources.P1.share_bits`).  Each cell's bit is one possible outcome among the
+ring's (`halike`, `Sources.P1.ring_bits_alike`).  The first part: the probability `p` that the
+outcome is the bit of a cell of `S` is the set's share of the cells, a whole number of bits over
+the number `n` of the ring's cells (`Capacity.share_read`).  The second and third parts: that
+probability lies less than one bit below the fraction `E/u`, `E/u − 1/n < p ≤ E/u`
+(`mass_of_cells`).  The fourth part: where some set of cells holds the share exactly, so that
+the share is a whole number of bits, `p = E/u` (`bits_of_share`).  Sec. IV.C: "The strings hold the matter `u` per string, on the `L` bits of one whole qubit, so for `f ≤ 1` a
+string's share of the body, `E = fu`, fills the fraction `f` of its bits, to within one bit." -/
+theorem filled_bits {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
+    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E u : ℝ) (hu : 0 < u) (hEu : E ≤ u)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u)
+    (halike : ∀ x, read x = 1 / Fintype.card Cell) (S : Finset Cell)
+    (hS : held S ≤ E) (hnext : ∀ x, x ∉ S → E < held (insert x S)) :
+    ∑ x ∈ S, read x = S.card / Fintype.card Cell ∧
+    E / u - 1 / Fintype.card Cell < ∑ x ∈ S, read x ∧ ∑ x ∈ S, read x ≤ E / u ∧
+    ((∃ T : Finset Cell, held T = E) → ∑ x ∈ S, read x = E / u) := by
+  have hn : (0 : ℝ) < Fintype.card Cell := by exact_mod_cast Fintype.card_pos
+  have hp : ∑ x ∈ S, read x = S.card / Fintype.card Cell := Capacity.share_read read halike S
+  have hheld := mass_of_cells held hadd hcell u hall
+  -- the set holds at most the share
+  have hle : (S.card : ℝ) / Fintype.card Cell ≤ E / u := by
+    rw [le_div_iff₀ hu, ← hheld S]
+    exact hS
+  -- one bit more would hold more than the share
+  have hlt : E / u - 1 / Fintype.card Cell < (S.card : ℝ) / Fintype.card Cell := by
+    by_cases hall' : ∀ x, x ∈ S
+    · have hSuniv : S = univ := Finset.eq_univ_iff_forall.2 hall'
+      rw [hSuniv, Finset.card_univ, div_self hn.ne']
+      have h1 : E / u ≤ 1 := (div_le_one hu).2 hEu
+      have h2 : (0 : ℝ) < 1 / Fintype.card Cell := by positivity
+      linarith
+    · push Not at hall'
+      obtain ⟨x, hx⟩ := hall'
+      have h1 := hnext x hx
+      rw [hheld (insert x S), Finset.card_insert_of_notMem hx] at h1
+      have h2 : E / u < ((S.card + 1 : ℕ) : ℝ) / Fintype.card Cell := by
+        rw [div_lt_iff₀ hu]
+        exact h1
+      push_cast at h2
+      have h3 : ((S.card : ℝ) + 1) / Fintype.card Cell
+          = (S.card : ℝ) / Fintype.card Cell + 1 / Fintype.card Cell := by ring
+      linarith
+  refine ⟨hp, by rw [hp]; exact hlt, by rw [hp]; exact hle, ?_⟩
+  rintro ⟨T, hT⟩
+  -- a set that holds the share exactly has as many cells
+  have hfrac := (bits_of_share held read E u hu.ne' hadd hcell hall halike T hT).1
+  rw [hp, ← hfrac]
+  rw [← hfrac] at hle hlt
+  have h1 : (S.card : ℝ) ≤ T.card := by
+    have := (div_le_div_iff_of_pos_right hn).1 hle
+    exact this
+  have h2 : (T.card : ℝ) - 1 < S.card := by
+    have h3 : ((T.card : ℝ) - 1) / Fintype.card Cell < (S.card : ℝ) / Fintype.card Cell := by
+      rw [sub_div]; exact hlt
+    exact (div_lt_div_iff_of_pos_right hn).1 h3
+  have h4 : S.card ≤ T.card := by exact_mod_cast h1
+  have h5 : T.card < S.card + 1 := by
+    have : (T.card : ℝ) < (S.card : ℝ) + 1 := by linarith
+    exact_mod_cast this
+  have h6 : S.card = T.card := by omega
+  rw [h6]
+
+/-- **Every share that one string can hold fills a set of cells and not one more**
+(Sec. IV.C).  With mass energy counted in bits (`hadd`, `hcell`) and the string's matter `u > 0`
+on all the cells of its ring (`hall`), for every share `0 ≤ E ≤ u` there is a set of cells whose
+bits hold at most the share and, with the bit of any further cell, more than the share: a set
+of `⌊nE/u⌋` of the ring's `n` cells, the whole bits that the share fills.  So the first part of
+`Sources.P1.share_bits` can be met for every such share.  Sec. IV.C: "The strings hold the matter `u` per string, on the `L` bits of one whole qubit, so for `f ≤ 1` a
+string's share of the body, `E = fu`, fills the fraction `f` of its bits, to within one bit." -/
+theorem fills_exists {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
+    (held : Finset Cell → ℝ) (E u : ℝ) (hu : 0 < u) (hE : 0 ≤ E) (hEu : E ≤ u)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u) :
+    ∃ S : Finset Cell, held S ≤ E ∧ ∀ x, x ∉ S → E < held (insert x S) := by
+  have hn : (0 : ℝ) < Fintype.card Cell := by exact_mod_cast Fintype.card_pos
+  have hheld := mass_of_cells held hadd hcell u hall
+  have hf0 : 0 ≤ (Fintype.card Cell : ℝ) * (E / u) := by positivity
+  have hf1 : (Fintype.card Cell : ℝ) * (E / u) ≤ Fintype.card Cell := by
+    have : E / u ≤ 1 := (div_le_one hu).2 hEu
+    nlinarith
+  -- the whole bits that the share fills
+  have hm : ⌊(Fintype.card Cell : ℝ) * (E / u)⌋₊ ≤ (univ : Finset Cell).card := by
+    rw [Finset.card_univ]
+    exact Nat.floor_le_of_le hf1
+  obtain ⟨S, -, hS⟩ := Finset.exists_subset_card_eq hm
+  refine ⟨S, ?_, fun x hx => ?_⟩
+  · rw [hheld S, hS]
+    have h1 := Nat.floor_le hf0
+    have h2 : (⌊(Fintype.card Cell : ℝ) * (E / u)⌋₊ : ℝ) / Fintype.card Cell ≤ E / u := by
+      rw [div_le_iff₀ hn]; linarith
+    rw [le_div_iff₀ hu] at h2
+    exact h2
+  · rw [hheld (insert x S), Finset.card_insert_of_notMem hx, hS]
+    have h1 := Nat.lt_floor_add_one ((Fintype.card Cell : ℝ) * (E / u))
+    have h2 : E / u < ((⌊(Fintype.card Cell : ℝ) * (E / u)⌋₊ + 1 : ℕ) : ℝ) / Fintype.card Cell := by
+      rw [lt_div_iff₀ hn]; push_cast; linarith
+    rw [div_lt_iff₀ hu] at h2
+    exact h2
+
+/-- **The exact amplitude of a body's share** (Sec. IV.C), in the form in which
+`Main.share_amplitude` states it from the sources.  The first part, for a share that one string
+can hold, `0 ≤ E ≤ u`: the share fills a set of the string's cells and not one more, and `h` is
+the amplitude of their bits (`hbits`, `Sources.P1.share_bits`).  So `h` is not negative, `h²` is
+a whole number of bits over the number `n` of the ring's cells, and `E/u − 1/n < h² ≤ E/u`
+(`filled_bits`).  The second part, for a larger share, `E > u`: `h = √(E/u)`, the paper's
+definition of `h` on the same scale, a condition (`hscale`, `Sources.Condition.same_scale`), and
+no count of bits.
+`share_leading_order` bounds the step from this amplitude to `√(E/u)`.  Up to v18-69 the files
+took `h = √(E/u)` as one premise, `Sources.P1.share_amplitude`. -/
+theorem share_amplitude {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
+    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E u h : ℝ) (hu : 0 < u) (hE : 0 ≤ E)
+    (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u)
+    (halike : ∀ x, read x = 1 / Fintype.card Cell)
+    (hbits : 0 ≤ E → E ≤ u → ∃ S : Finset Cell, held S ≤ E ∧
+      (∀ x, x ∉ S → E < held (insert x S)) ∧ h = Real.sqrt (∑ x ∈ S, read x))
+    (hscale : u < E → h = Real.sqrt (E / u)) :
+    (E ≤ u → 0 ≤ h ∧ (∃ m : ℕ, h ^ 2 = m / Fintype.card Cell) ∧
+      E / u - 1 / Fintype.card Cell < h ^ 2 ∧ h ^ 2 ≤ E / u) ∧
+    (u < E → h = Real.sqrt (E / u)) := by
+  refine ⟨fun hEu => ?_, hscale⟩
+  obtain ⟨S, hS, hnext, hh⟩ := hbits hE hEu
+  obtain ⟨hp, hlo, hhi, -⟩ :=
+    filled_bits held read E u hu hEu hadd hcell hall halike S hS hnext
+  have hp0 : 0 ≤ ∑ x ∈ S, read x := by rw [hp]; positivity
+  have hsq : h ^ 2 = ∑ x ∈ S, read x := by rw [hh, Real.sq_sqrt hp0]
+  exact ⟨by rw [hh]; exact Real.sqrt_nonneg _, ⟨S.card, by rw [hsq, hp]⟩, by rw [hsq]; exact hlo,
+    by rw [hsq]; exact hhi⟩
+
+/-- **The amplitude of a share at leading order** (Sec. IV.C): what the step from the exact
+amplitude to `√f` changes, with `f = E/u`.  Let `h` be the amplitude of whole bits on a string of
+`n` bits: `h ≥ 0`, `h²` a whole number of bits over `n`, and `f − 1/n < h² ≤ f` (`hexact`, the
+first part of `share_amplitude`).  The first and second parts: `√f` is at least `h` and exceeds
+it by at most `1/√n`, since `(√f − h)² ≤ f − h² < 1/n`.  The third part: where the share is at
+least one bit, `f ≥ 1/n`, `√f` exceeds `h` by at most `1/(n√f)`, since
+`√f − h = (f − h²)/(√f + h)`.  The fourth part: where the share is a whole number of bits,
+`f = k/n`, the two are equal.  The fifth part: where the share is below one bit, `f < 1/n`, it
+fills no bit and `h = 0`, so there the step puts `√f` for the amplitude zero.  The hypothesis
+has `n ≥ 1`: for `n = 0` it would read `f < h² ≤ f`.  Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+theorem share_leading_order (n : ℕ) (f h : ℝ)
+    (hexact : 0 ≤ h ∧ (∃ m : ℕ, h ^ 2 = m / n) ∧ f - 1 / n < h ^ 2 ∧ h ^ 2 ≤ f) :
+    0 ≤ Real.sqrt f - h ∧ Real.sqrt f - h ≤ 1 / Real.sqrt n ∧
+    (1 / n ≤ f → Real.sqrt f - h ≤ 1 / (n * Real.sqrt f)) ∧
+    ((∃ k : ℕ, f = k / n) → h = Real.sqrt f) ∧ (f < 1 / n → h = 0) := by
+  obtain ⟨hh0, ⟨m, hm⟩, hlo, hhi⟩ := hexact
+  have hf0 : 0 ≤ f := le_trans (sq_nonneg h) hhi
+  have ha0 : 0 ≤ Real.sqrt f := Real.sqrt_nonneg f
+  have ha2 : Real.sqrt f ^ 2 = f := Real.sq_sqrt hf0
+  -- `h ≤ √f`
+  have hle : h ≤ Real.sqrt f := Real.le_sqrt_of_sq_le hhi
+  -- the number of the cells is not zero: else `f < h² ≤ f`
+  have hn : 0 < n := by
+    rcases Nat.eq_zero_or_pos n with h0 | h0
+    · exfalso
+      rw [h0, Nat.cast_zero, div_zero, sub_zero] at hlo
+      linarith
+    · exact h0
+  have hn' : (0 : ℝ) < n := by exact_mod_cast hn
+  have hsn : 0 < Real.sqrt n := Real.sqrt_pos.2 hn'
+  -- `(√f − h)² ≤ (√f − h)(√f + h) = f − h² < 1/n`
+  have hgap : Real.sqrt f ^ 2 - h ^ 2 < 1 / n := by rw [ha2]; linarith
+  refine ⟨by linarith, ?_, fun h1 => ?_, ?_, fun hlt => ?_⟩
+  · have h2 : (Real.sqrt f - h) ^ 2 ≤ 1 / n := by nlinarith
+    have h3 : Real.sqrt f - h ≤ Real.sqrt (1 / n) := Real.le_sqrt_of_sq_le h2
+    rwa [Real.sqrt_div' 1 hn'.le, Real.sqrt_one] at h3
+  · -- `√f − h = (f − h²)/(√f + h) ≤ (1/n)/√f`
+    have hf : 0 < f := lt_of_lt_of_le (by positivity) h1
+    have ha : 0 < Real.sqrt f := Real.sqrt_pos.2 hf
+    rw [le_div_iff₀ (by positivity)]
+    have h2 : (Real.sqrt f - h) * Real.sqrt f ≤ Real.sqrt f ^ 2 - h ^ 2 := by nlinarith
+    have h3 : (Real.sqrt f - h) * (n * Real.sqrt f) = n * ((Real.sqrt f - h) * Real.sqrt f) := by
+      ring
+    rw [h3]
+    have h4 : (n : ℝ) * (Real.sqrt f ^ 2 - h ^ 2) < 1 := by
+      have := mul_lt_mul_of_pos_left hgap hn'
+      rwa [mul_one_div_cancel hn'.ne'] at this
+    nlinarith
+  · rintro ⟨k, hk⟩
+    -- `k − 1 < m ≤ k`, so `m = k`
+    rw [hm, hk] at hhi
+    rw [hm, hk] at hlo
+    have h1 : (m : ℝ) ≤ k := (div_le_div_iff_of_pos_right hn').1 hhi
+    have h2 : (k : ℝ) - 1 < m := by
+      have h3 : ((k : ℝ) - 1) / n < (m : ℝ) / n := by rw [sub_div]; exact hlo
+      exact (div_lt_div_iff_of_pos_right hn').1 h3
+    have h4 : m ≤ k := by exact_mod_cast h1
+    have h5 : k < m + 1 := by
+      have : (k : ℝ) < (m : ℝ) + 1 := by linarith
+      exact_mod_cast this
+    have h6 : m = k := by omega
+    have h7 : h ^ 2 = f := by rw [hm, hk, h6]
+    rw [← h7, Real.sqrt_sq hh0]
+  · -- `m/n = h² ≤ f < 1/n`, so `m = 0`
+    have h1 : (m : ℝ) / n < 1 / n := by rw [← hm]; linarith
+    have h2 : (m : ℝ) < 1 := (div_lt_div_iff_of_pos_right hn').1 h1
+    have h3 : m = 0 := by
+      have : m < 1 := by exact_mod_cast h2
+      omega
+    rw [h3, Nat.cast_zero, zero_div] at hm
+    exact (pow_eq_zero_iff two_ne_zero).1 hm
+
+/-- **The hypotheses of the share's amplitude can hold at once** (Sec. IV.C), on a ring of
+`n ≥ 1` cells, for every matter `u > 0` and every share `E`.  There are a count `held` of the
+mass energy in cells that adds over them, with the bit of each cell holding the same and all the
+cells holding `u`; probabilities `read` of the bits, alike; and an amplitude `h`, such that for
+`0 ≤ E ≤ u` the share fills a set of cells and not one more, with `h` the amplitude of its bits
+(`fills_exists`), and for `E > u` the amplitude is `√(E/u)`.  So `Main.share_amplitude` does not
+hold vacuously, at any share. -/
+theorem share_bits_model (n : ℕ) (hn : 0 < n) (E u : ℝ) (hu : 0 < u) :
+    ∃ (held : Finset (Fin n) → ℝ) (read : Fin n → ℝ) (h : ℝ),
+      (∀ S T : Finset (Fin n), Disjoint S T → held (S ∪ T) = held S + held T) ∧
+      (∀ x y : Fin n, held {x} = held {y}) ∧ held univ = u ∧
+      (∀ x, read x = 1 / Fintype.card (Fin n)) ∧
+      (0 ≤ E → E ≤ u → ∃ S : Finset (Fin n), held S ≤ E ∧
+        (∀ x, x ∉ S → E < held (insert x S)) ∧ h = Real.sqrt (∑ x ∈ S, read x)) ∧
+      (u < E → h = Real.sqrt (E / u)) := by
+  have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast hn.ne'
+  have hne : Nonempty (Fin n) := ⟨⟨0, hn⟩⟩
+  -- the count: each of the `n` cells holds `u/n`
+  have hadd : ∀ S T : Finset (Fin n), Disjoint S T →
+      ((S ∪ T).card : ℝ) / n * u = (S.card : ℝ) / n * u + (T.card : ℝ) / n * u := by
+    intro A B hAB
+    rw [Finset.card_union_of_disjoint hAB]
+    push_cast
+    ring
+  have hcell : ∀ x y : Fin n,
+      (({x} : Finset (Fin n)).card : ℝ) / n * u = (({y} : Finset (Fin n)).card : ℝ) / n * u := by
+    intro x y
+    rw [Finset.card_singleton, Finset.card_singleton]
+  have hall : ((univ : Finset (Fin n)).card : ℝ) / n * u = u := by
+    rw [Finset.card_univ, Fintype.card_fin, div_self hn', one_mul]
+  by_cases hcase : 0 ≤ E ∧ E ≤ u
+  · -- a share that the string can hold: the amplitude of the bits that it fills
+    obtain ⟨S, hS, hnext⟩ :=
+      fills_exists (fun T : Finset (Fin n) => (T.card : ℝ) / n * u) E u hu hcase.1 hcase.2
+        hadd hcell hall
+    exact ⟨fun T => (T.card : ℝ) / n * u, fun _ => 1 / Fintype.card (Fin n),
+      Real.sqrt (∑ x ∈ S, (fun _ : Fin n => (1 : ℝ) / Fintype.card (Fin n)) x), hadd, hcell, hall,
+      fun _ => rfl, fun _ _ => ⟨S, hS, hnext, rfl⟩, fun hlt => absurd hcase.2 (not_le.2 hlt)⟩
+  · -- a larger share, or none: the scale
+    exact ⟨fun T => (T.card : ℝ) / n * u, fun _ => 1 / Fintype.card (Fin n), Real.sqrt (E / u),
+      hadd, hcell, hall, fun _ => rfl, fun h0 h1 => absurd ⟨h0, h1⟩ hcase, fun _ => rfl⟩
 
 /-! ### The Gibbs mean of the strings' energies (Sec. IV.E) -/
 
@@ -1089,6 +1456,204 @@ theorem law_bounds (gN L h a b : ℝ) (hgN : 0 < gN) (hL : 1 ≤ L) (hh0 : 0 < h
       _ ≤ gN / b := div_le_div_of_nonneg_left hgN.le hbpos hb3
       _ = a := hab.symm
 
+/-- **The carriers' fraction increases with the amplitude of the share** (Sec. IV.C).  The
+carriers are the fraction `b(h) = (1 − e^{−A})(1 + (e^{A} + 1)/(e^{2πL} − 1))` of the strings,
+with `A = L arcsin(h/L)` (`phase_fraction`), and `L > 0`.  The first part: for `0 ≤ h₁ ≤ h₂`,
+`b(h₁) ≤ b(h₂)`.  The second part: for `h₁ < h₂ ≤ L`, `b(h₁) < b(h₂)`.  The exponent `A`
+increases with `h`, as the arcsine does, and both factors of `b` increase with `A`; the first
+factor is not negative for `A ≥ 0`, and the second is positive.  Lean's arcsine stays at `π/2`
+beyond `1`, so the first part needs no bound on `h₂`, and the second part has `h₂ ≤ L`.
+`law_whole_bits` takes the first part at the amplitude of whole bits and at `√f`.
+Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+theorem carriers_fraction_mono (L h₁ h₂ : ℝ) (hL : 0 < L) (h0 : 0 ≤ h₁) (h12 : h₁ ≤ h₂) :
+    (1 - Real.exp (-(L * Real.arcsin (h₁ / L)))) *
+        (1 + (Real.exp (L * Real.arcsin (h₁ / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1)) ≤
+      (1 - Real.exp (-(L * Real.arcsin (h₂ / L)))) *
+        (1 + (Real.exp (L * Real.arcsin (h₂ / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1)) ∧
+    (h₁ < h₂ → h₂ ≤ L →
+      (1 - Real.exp (-(L * Real.arcsin (h₁ / L)))) *
+          (1 + (Real.exp (L * Real.arcsin (h₁ / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1)) <
+        (1 - Real.exp (-(L * Real.arcsin (h₂ / L)))) *
+          (1 + (Real.exp (L * Real.arcsin (h₂ / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1))) := by
+  have hQ : 0 < Real.exp (2 * Real.pi * L) - 1 := by
+    have h1 : 0 < 2 * Real.pi * L := by positivity
+    have h2 := Real.add_one_lt_exp h1.ne'
+    linarith
+  -- the second factor is positive at every exponent
+  have hsec : ∀ s : ℝ, 0 < 1 + (Real.exp s + 1) / (Real.exp (2 * Real.pi * L) - 1) := by
+    intro s
+    have := div_pos (by positivity : 0 < Real.exp s + 1) hQ
+    linarith
+  -- both factors increase with the exponent, from zero up
+  have key : ∀ s t : ℝ, 0 ≤ s → s ≤ t →
+      (1 - Real.exp (-s)) * (1 + (Real.exp s + 1) / (Real.exp (2 * Real.pi * L) - 1)) ≤
+          (1 - Real.exp (-t)) * (1 + (Real.exp t + 1) / (Real.exp (2 * Real.pi * L) - 1)) ∧
+        (s < t →
+          (1 - Real.exp (-s)) * (1 + (Real.exp s + 1) / (Real.exp (2 * Real.pi * L) - 1)) <
+            (1 - Real.exp (-t)) * (1 + (Real.exp t + 1) / (Real.exp (2 * Real.pi * L) - 1))) := by
+    intro s t hs hst
+    have h1 : Real.exp (-t) ≤ Real.exp (-s) := Real.exp_le_exp.2 (neg_le_neg hst)
+    have h2 : Real.exp s ≤ Real.exp t := Real.exp_le_exp.2 hst
+    have h3 : Real.exp (-t) ≤ 1 := by
+      rw [← Real.exp_zero]
+      exact Real.exp_le_exp.2 (by linarith)
+    have h4 : (Real.exp s + 1) / (Real.exp (2 * Real.pi * L) - 1) ≤
+        (Real.exp t + 1) / (Real.exp (2 * Real.pi * L) - 1) :=
+      (div_le_div_iff_of_pos_right hQ).2 (by linarith)
+    refine ⟨mul_le_mul (by linarith) (by linarith) (hsec s).le (by linarith), fun hlt => ?_⟩
+    have h5 : Real.exp (-t) < Real.exp (-s) := Real.exp_lt_exp.2 (neg_lt_neg hlt)
+    exact mul_lt_mul (by linarith) (by linarith) (hsec s) (by linarith)
+  have hy1 : 0 ≤ h₁ / L := div_nonneg h0 hL.le
+  have hs0 : 0 ≤ L * Real.arcsin (h₁ / L) := mul_nonneg hL.le (Real.arcsin_nonneg.2 hy1)
+  have hdiv : h₁ / L ≤ h₂ / L := (div_le_div_iff_of_pos_right hL).2 h12
+  have hst : L * Real.arcsin (h₁ / L) ≤ L * Real.arcsin (h₂ / L) :=
+    mul_le_mul_of_nonneg_left (Real.monotone_arcsin hdiv) hL.le
+  refine ⟨(key _ _ hs0 hst).1, fun hlt hle => (key _ _ hs0 hst).2 ?_⟩
+  -- the arcsine increases strictly up to `1`
+  have hy2 : h₂ / L ≤ 1 := (div_le_one hL).2 hle
+  have hdiv' : h₁ / L < h₂ / L := (div_lt_div_iff_of_pos_right hL).2 hlt
+  have hstrict : Real.arcsin (h₁ / L) < Real.arcsin (h₂ / L) :=
+    Real.strictMonoOn_arcsin ⟨by linarith, by linarith⟩ ⟨by linarith, hy2⟩ hdiv'
+  exact mul_lt_mul_of_pos_left hstrict hL
+
+/-- **The concavity of `1 − e^{−t}`** (Sec. IV.C): for `x > 0` and `0 ≤ y ≤ x`,
+`(y/x)(1 − e^{−x}) ≤ 1 − e^{−y}`.  The function `t ↦ 1 − e^{−t}` is concave and vanishes at
+`t = 0`, so its value at a point `y` between `0` and `x` is at least the fraction `y/x` of its
+value at `x`.  The proof is the convexity of the exponential (`convexOn_exp`) at the points
+`−x` and `0`, with the weights `y/x` and `1 − y/x`.  `law_whole_bits` takes it at `x = √f` and
+`y = √(f − 1/L)`.
+Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+theorem one_sub_exp_concave (x y : ℝ) (hx : 0 < x) (hy : 0 ≤ y) (hyx : y ≤ x) :
+    y / x * (1 - Real.exp (-x)) ≤ 1 - Real.exp (-y) := by
+  have ht0 : 0 ≤ y / x := div_nonneg hy hx.le
+  have ht1 : y / x ≤ 1 := (div_le_one hx).2 hyx
+  -- `e^{−y} ≤ (y/x) e^{−x} + (1 − y/x) e^0`
+  have hc := convexOn_exp.2 (Set.mem_univ (-x)) (Set.mem_univ (0 : ℝ)) ht0 (sub_nonneg.2 ht1)
+    (by ring : y / x + (1 - y / x) = 1)
+  simp only [smul_eq_mul, mul_zero, add_zero, Real.exp_zero, mul_one] at hc
+  have e : y / x * -x = -y := by field_simp
+  rw [e] at hc
+  linarith
+
+/-- `1/√(1 − x) ≤ 1 + x` for `0 ≤ x ≤ 1/2`: the square of `(1 + x)√(1 − x)` is
+`1 + x(1 − x − x²) ≥ 1`.
+Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+lemma inv_sqrt_one_sub_le (x : ℝ) (hx0 : 0 ≤ x) (hx : x ≤ 1 / 2) :
+    1 / Real.sqrt (1 - x) ≤ 1 + x := by
+  have hpos : 0 < 1 - x := by linarith
+  have hs : 0 < Real.sqrt (1 - x) := Real.sqrt_pos.2 hpos
+  have hsq : Real.sqrt (1 - x) ^ 2 = 1 - x := Real.sq_sqrt hpos.le
+  rw [div_le_iff₀ hs]
+  by_contra hlt
+  push Not at hlt
+  have h0 : 0 ≤ (1 + x) * Real.sqrt (1 - x) := by positivity
+  have h1 : ((1 + x) * Real.sqrt (1 - x)) ^ 2 < 1 := pow_lt_one₀ h0 hlt two_ne_zero
+  rw [mul_pow, hsq] at h1
+  have h2 : (1 + x) ^ 2 * (1 - x) - 1 = x * (1 - x - x ^ 2) := by ring
+  have h3 : 0 ≤ x * (1 - x - x ^ 2) := mul_nonneg hx0 (by nlinarith)
+  linarith
+
+/-- **The law with the amplitude of whole bits, between its bounds** (Sec. IV.C).  The carriers
+are the fraction `b = (1 − e^{−A})(1 + (e^{A} + 1)/(e^{2πL} − 1))`, with `A = L arcsin(h/L)`
+(`hb`, `phase_fraction`), `L ≥ 1` and `0 < h < L`, and the acceleration is `a = g_N/b` (`hab`,
+Eq. (share)).  The amplitude `h` is that of whole bits on a string of `L` bits: `h²` is at most
+the fraction `f` and less than one bit below it, `f − 1/L < h² ≤ f` (`hlo`, `hhi`; the first
+part of `share_amplitude` at `n = L`), where Eq. (law) takes `h = √f`.  The first part: where
+`√f ≤ L/2`, the acceleration is at least `1 − (√f/L)² − 5e^{−3πL/2}` times the value
+`g_N/(1 − e^{−√f})` of Eq. (law).  The fraction increases with `h` (`carriers_fraction_mono`)
+and `h ≤ √f`, so `a` is at least the acceleration with the fraction at `√f`, which
+`law_bounds` bounds.  The second part: where `f > 1/L`, the acceleration is at most the value
+of Eq. (law) over `√(1 − 1/(L·f))`.  The fraction is at least `1 − e^{−h}`
+(`fraction_bounds`), `h` exceeds `y = √(f − 1/L)`, and `1 − e^{−y} ≥ (y/√f)(1 − e^{−√f})`
+(`one_sub_exp_concave`), with `y/√f = √(1 − 1/(L·f))`.  The third part: where `f ≥ 2/L`, the
+acceleration is at most `1 + 1/(L·f)` times the value of Eq. (law) (`inv_sqrt_one_sub_le`).
+Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+theorem law_whole_bits (gN L f h a b : ℝ) (hgN : 0 < gN) (hL : 1 ≤ L) (hh0 : 0 < h) (hhL : h < L)
+    (hlo : f - 1 / L < h ^ 2) (hhi : h ^ 2 ≤ f)
+    (hb : b = (1 - Real.exp (-(L * Real.arcsin (h / L)))) *
+      (1 + (Real.exp (L * Real.arcsin (h / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1)))
+    (hab : a = gN / b) :
+    (Real.sqrt f / L ≤ 1 / 2 →
+      (1 - (Real.sqrt f / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+        (gN / (1 - Real.exp (-Real.sqrt f))) ≤ a) ∧
+    (1 / L < f → a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - 1 / (L * f))) ∧
+    (2 / L ≤ f → a ≤ (1 + 1 / (L * f)) * (gN / (1 - Real.exp (-Real.sqrt f)))) := by
+  have hL0 : 0 < L := by linarith
+  have hf : 0 < f := lt_of_lt_of_le (by positivity) hhi
+  have hx : 0 < Real.sqrt f := Real.sqrt_pos.2 hf
+  -- the amplitude of whole bits is at most `√f`
+  have hle : h ≤ Real.sqrt f := Real.le_sqrt_of_sq_le hhi
+  obtain ⟨hb1, -⟩ := fraction_bounds L h b hL hh0.le hhL hb
+  have hc0 : 0 < 1 - Real.exp (-h) := by linarith [exp_neg_lt_one hh0]
+  have hbpos : 0 < b := lt_of_lt_of_le hc0 hb1
+  have hcx : 0 < 1 - Real.exp (-Real.sqrt f) := by linarith [exp_neg_lt_one hx]
+  -- the lower bound: the fraction at `h` is at most the fraction at `√f`
+  have hlow : Real.sqrt f / L ≤ 1 / 2 →
+      (1 - (Real.sqrt f / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+        (gN / (1 - Real.exp (-Real.sqrt f))) ≤ a := by
+    intro hhalf
+    have hxL : Real.sqrt f < L := by
+      rw [div_le_iff₀ hL0] at hhalf
+      linarith
+    have hmono := (carriers_fraction_mono L h (Real.sqrt f) hL0 hh0.le hle).1
+    rw [← hb] at hmono
+    obtain ⟨-, -, h3⟩ := law_bounds gN L (Real.sqrt f) _ _ hgN hL hx hxL rfl rfl
+    calc (1 - (Real.sqrt f / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+          (gN / (1 - Real.exp (-Real.sqrt f)))
+        ≤ gN / ((1 - Real.exp (-(L * Real.arcsin (Real.sqrt f / L)))) *
+            (1 + (Real.exp (L * Real.arcsin (Real.sqrt f / L)) + 1) /
+              (Real.exp (2 * Real.pi * L) - 1))) := h3 hhalf
+      _ ≤ gN / b := div_le_div_of_nonneg_left hgN.le hbpos hmono
+      _ = a := hab.symm
+  -- the upper bound: `h` exceeds `√(f − 1/L)`, and `1 − e^{−t}` is concave
+  have hup : 1 / L < f →
+      a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - 1 / (L * f)) := by
+    intro h1
+    have hd : 0 < f - 1 / L := by linarith
+    have hy : 0 < Real.sqrt (f - 1 / L) := Real.sqrt_pos.2 hd
+    have hyh : Real.sqrt (f - 1 / L) < h := (Real.sqrt_lt' hh0).2 hlo
+    have hyx : Real.sqrt (f - 1 / L) ≤ Real.sqrt f :=
+      Real.sqrt_le_sqrt (by linarith [one_div_pos.2 hL0])
+    -- `√(1 − 1/(L·f)) = √(f − 1/L)/√f`
+    have hr : Real.sqrt (1 - 1 / (L * f)) = Real.sqrt (f - 1 / L) / Real.sqrt f := by
+      rw [← Real.sqrt_div hd.le]
+      congr 1
+      field_simp
+    have hconc := one_sub_exp_concave (Real.sqrt f) (Real.sqrt (f - 1 / L)) hx hy.le hyx
+    have h2 : 1 - Real.exp (-Real.sqrt (f - 1 / L)) ≤ 1 - Real.exp (-h) := by
+      have := Real.exp_le_exp.2 (neg_le_neg hyh.le)
+      linarith
+    have hden : 0 < Real.sqrt (f - 1 / L) / Real.sqrt f * (1 - Real.exp (-Real.sqrt f)) :=
+      mul_pos (div_pos hy hx) hcx
+    have hb2 : Real.sqrt (f - 1 / L) / Real.sqrt f * (1 - Real.exp (-Real.sqrt f)) ≤ b := by
+      linarith
+    rw [hab, hr, div_div, mul_comm (1 - Real.exp (-Real.sqrt f))]
+    exact div_le_div_of_nonneg_left hgN.le hden hb2
+  refine ⟨hlow, hup, fun h2 => ?_⟩
+  -- the plainer form: `1/√(1 − t) ≤ 1 + t` at `t = 1/(L·f) ≤ 1/2`
+  have h1 : 1 / L < f := lt_of_lt_of_le (by rw [div_lt_div_iff_of_pos_right hL0]; norm_num) h2
+  have ht0 : 0 ≤ 1 / (L * f) := by positivity
+  have ht : 1 / (L * f) ≤ 1 / 2 := by
+    rw [div_le_iff₀ hL0] at h2
+    rw [div_le_div_iff₀ (by positivity) (by norm_num)]
+    linarith
+  have hinv := inv_sqrt_one_sub_le (1 / (L * f)) ht0 ht
+  have halaw : 0 < gN / (1 - Real.exp (-Real.sqrt f)) := div_pos hgN hcx
+  calc a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - 1 / (L * f)) := hup h1
+    _ = gN / (1 - Real.exp (-Real.sqrt f)) * (1 / Real.sqrt (1 - 1 / (L * f))) := by
+        rw [div_eq_mul_one_div]
+    _ ≤ gN / (1 - Real.exp (-Real.sqrt f)) * (1 + 1 / (L * f)) :=
+        mul_le_mul_of_nonneg_left hinv halaw.le
+    _ = (1 + 1 / (L * f)) * (gN / (1 - Real.exp (-Real.sqrt f))) := mul_comm _ _
+
 /-- The Gibbs mean on a ladder of equal steps `ε`: the mean of the energies `nε`,
 `n = 0, 1, 2, …`, with the weights `e^{−nε/θ}`. -/
 noncomputable def gibbsLadder (ε θ : ℝ) : ℝ :=
@@ -1162,6 +1727,631 @@ theorem gibbsLadder_within_step (ε θ : ℝ) (hε : 0 < ε) (hθ : 0 < θ) :
     rw [div_lt_iff₀ hd]
     have h := mul_lt_mul_of_pos_left (show ε / θ < Real.exp (ε / θ) - 1 by linarith) hθ
     rwa [hεθ] at h
+
+/-! ### The phase of a unit state under one tick (Sec. IV.C) -/
+
+/-- **The new state along and across the old direction** (Sec. IV.C).  A state of unit amplitude
+at the phase `φ`, counted from the phase of an added amplitude, has the components `cos φ` and
+`sin φ`.  A tick turns it by `Δ` and adds the amplitude `ε` at the phase zero, so the new state
+has the components `cos(φ + Δ) + ε` and `sin(φ + Δ)`.  The first part: its component along the
+old direction `(cos φ, sin φ)` is `cos Δ + ε cos φ`.  The second part: its component across the
+old direction, along `(−sin φ, cos φ)`, is `sin Δ − ε sin φ`.  The third part: the square of its
+length is `1 + 2ε cos(φ + Δ) + ε²`.  The three hold for every real `φ`, `Δ` and `ε`.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tick_components (φ Δ ε : ℝ) :
+    (Real.cos (φ + Δ) + ε) * Real.cos φ + Real.sin (φ + Δ) * Real.sin φ
+      = Real.cos Δ + ε * Real.cos φ ∧
+    Real.sin (φ + Δ) * Real.cos φ - (Real.cos (φ + Δ) + ε) * Real.sin φ
+      = Real.sin Δ - ε * Real.sin φ ∧
+    (Real.cos (φ + Δ) + ε) ^ 2 + Real.sin (φ + Δ) ^ 2
+      = 1 + 2 * ε * Real.cos (φ + Δ) + ε ^ 2 := by
+  have hp := Real.sin_sq_add_cos_sq φ
+  have hq := Real.sin_sq_add_cos_sq (φ + Δ)
+  refine ⟨?_, ?_, ?_⟩
+  · rw [Real.cos_add, Real.sin_add]
+    linear_combination Real.cos Δ * hp
+  · rw [Real.cos_add, Real.sin_add]
+    linear_combination Real.sin Δ * hp
+  · linear_combination hq
+
+/-- **The change of the phase in one tick** (Sec. IV.C).  Let the new state of
+`tick_components` have the amplitude `r` and the phase `ψ`: `cos(φ + Δ) + ε = r cos ψ` and
+`sin(φ + Δ) = r sin ψ` (`hc`, `hs`).  Then `r sin(ψ − φ) = sin Δ − ε sin φ` and
+`r cos(ψ − φ) = cos Δ + ε cos φ`: the change `ψ − φ` of the phase is the angle of the new state
+from the old direction.  And `r² = 1 + 2ε cos(φ + Δ) + ε²`.  The statement holds for every
+amplitude and phase of the new state, with no condition on `r`, `Δ` or `ε`.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tick_turn (φ Δ ε r ψ : ℝ) (hc : Real.cos (φ + Δ) + ε = r * Real.cos ψ)
+    (hs : Real.sin (φ + Δ) = r * Real.sin ψ) :
+    r * Real.sin (ψ - φ) = Real.sin Δ - ε * Real.sin φ ∧
+    r * Real.cos (ψ - φ) = Real.cos Δ + ε * Real.cos φ ∧
+    r ^ 2 = 1 + 2 * ε * Real.cos (φ + Δ) + ε ^ 2 := by
+  obtain ⟨h1, h2, h3⟩ := tick_components φ Δ ε
+  have hp := Real.sin_sq_add_cos_sq ψ
+  refine ⟨?_, ?_, ?_⟩
+  · rw [Real.sin_sub, ← h2, hc, hs]; ring
+  · rw [Real.cos_sub, ← h1, hc, hs]; ring
+  · rw [← h3, hc, hs]
+    linear_combination (-(r ^ 2)) * hp
+
+/-- **The new state has an amplitude and a phase** (Sec. IV.C).  For an added amplitude
+`0 < ε < 1` and every `φ` and `Δ`, the new state of `tick_components` has an amplitude `r > 0`
+and a phase `ψ`, with the equations of `tick_turn`, and `1 − ε ≤ r ≤ 1 + ε`.  The new state is
+not zero, so it has a phase.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tick_polar (φ Δ ε : ℝ) (hε : 0 < ε) (hε1 : ε < 1) :
+    ∃ r ψ : ℝ, 0 < r ∧ Real.cos (φ + Δ) + ε = r * Real.cos ψ ∧
+      Real.sin (φ + Δ) = r * Real.sin ψ ∧
+      r * Real.sin (ψ - φ) = Real.sin Δ - ε * Real.sin φ ∧
+      r * Real.cos (ψ - φ) = Real.cos Δ + ε * Real.cos φ ∧
+      r ^ 2 = 1 + 2 * ε * Real.cos (φ + Δ) + ε ^ 2 ∧ 1 - ε ≤ r ∧ r ≤ 1 + ε := by
+  -- the new state as a complex number, its modulus and its argument
+  set z : ℂ := ⟨Real.cos (φ + Δ) + ε, Real.sin (φ + Δ)⟩ with hz
+  have hc : Real.cos (φ + Δ) + ε = ‖z‖ * Real.cos (Complex.arg z) :=
+    (Complex.norm_mul_cos_arg z).symm
+  have hs : Real.sin (φ + Δ) = ‖z‖ * Real.sin (Complex.arg z) :=
+    (Complex.norm_mul_sin_arg z).symm
+  obtain ⟨h1, h2, h3⟩ := tick_turn φ Δ ε ‖z‖ (Complex.arg z) hc hs
+  have hcos1 := Real.cos_le_one (φ + Δ)
+  have hcos2 := Real.neg_one_le_cos (φ + Δ)
+  have hr0 : 0 ≤ ‖z‖ := norm_nonneg z
+  have hlo : (1 - ε) ^ 2 ≤ ‖z‖ ^ 2 := by rw [h3]; nlinarith
+  have hhi : ‖z‖ ^ 2 ≤ (1 + ε) ^ 2 := by rw [h3]; nlinarith
+  have hr1 : 1 - ε ≤ ‖z‖ := by nlinarith
+  have hr2 : ‖z‖ ≤ 1 + ε := by nlinarith
+  exact ⟨‖z‖, Complex.arg z, by linarith, hc, hs, h1, h2, h3, hr1, hr2⟩
+
+/-- **The tick keeps the phase `φ`** (Sec. IV.C): the new state of `tick_components` is a
+positive multiple of the old direction `(cos φ, sin φ)`.  `keepsPhase Δ ε` says that the tick
+keeps some phase.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+def keepsPhaseAt (Δ ε φ : ℝ) : Prop :=
+  ∃ r : ℝ, 0 < r ∧ Real.cos (φ + Δ) + ε = r * Real.cos φ ∧ Real.sin (φ + Δ) = r * Real.sin φ
+
+/-- **When the tick keeps a phase** (Sec. IV.C).  For every `φ`, `Δ` and `ε`, the tick keeps
+the phase `φ` (`keepsPhaseAt`) exactly when the new state has no component across the old
+direction, `sin Δ = ε sin φ`, and a positive component along it, `0 < cos Δ + ε cos φ`
+(`tick_components`).
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem keepsPhaseAt_iff (Δ ε φ : ℝ) :
+    keepsPhaseAt Δ ε φ ↔
+      Real.sin Δ = ε * Real.sin φ ∧ 0 < Real.cos Δ + ε * Real.cos φ := by
+  obtain ⟨h1, h2, -⟩ := tick_components φ Δ ε
+  have hp := Real.sin_sq_add_cos_sq φ
+  constructor
+  · rintro ⟨r, hr, hc, hs⟩
+    obtain ⟨t1, t2, -⟩ := tick_turn φ Δ ε r φ hc hs
+    rw [sub_self, Real.sin_zero, mul_zero] at t1
+    rw [sub_self, Real.cos_zero, mul_one] at t2
+    exact ⟨by linarith, by rw [← t2]; exact hr⟩
+  · rintro ⟨hsin, hpos⟩
+    refine ⟨Real.cos Δ + ε * Real.cos φ, hpos, ?_, ?_⟩
+    · rw [Real.cos_add]
+      linear_combination (-(Real.sin φ)) * hsin - ε * hp
+    · rw [Real.sin_add]
+      linear_combination Real.cos φ * hsin
+
+/-- **The kept phases and the condition of `steady_phase_all_turns`** (Sec. IV.C).  The first
+part: the tick keeps some phase (`keepsPhase`) exactly when it keeps the phase `φ` for some `φ`
+(`keepsPhaseAt`); the two say the same by definition.  The second part, for `0 < ε < 1`: some
+`φ` has `sin Δ = ε sin φ` and `0 < cos Δ + ε cos φ` exactly when `cos Δ > 0` and `|sin Δ| ≤ ε`
+(`keepsPhaseAt_iff` with `steady_phase_all_turns`).
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem keepsPhase_iff_kept (Δ ε : ℝ) (hε : 0 < ε) (hε1 : ε < 1) :
+    (keepsPhase Δ ε ↔ ∃ φ, keepsPhaseAt Δ ε φ) ∧
+    ((∃ φ, Real.sin Δ = ε * Real.sin φ ∧ 0 < Real.cos Δ + ε * Real.cos φ) ↔
+      0 < Real.cos Δ ∧ |Real.sin Δ| ≤ ε) := by
+  have h1 : keepsPhase Δ ε ↔ ∃ φ, keepsPhaseAt Δ ε φ := Iff.rfl
+  refine ⟨h1, ?_⟩
+  rw [← steady_phase_all_turns Δ ε hε hε1, h1]
+  exact exists_congr fun φ => (keepsPhaseAt_iff Δ ε φ).symm
+
+/-- **Outside the range the phase moves in one sense at every tick** (Sec. IV.C).  Let the
+added amplitude be smaller than the sine of the turn, `0 < ε < |sin Δ|`, and let `φ` be any
+phase.  The first and second parts: the component of the new state across the old direction,
+`sin Δ − ε sin φ`, is not zero and has the sign of `sin Δ`.  The third part: the tick does not
+keep the phase `φ`.  The fourth part: for every amplitude `r > 0` and phase `ψ` of the new
+state, `sin(ψ − φ)` has the sign of `sin Δ` (`tick_turn`).  So the phase moves in the same sense
+at every tick, whatever the phase is.  `Main.phase_under_tick` states it for a string of the
+register, with `Δ = Et_c/ℏ` and `ε = h/L` (`Reg.phase_under_tick`).
+Sec. IV.C: "Where the slip per tick is larger, the global phase slips at every tick and the string takes
+no phase from the body." -/
+theorem phase_slips (Δ ε : ℝ) (hε : 0 < ε) (hout : ε < |Real.sin Δ|) (φ : ℝ) :
+    Real.sin Δ - ε * Real.sin φ ≠ 0 ∧
+    0 < Real.sin Δ * (Real.sin Δ - ε * Real.sin φ) ∧ ¬ keepsPhaseAt Δ ε φ ∧
+    ∀ r ψ : ℝ, 0 < r → Real.cos (φ + Δ) + ε = r * Real.cos ψ →
+      Real.sin (φ + Δ) = r * Real.sin ψ → 0 < Real.sin Δ * Real.sin (ψ - φ) := by
+  have hb : |ε * Real.sin φ| ≤ ε := by
+    rw [abs_mul, abs_of_pos hε]
+    calc ε * |Real.sin φ| ≤ ε * 1 := mul_le_mul_of_nonneg_left (Real.abs_sin_le_one φ) hε.le
+      _ = ε := mul_one ε
+  obtain ⟨hb1, hb2⟩ := abs_le.mp hb
+  -- the component across has the sign of `sin Δ`
+  have hsign : 0 < Real.sin Δ * (Real.sin Δ - ε * Real.sin φ) := by
+    rcases lt_abs.1 hout with h | h
+    · exact mul_pos (by linarith) (by linarith)
+    · exact mul_pos_of_neg_of_neg (by linarith) (by linarith)
+  have hne : Real.sin Δ - ε * Real.sin φ ≠ 0 := by
+    intro h0
+    rw [h0, mul_zero] at hsign
+    exact lt_irrefl 0 hsign
+  refine ⟨hne, hsign, fun hk => ?_, fun r ψ hr hc hs => ?_⟩
+  · exact hne (by rw [((keepsPhaseAt_iff Δ ε φ).1 hk).1]; ring)
+  · obtain ⟨t1, -, -⟩ := tick_turn φ Δ ε r ψ hc hs
+    have h2 : Real.sin Δ * (r * Real.sin (ψ - φ)) = r * (Real.sin Δ * Real.sin (ψ - φ)) := by ring
+    rw [← t1, h2] at hsign
+    exact pos_of_mul_pos_right hsign hr.le
+
+/-- **The kept phase inside the range** (Sec. IV.C).  For `0 < ε < 1`, `|sin Δ| < ε` and
+`cos Δ > 0`, the phase `φ₀ = arcsin(sin Δ/ε)` has `sin Δ = ε sin φ₀`, lies strictly between
+`−π/2` and `π/2`, so that `cos φ₀ > 0`, and `ε cos φ₀ < cos Δ`, since
+`cos² Δ − ε² cos² φ₀ = 1 − ε² > 0`.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+lemma kept_phase_bounds (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) :
+    Real.sin Δ = ε * Real.sin φ₀ ∧ -(Real.pi / 2) < φ₀ ∧ φ₀ < Real.pi / 2 ∧
+    0 < Real.cos φ₀ ∧ ε * Real.cos φ₀ < Real.cos Δ := by
+  obtain ⟨hin1, hin2⟩ := abs_lt.mp hin
+  have hq1 : -1 < Real.sin Δ / ε := by rw [lt_div_iff₀ hε]; linarith
+  have hq2 : Real.sin Δ / ε < 1 := by rw [div_lt_one hε]; exact hin2
+  have hs : Real.sin φ₀ = Real.sin Δ / ε := by rw [hφ₀]; exact Real.sin_arcsin hq1.le hq2.le
+  have hlo : -(Real.pi / 2) < φ₀ := by rw [hφ₀]; exact Real.neg_pi_div_two_lt_arcsin.2 hq1
+  have hhi : φ₀ < Real.pi / 2 := by rw [hφ₀]; exact Real.arcsin_lt_pi_div_two.2 hq2
+  have hc : 0 < Real.cos φ₀ := Real.cos_pos_of_mem_Ioo ⟨hlo, hhi⟩
+  have hsΔ : Real.sin Δ = ε * Real.sin φ₀ := by rw [hs]; field_simp
+  have hp := Real.sin_sq_add_cos_sq φ₀
+  have hq := Real.sin_sq_add_cos_sq Δ
+  -- `cos² Δ = 1 − ε² sin² φ₀ > ε² cos² φ₀`
+  have h1 : (ε * Real.cos φ₀) ^ 2 < Real.cos Δ ^ 2 := by
+    have h2 : Real.cos Δ ^ 2 - (ε * Real.cos φ₀) ^ 2 = 1 - ε ^ 2 := by
+      rw [hsΔ] at hq
+      linear_combination hq - ε ^ 2 * hp
+    have h3 : 0 < 1 - ε ^ 2 := by nlinarith
+    linarith
+  have h4 : ε * Real.cos φ₀ < Real.cos Δ := by
+    have := abs_lt_of_sq_lt_sq' h1 hcos.le
+    exact this.2
+  exact ⟨hsΔ, hlo, hhi, hc, h4⟩
+
+/-- **The kept phases inside the range** (Sec. IV.C).  For `0 < ε < 1`, `|sin Δ| < ε` and
+`cos Δ > 0`, with `φ₀ = arcsin(sin Δ/ε)`: the tick keeps the phase `φ` (`keepsPhaseAt`) exactly
+when `φ` is `φ₀` or `π − φ₀` up to whole turns.
+Sec. IV.C: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem kept_phases (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) (φ : ℝ) :
+    keepsPhaseAt Δ ε φ ↔
+      ∃ k : ℤ, φ = φ₀ + 2 * Real.pi * k ∨ φ = Real.pi - φ₀ + 2 * Real.pi * k := by
+  obtain ⟨hsΔ, -, -, hc, hlt⟩ := kept_phase_bounds Δ ε φ₀ hε hε1 hin hcos hφ₀
+  rw [keepsPhaseAt_iff]
+  constructor
+  · rintro ⟨hs, -⟩
+    -- `sin φ = sin φ₀`
+    have h1 : Real.sin φ₀ = Real.sin φ := by
+      have : ε * Real.sin φ₀ = ε * Real.sin φ := by rw [← hsΔ, hs]
+      exact mul_left_cancel₀ hε.ne' this
+    obtain ⟨k, hk | hk⟩ := Real.sin_eq_sin_iff.1 h1
+    · exact ⟨k, Or.inl (by rw [hk]; ring)⟩
+    · exact ⟨k, Or.inr (by rw [hk]; ring)⟩
+  · rintro ⟨k, hk | hk⟩
+    · have hs : Real.sin φ = Real.sin φ₀ := by
+        rw [hk, show 2 * Real.pi * (k : ℝ) = (k : ℝ) * (2 * Real.pi) by ring]
+        exact Real.sin_add_int_mul_two_pi _ k
+      have hcφ : Real.cos φ = Real.cos φ₀ := by
+        rw [hk, show 2 * Real.pi * (k : ℝ) = (k : ℝ) * (2 * Real.pi) by ring]
+        exact Real.cos_add_int_mul_two_pi _ k
+      rw [hs, hcφ]
+      exact ⟨hsΔ, by nlinarith⟩
+    · have hs : Real.sin φ = Real.sin φ₀ := by
+        rw [hk, show 2 * Real.pi * (k : ℝ) = (k : ℝ) * (2 * Real.pi) by ring,
+          Real.sin_add_int_mul_two_pi, Real.sin_pi_sub]
+      have hcφ : Real.cos φ = -Real.cos φ₀ := by
+        rw [hk, show 2 * Real.pi * (k : ℝ) = (k : ℝ) * (2 * Real.pi) by ring,
+          Real.cos_add_int_mul_two_pi, Real.cos_pi_sub]
+      rw [hs, hcφ]
+      exact ⟨hsΔ, by nlinarith⟩
+
+/-- **Inside the range the phase moves toward one kept phase and away from the other**
+(Sec. IV.C).  For `0 < ε < 1`, `|sin Δ| < ε` and `cos Δ > 0`, with `φ₀ = arcsin(sin Δ/ε)`, and
+any phase `φ`.  The first part: the component of the new state across the old direction is
+`sin Δ − ε sin φ = ε(sin φ₀ − sin φ)`.  The second and third parts: it is positive where
+`sin φ < sin φ₀` and negative where `sin φ > sin φ₀`, and by `tick_turn` the phase then moves
+forward and backward.  The fourth and fifth parts say where: it is positive for `φ` strictly
+between `−π − φ₀` and `φ₀`, and negative for `φ` strictly between `φ₀` and `π − φ₀`.  The two
+ranges and the two kept phases `φ₀` and `π − φ₀` make up one whole turn, so from every phase
+other than those two the phase moves toward `φ₀` and away from `π − φ₀`.
+Sec. IV.C: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem phase_drawn (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) (φ : ℝ) :
+    Real.sin Δ - ε * Real.sin φ = ε * (Real.sin φ₀ - Real.sin φ) ∧
+    (Real.sin φ < Real.sin φ₀ → 0 < Real.sin Δ - ε * Real.sin φ) ∧
+    (Real.sin φ₀ < Real.sin φ → Real.sin Δ - ε * Real.sin φ < 0) ∧
+    (-Real.pi - φ₀ < φ → φ < φ₀ → 0 < Real.sin Δ - ε * Real.sin φ) ∧
+    (φ₀ < φ → φ < Real.pi - φ₀ → Real.sin Δ - ε * Real.sin φ < 0) := by
+  obtain ⟨hsΔ, hlo, hhi, -, -⟩ := kept_phase_bounds Δ ε φ₀ hε hε1 hin hcos hφ₀
+  have hid : Real.sin Δ - ε * Real.sin φ = ε * (Real.sin φ₀ - Real.sin φ) := by rw [hsΔ]; ring
+  have hfwd : Real.sin φ < Real.sin φ₀ → 0 < Real.sin Δ - ε * Real.sin φ := by
+    intro h
+    rw [hid]
+    exact mul_pos hε (by linarith)
+  have hbwd : Real.sin φ₀ < Real.sin φ → Real.sin Δ - ε * Real.sin φ < 0 := by
+    intro h
+    rw [hid]
+    exact mul_neg_of_pos_of_neg hε (by linarith)
+  refine ⟨hid, hfwd, hbwd, fun h1 h2 => hfwd ?_, fun h1 h2 => hbwd ?_⟩
+  · -- `sin φ₀ − sin φ = 2 sin((φ₀ − φ)/2) cos((φ₀ + φ)/2) > 0`
+    have h3 : 0 < Real.sin ((φ₀ - φ) / 2) :=
+      Real.sin_pos_of_pos_of_lt_pi (by linarith) (by linarith)
+    have h4 : 0 < Real.cos ((φ₀ + φ) / 2) :=
+      Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩
+    have h5 := Real.sin_sub_sin φ₀ φ
+    have h6 : 0 < 2 * Real.sin ((φ₀ - φ) / 2) * Real.cos ((φ₀ + φ) / 2) := by positivity
+    linarith
+  · -- `sin φ − sin φ₀ = 2 sin((φ − φ₀)/2) cos((φ + φ₀)/2) > 0`
+    have h3 : 0 < Real.sin ((φ - φ₀) / 2) :=
+      Real.sin_pos_of_pos_of_lt_pi (by linarith) (by linarith)
+    have h4 : 0 < Real.cos ((φ + φ₀) / 2) :=
+      Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩
+    have h5 := Real.sin_sub_sin φ φ₀
+    have h6 : 0 < 2 * Real.sin ((φ - φ₀) / 2) * Real.cos ((φ + φ₀) / 2) := by positivity
+    linarith
+
+/-- **The phase after one tick, the nearest to the phase before** (Sec. IV.C): the phase before,
+`φ`, plus the angle of the new state from the old direction, taken between `−π` and `π`, with
+`π` included.  The angle is the argument of the complex number whose real part is the component
+of the new state along the old direction and whose imaginary part is the component across it
+(`tick_components`).
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+noncomputable def tickPhase (Δ ε φ : ℝ) : ℝ :=
+  φ + Complex.arg ⟨Real.cos Δ + ε * Real.cos φ, Real.sin Δ - ε * Real.sin φ⟩
+
+/-- **`tickPhase` is a phase of the new state, within half a turn of the phase before**
+(Sec. IV.C).  For `0 < ε < 1` and every `φ` and `Δ`: the new state of `tick_components` has a
+positive amplitude `r` and the phase `tickPhase Δ ε φ`, and
+`−π < tickPhase Δ ε φ − φ ≤ π`.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tickPhase_spec (Δ ε φ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) :
+    (∃ r : ℝ, 0 < r ∧ Real.cos (φ + Δ) + ε = r * Real.cos (tickPhase Δ ε φ) ∧
+      Real.sin (φ + Δ) = r * Real.sin (tickPhase Δ ε φ)) ∧
+    -Real.pi < tickPhase Δ ε φ - φ ∧ tickPhase Δ ε φ - φ ≤ Real.pi := by
+  set w : ℂ := ⟨Real.cos Δ + ε * Real.cos φ, Real.sin Δ - ε * Real.sin φ⟩ with hw
+  have hT : tickPhase Δ ε φ = φ + Complex.arg w := rfl
+  have hc : ‖w‖ * Real.cos (Complex.arg w) = Real.cos Δ + ε * Real.cos φ :=
+    Complex.norm_mul_cos_arg w
+  have hs : ‖w‖ * Real.sin (Complex.arg w) = Real.sin Δ - ε * Real.sin φ :=
+    Complex.norm_mul_sin_arg w
+  have hp := Real.sin_sq_add_cos_sq φ
+  have hq := Real.sin_sq_add_cos_sq (Complex.arg w)
+  -- the length of the new state is at least `1 − ε`
+  have hn2 : ‖w‖ ^ 2 = 1 + 2 * ε * Real.cos (φ + Δ) + ε ^ 2 := by
+    have h1 : ‖w‖ ^ 2 = (Real.cos Δ + ε * Real.cos φ) ^ 2 + (Real.sin Δ - ε * Real.sin φ) ^ 2 := by
+      rw [← hc, ← hs]
+      linear_combination (-(‖w‖ ^ 2)) * hq
+    rw [h1, Real.cos_add]
+    have hd := Real.sin_sq_add_cos_sq Δ
+    linear_combination hd + ε ^ 2 * hp
+  have hr0 : 0 ≤ ‖w‖ := norm_nonneg w
+  have hcos2 := Real.neg_one_le_cos (φ + Δ)
+  have hr : 0 < ‖w‖ := by nlinarith
+  refine ⟨⟨‖w‖, hr, ?_, ?_⟩, ?_, ?_⟩
+  · rw [hT, Real.cos_add, Real.cos_add]
+    linear_combination (-(Real.cos φ)) * hc + Real.sin φ * hs - ε * hp
+  · rw [hT, Real.sin_add, Real.sin_add]
+    linear_combination (-(Real.sin φ)) * hc - Real.cos φ * hs
+  · rw [hT, add_sub_cancel_left]
+    exact Complex.neg_pi_lt_arg w
+  · rw [hT, add_sub_cancel_left]
+    exact Complex.arg_le_pi w
+
+/-- **The phase after the tick at the kept phase** (Sec. IV.C).  For `0 < ε < 1`,
+`|sin Δ| < ε` and `cos Δ > 0`, with `φ₀ = arcsin(sin Δ/ε)`: `tickPhase Δ ε φ₀ = φ₀`.
+Sec. IV.C: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tickPhase_kept (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) :
+    tickPhase Δ ε φ₀ = φ₀ := by
+  obtain ⟨hsΔ, -, -, hc, -⟩ := kept_phase_bounds Δ ε φ₀ hε hε1 hin hcos hφ₀
+  have h0 : Complex.arg ⟨Real.cos Δ + ε * Real.cos φ₀, Real.sin Δ - ε * Real.sin φ₀⟩ = 0 := by
+    rw [Complex.arg_eq_zero_iff]
+    exact ⟨by show 0 ≤ Real.cos Δ + ε * Real.cos φ₀; positivity,
+      by show Real.sin Δ - ε * Real.sin φ₀ = 0; rw [hsΔ]; ring⟩
+  unfold tickPhase
+  rw [h0, add_zero]
+
+/-- **The phase does not pass the kept phase** (Sec. IV.C).  For `0 < ε < 1`, `|sin Δ| < ε` and
+`cos Δ > 0`, with `φ₀ = arcsin(sin Δ/ε)`.  The first part: for a phase `φ` strictly between `φ₀`
+and `π − φ₀`, the phase after the tick (`tickPhase`) lies strictly between `φ₀` and `φ`.  The
+second part: for `φ` strictly between `−π − φ₀` and `φ₀`, it lies strictly between `φ` and
+`φ₀`.  So from every phase strictly between `−π − φ₀` and `π − φ₀`, other than `φ₀`, one tick
+brings the phase nearer to `φ₀` and not beyond it.
+Sec. IV.C: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tick_between (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) (φ : ℝ) :
+    (φ₀ < φ → φ < Real.pi - φ₀ → φ₀ < tickPhase Δ ε φ ∧ tickPhase Δ ε φ < φ) ∧
+    (-Real.pi - φ₀ < φ → φ < φ₀ → φ < tickPhase Δ ε φ ∧ tickPhase Δ ε φ < φ₀) := by
+  obtain ⟨hsΔ, hlo, hhi, hc0, hlt⟩ := kept_phase_bounds Δ ε φ₀ hε hε1 hin hcos hφ₀
+  obtain ⟨-, -, -, hfwd, hbwd⟩ := phase_drawn Δ ε φ₀ hε hε1 hin hcos hφ₀ φ
+  obtain ⟨⟨r, hr, hc, hs⟩, hg1, hg2⟩ := tickPhase_spec Δ ε φ hε hε1
+  set ψ := tickPhase Δ ε φ with hψ
+  have hgdef : ψ - φ = Complex.arg ⟨Real.cos Δ + ε * Real.cos φ, Real.sin Δ - ε * Real.sin φ⟩ := by
+    rw [hψ]; unfold tickPhase; ring
+  -- the new state against the kept direction: `r sin(ψ − φ₀) = sin(φ − φ₀ + Δ) − sin Δ`
+  have hkey : r * Real.sin (ψ - φ₀) = Real.sin (φ - φ₀ + Δ) - Real.sin Δ := by
+    have h1 : Real.sin (φ - φ₀ + Δ) = Real.sin (φ + Δ) * Real.cos φ₀
+        - Real.cos (φ + Δ) * Real.sin φ₀ := by
+      rw [show φ - φ₀ + Δ = φ + Δ - φ₀ by ring, Real.sin_sub]
+    rw [Real.sin_sub, h1, hsΔ]
+    linear_combination (-(Real.cos φ₀)) * hs + Real.sin φ₀ * hc
+  constructor
+  · intro h1 h2
+    -- the phase moves backward, by less than half a turn
+    have hB : Real.sin Δ - ε * Real.sin φ < 0 := hbwd h1 h2
+    have hg : ψ - φ < 0 := by rw [hgdef]; exact Complex.arg_neg_iff.2 hB
+    refine ⟨?_, by linarith⟩
+    by_contra hcon
+    push Not at hcon
+    -- else `ψ − φ₀` lies in `(−π, 0]`, where the sine is not positive
+    have hsin : Real.sin (ψ - φ₀) ≤ 0 :=
+      Real.sin_nonpos_of_nonpos_of_neg_pi_le (by linarith) (by linarith)
+    have hd1 : 0 < (φ - φ₀) / 2 := by linarith
+    have hd2 : (φ - φ₀) / 2 < Real.pi / 2 := by linarith
+    have h3 : 0 < Real.sin ((φ - φ₀) / 2) := Real.sin_pos_of_pos_of_lt_pi hd1 (by linarith)
+    have h4 : 0 < Real.cos ((φ - φ₀) / 2) := Real.cos_pos_of_mem_Ioo ⟨by linarith, hd2⟩
+    have h5 : 0 < Real.cos (φ₀ + (φ - φ₀) / 2) :=
+      Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩
+    -- `cos(Δ + δ/2) > ε cos(φ₀ + δ/2) > 0`
+    have h6 : 0 < Real.cos (Δ + (φ - φ₀) / 2) := by
+      rw [Real.cos_add] at h5 ⊢
+      have h7 : ε * Real.cos φ₀ * Real.cos ((φ - φ₀) / 2)
+          < Real.cos Δ * Real.cos ((φ - φ₀) / 2) := mul_lt_mul_of_pos_right hlt h4
+      have h8 : 0 < ε * (Real.cos φ₀ * Real.cos ((φ - φ₀) / 2)
+          - Real.sin φ₀ * Real.sin ((φ - φ₀) / 2)) := mul_pos hε h5
+      rw [hsΔ]
+      nlinarith
+    have h9 := Real.sin_sub_sin (φ - φ₀ + Δ) Δ
+    rw [show (φ - φ₀ + Δ - Δ) / 2 = (φ - φ₀) / 2 by ring,
+      show (φ - φ₀ + Δ + Δ) / 2 = Δ + (φ - φ₀) / 2 by ring] at h9
+    have h10 : 0 < r * Real.sin (ψ - φ₀) := by
+      rw [hkey, h9]; positivity
+    have h11 : r * Real.sin (ψ - φ₀) ≤ 0 := mul_nonpos_of_nonneg_of_nonpos hr.le hsin
+    linarith
+  · intro h1 h2
+    -- the phase moves forward, by at most half a turn
+    have hB : 0 < Real.sin Δ - ε * Real.sin φ := hfwd h1 h2
+    have hg : 0 < ψ - φ := by
+      rw [hgdef]
+      have h3 : 0 ≤ Complex.arg ⟨Real.cos Δ + ε * Real.cos φ, Real.sin Δ - ε * Real.sin φ⟩ :=
+        Complex.arg_nonneg_iff.2 hB.le
+      rcases h3.lt_or_eq with h4 | h4
+      · exact h4
+      · exact absurd (Complex.arg_eq_zero_iff.1 h4.symm).2 hB.ne'
+    refine ⟨by linarith, ?_⟩
+    by_contra hcon
+    push Not at hcon
+    -- else `ψ − φ₀` lies in `[0, π)`, where the sine is not negative
+    have hsin : 0 ≤ Real.sin (ψ - φ₀) :=
+      Real.sin_nonneg_of_nonneg_of_le_pi (by linarith) (by linarith)
+    have hd1 : 0 < (φ₀ - φ) / 2 := by linarith
+    have hd2 : (φ₀ - φ) / 2 ≤ Real.pi / 2 := by linarith
+    have h3 : 0 < Real.sin ((φ₀ - φ) / 2) :=
+      Real.sin_pos_of_pos_of_lt_pi hd1 (by linarith [Real.pi_pos])
+    have h4 : 0 ≤ Real.cos ((φ₀ - φ) / 2) :=
+      Real.cos_nonneg_of_mem_Icc ⟨by linarith [Real.pi_pos], hd2⟩
+    have h5 : 0 < Real.cos (φ₀ - (φ₀ - φ) / 2) :=
+      Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩
+    -- `cos(Δ − δ/2) ≥ ε cos(φ₀ − δ/2) > 0`
+    have h6 : 0 < Real.cos (Δ - (φ₀ - φ) / 2) := by
+      rw [Real.cos_sub] at h5 ⊢
+      have h7 : ε * Real.cos φ₀ * Real.cos ((φ₀ - φ) / 2)
+          ≤ Real.cos Δ * Real.cos ((φ₀ - φ) / 2) := mul_le_mul_of_nonneg_right hlt.le h4
+      have h8 : 0 < ε * (Real.cos φ₀ * Real.cos ((φ₀ - φ) / 2)
+          + Real.sin φ₀ * Real.sin ((φ₀ - φ) / 2)) := mul_pos hε h5
+      rw [hsΔ]
+      nlinarith
+    have h9 := Real.sin_sub_sin Δ (φ - φ₀ + Δ)
+    rw [show (Δ - (φ - φ₀ + Δ)) / 2 = (φ₀ - φ) / 2 by ring,
+      show (Δ + (φ - φ₀ + Δ)) / 2 = Δ - (φ₀ - φ) / 2 by ring] at h9
+    have h10 : r * Real.sin (ψ - φ₀) < 0 := by
+      have h12 : 0 < 2 * Real.sin ((φ₀ - φ) / 2) * Real.cos (Δ - (φ₀ - φ) / 2) := by positivity
+      rw [hkey]; linarith
+    have h11 : 0 ≤ r * Real.sin (ψ - φ₀) := mul_nonneg hr.le hsin
+    linarith
+
+open Filter Topology in
+/-- A map of the real line that carries each point of an interval toward the interval's lower
+end without passing it, and is continuous at each point of the interval, has iterates that
+converge to that end from every point of the interval.  The iterates fall and stay above the
+end, so they converge, and the map leaves their limit in place, which it does to no point of the
+interval.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+lemma iterate_tendsto_lower (T : ℝ → ℝ) (a b : ℝ)
+    (hT : ∀ x, a < x → x < b → a < T x ∧ T x < x)
+    (hcont : ∀ x, a < x → x < b → ContinuousAt T x) (x₀ : ℝ) (h1 : a < x₀) (h2 : x₀ < b) :
+    Tendsto (fun k => T^[k] x₀) atTop (𝓝 a) := by
+  -- the iterates stay above `a` and do not rise
+  have hinv : ∀ k, a < T^[k] x₀ ∧ T^[k] x₀ ≤ x₀ := by
+    intro k
+    induction k with
+    | zero => exact ⟨h1, le_refl _⟩
+    | succ k ih =>
+      rw [Function.iterate_succ_apply']
+      obtain ⟨t1, t2⟩ := hT _ ih.1 (lt_of_le_of_lt ih.2 h2)
+      exact ⟨t1, le_trans t2.le ih.2⟩
+  have hanti : Antitone (fun k => T^[k] x₀) := by
+    apply antitone_nat_of_succ_le
+    intro k
+    show T^[k + 1] x₀ ≤ T^[k] x₀
+    rw [Function.iterate_succ_apply']
+    exact (hT _ (hinv k).1 (lt_of_le_of_lt (hinv k).2 h2)).2.le
+  have hbdd : BddBelow (Set.range (fun k => T^[k] x₀)) :=
+    ⟨a, by rintro _ ⟨k, rfl⟩; exact (hinv k).1.le⟩
+  have hlim := tendsto_atTop_ciInf hanti hbdd
+  -- the limit is a point that the map leaves in place, so it is `a`
+  have hle : a ≤ ⨅ k, T^[k] x₀ := le_ciInf fun k => (hinv k).1.le
+  have hub : (⨅ k, T^[k] x₀) ≤ x₀ := ciInf_le hbdd 0
+  rcases hle.lt_or_eq with hlt | heq
+  · exfalso
+    have hc := hcont _ hlt (lt_of_le_of_lt hub h2)
+    have h3 : Tendsto (fun k => T (T^[k] x₀)) atTop (𝓝 (T (⨅ k, T^[k] x₀))) := hc.tendsto.comp hlim
+    have h4 : Tendsto (fun k => T^[k + 1] x₀) atTop (𝓝 (⨅ k, T^[k] x₀)) :=
+      hlim.comp (tendsto_add_atTop_nat 1)
+    have h5 : (fun k => T^[k + 1] x₀) = fun k => T (T^[k] x₀) := by
+      funext k
+      exact Function.iterate_succ_apply' T k x₀
+    rw [h5] at h4
+    have h6 := tendsto_nhds_unique h3 h4
+    have h7 := (hT _ hlt (lt_of_le_of_lt hub h2)).2
+    linarith
+  · rw [heq]
+    exact hlim
+
+open Filter Topology in
+/-- The statement of `iterate_tendsto_lower` for a map that carries each point of an interval
+toward the interval's upper end without passing it: the iterates converge to the upper end.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+lemma iterate_tendsto_upper (T : ℝ → ℝ) (c a : ℝ)
+    (hT : ∀ x, c < x → x < a → x < T x ∧ T x < a)
+    (hcont : ∀ x, c < x → x < a → ContinuousAt T x) (x₀ : ℝ) (h1 : c < x₀) (h2 : x₀ < a) :
+    Tendsto (fun k => T^[k] x₀) atTop (𝓝 a) := by
+  -- the map `y ↦ −T(−y)` carries each point between `−a` and `−c` toward `−a`
+  have h := iterate_tendsto_lower (fun y => -T (-y)) (-a) (-c)
+    (fun y hy1 hy2 => by
+      obtain ⟨t1, t2⟩ := hT (-y) (by linarith) (by linarith)
+      exact ⟨by linarith, by linarith⟩)
+    (fun y hy1 hy2 => by
+      have hc := hcont (-y) (by linarith) (by linarith)
+      exact (ContinuousAt.comp (f := fun y : ℝ => -y) hc continuous_neg.continuousAt).neg)
+    (-x₀) (by linarith) (by linarith)
+  have hiter : ∀ k, (fun y => -T (-y))^[k] (-x₀) = -(T^[k] x₀) := by
+    intro k
+    induction k with
+    | zero => rfl
+    | succ k ih => rw [Function.iterate_succ_apply', ih, neg_neg, Function.iterate_succ_apply']
+  simp only [hiter] at h
+  have h' := h.neg
+  simpa using h'
+
+/-- **The phase after the tick is continuous in the phase before** (Sec. IV.C), at every phase
+`φ` where the new state has a positive component along the old direction or a component across
+it that is not zero: there the new state is not opposite to the old direction.
+Sec. IV.C, the sentence that the statements of this block prove: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+lemma tickPhase_continuousAt (Δ ε φ : ℝ)
+    (h : 0 < Real.cos Δ + ε * Real.cos φ ∨ Real.sin Δ - ε * Real.sin φ ≠ 0) :
+    ContinuousAt (tickPhase Δ ε) φ := by
+  have hw : ContinuousAt (fun x : ℝ =>
+      (⟨Real.cos Δ + ε * Real.cos x, Real.sin Δ - ε * Real.sin x⟩ : ℂ)) φ := by
+    have he : (fun x : ℝ => (⟨Real.cos Δ + ε * Real.cos x, Real.sin Δ - ε * Real.sin x⟩ : ℂ))
+        = fun x : ℝ => ((Real.cos Δ + ε * Real.cos x : ℝ) : ℂ)
+          + ((Real.sin Δ - ε * Real.sin x : ℝ) : ℂ) * Complex.I := by
+      funext x
+      exact Complex.mk_eq_add_mul_I _ _
+    rw [he]
+    fun_prop
+  have harg : ContinuousAt (fun x : ℝ => Complex.arg
+      (⟨Real.cos Δ + ε * Real.cos x, Real.sin Δ - ε * Real.sin x⟩ : ℂ)) φ :=
+    ContinuousAt.comp (g := Complex.arg)
+      (Complex.continuousAt_arg (Complex.mem_slitPlane_iff.2 h)) hw
+  exact continuousAt_id.add harg
+
+open Filter Topology in
+/-- **The repeated tick converges to the kept phase** (Sec. IV.C).  For `0 < ε < 1`,
+`|sin Δ| < ε` and `cos Δ > 0`, with `φ₀ = arcsin(sin Δ/ε)`: from every phase `φ` strictly
+between `−π − φ₀` and `π − φ₀`, the phases after one tick, two ticks and so on
+(`tickPhase`, repeated) converge to `φ₀`.  Each tick brings the phase nearer to `φ₀` without
+passing it (`tick_between`), and the only phase of that range that the tick keeps is `φ₀`.
+`Main.phase_under_tick` states it for a string of the register, with `Δ = Et_c/ℏ` and
+`ε = h/L` (`Reg.phase_under_tick`).
+Sec. IV.C: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tick_converges (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) (φ : ℝ)
+    (h1 : -Real.pi - φ₀ < φ) (h2 : φ < Real.pi - φ₀) :
+    Tendsto (fun k => (tickPhase Δ ε)^[k] φ) atTop (𝓝 φ₀) := by
+  rcases lt_trichotomy φ φ₀ with hlt | heq | hgt
+  · exact iterate_tendsto_upper (tickPhase Δ ε) (-Real.pi - φ₀) φ₀
+      (fun x hx1 hx2 => (tick_between Δ ε φ₀ hε hε1 hin hcos hφ₀ x).2 hx1 hx2)
+      (fun x hx1 hx2 => tickPhase_continuousAt Δ ε x
+        (Or.inr ((phase_drawn Δ ε φ₀ hε hε1 hin hcos hφ₀ x).2.2.2.1 hx1 hx2).ne')) φ h1 hlt
+  · rw [heq]
+    have hfix : ∀ k, (tickPhase Δ ε)^[k] φ₀ = φ₀ := fun k =>
+      Function.iterate_fixed (tickPhase_kept Δ ε φ₀ hε hε1 hin hcos hφ₀) k
+    simp only [hfix]
+    exact tendsto_const_nhds
+  · exact iterate_tendsto_lower (tickPhase Δ ε) φ₀ (Real.pi - φ₀)
+      (fun x hx1 hx2 => (tick_between Δ ε φ₀ hε hε1 hin hcos hφ₀ x).1 hx1 hx2)
+      (fun x hx1 hx2 => tickPhase_continuousAt Δ ε x
+        (Or.inr ((phase_drawn Δ ε φ₀ hε hε1 hin hcos hφ₀ x).2.2.2.2 hx1 hx2).ne)) φ hgt h2
+
+/-- **The factor by which a small gap shrinks per tick** (Sec. IV.C).  For `0 < ε < 1`,
+`|sin Δ| < ε` and `cos Δ > 0`, with `φ₀ = arcsin(sin Δ/ε)`: at `φ₀` the phase after the tick
+(`tickPhase`) has the derivative `cos Δ/(cos Δ + ε cos φ₀)` with respect to the phase before,
+and that factor lies strictly between `0` and `1`.  So a small gap between the phase and `φ₀`
+shrinks by that factor in one tick, to first order in the gap.
+Sec. IV.C: "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged, as
+the Lean files also prove." -/
+theorem tick_contracts (Δ ε φ₀ : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hin : |Real.sin Δ| < ε)
+    (hcos : 0 < Real.cos Δ) (hφ₀ : φ₀ = Real.arcsin (Real.sin Δ / ε)) :
+    HasDerivAt (tickPhase Δ ε) (Real.cos Δ / (Real.cos Δ + ε * Real.cos φ₀)) φ₀ ∧
+    0 < Real.cos Δ / (Real.cos Δ + ε * Real.cos φ₀) ∧
+    Real.cos Δ / (Real.cos Δ + ε * Real.cos φ₀) < 1 := by
+  obtain ⟨hsΔ, -, -, hc0, -⟩ := kept_phase_bounds Δ ε φ₀ hε hε1 hin hcos hφ₀
+  have hr0 : 0 < Real.cos Δ + ε * Real.cos φ₀ := by positivity
+  refine ⟨?_, div_pos hcos hr0, (div_lt_one hr0).2 (by nlinarith)⟩
+  -- the new state along and across the old direction, as a complex number
+  set w : ℝ → ℂ := fun x => ((Real.cos Δ + ε * Real.cos x : ℝ) : ℂ)
+    + ((Real.sin Δ - ε * Real.sin x : ℝ) : ℂ) * Complex.I with hw
+  have hT : tickPhase Δ ε = fun x => x + (Complex.log (w x)).im := by
+    funext x
+    rw [Complex.log_im]
+    unfold tickPhase
+    rw [Complex.mk_eq_add_mul_I]
+  have hA : HasDerivAt (fun x : ℝ => Real.cos Δ + ε * Real.cos x) (ε * -Real.sin φ₀) φ₀ :=
+    ((Real.hasDerivAt_cos φ₀).const_mul ε).const_add (Real.cos Δ)
+  have hB : HasDerivAt (fun x : ℝ => Real.sin Δ - ε * Real.sin x) (-(ε * Real.cos φ₀)) φ₀ :=
+    ((Real.hasDerivAt_sin φ₀).const_mul ε).const_sub (Real.sin Δ)
+  have hw' : HasDerivAt w (((ε * -Real.sin φ₀ : ℝ) : ℂ)
+      + ((-(ε * Real.cos φ₀) : ℝ) : ℂ) * Complex.I) φ₀ :=
+    hA.ofReal_comp.add (hB.ofReal_comp.mul_const Complex.I)
+  -- at the kept phase the new state lies along the old direction
+  have hwφ : w φ₀ = ((Real.cos Δ + ε * Real.cos φ₀ : ℝ) : ℂ) := by
+    simp only [hw]
+    rw [hsΔ, sub_self, Complex.ofReal_zero, zero_mul, add_zero]
+  have hmem : w φ₀ ∈ Complex.slitPlane := by
+    rw [hwφ, Complex.mem_slitPlane_iff]
+    exact Or.inl (by rw [Complex.ofReal_re]; exact hr0)
+  have hlog := hw'.clog_real hmem
+  have him := Complex.imCLM.hasFDerivAt.comp_hasDerivAt φ₀ hlog
+  have hsum := (hasDerivAt_id φ₀).add him
+  have hfun : (fun x : ℝ => x + (Complex.log (w x)).im)
+      = id + ⇑Complex.imCLM ∘ fun t => Complex.log (w t) := by
+    funext x
+    rfl
+  -- the derivative: `1 − ε cos φ₀/(cos Δ + ε cos φ₀)`
+  have hval : Real.cos Δ / (Real.cos Δ + ε * Real.cos φ₀)
+      = 1 + Complex.imCLM ((((ε * -Real.sin φ₀ : ℝ) : ℂ)
+        + ((-(ε * Real.cos φ₀) : ℝ) : ℂ) * Complex.I) / w φ₀) := by
+    rw [hwφ]
+    simp only [Complex.imCLM_apply, Complex.div_ofReal_im, Complex.add_im, Complex.ofReal_im,
+      Complex.mul_im, Complex.ofReal_re, Complex.I_im, Complex.I_re, mul_zero, mul_one, zero_add,
+      add_zero]
+    field_simp
+    ring
+  rw [hT, hfun, hval]
+  exact hsum
 
 end Law
 
@@ -1316,6 +2506,41 @@ theorem phase_all_turns (ε E : ℝ) (hε : 0 < ε) (hε1 : ε < 1) (hE : 0 ≤ 
   refine ⟨Law.steady_phase_iff_turns_nat _ ε hε hε1 hΔ0, ?_⟩
   have h := Law.phase_ranges (R.ℏ / R.tc) ε E hu hε hε1 hE
   rwa [div_div_eq_mul_div] at h
+
+open Filter Topology in
+/-- **The tick's action on the phase of a string of the register** (Sec. IV.C).  A free tick
+turns the global phase of a string of energy `E` by `Δ = Et_c/ℏ` (Sec. II's definition of
+energy), and it adds to the string the amplitude `h/L` of a share of amplitude `h`, `0 < h < L`.
+The first part, outside the range: where `h/L < |sin Δ|`, the tick keeps no phase
+(`Law.keepsPhaseAt`), and for every phase `φ` the phase after the tick (`Law.tickPhase`)
+differs from `φ` by an angle whose sine has the sign of `sin Δ` (`Law.phase_slips`,
+`Law.tickPhase_spec`).  So the phase moves in the same sense at every tick.  The second part,
+inside the range: where `|sin Δ| < h/L` and `cos Δ > 0`, the tick keeps the phase
+`φ₀ = arcsin(L sin Δ/h)` (`Law.kept_phases`), and from every phase strictly between `−π − φ₀`
+and `π − φ₀` the repeated tick converges to `φ₀` (`Law.tick_converges`).  The edge of the
+range, `|sin Δ| = h/L`, is in neither part.
+Sec. IV.C: "Where the slip per tick is larger, the global phase slips at every tick and the
+string takes no phase from the body."  "Where it is smaller, the ticks draw the global phase to
+a phase that they leave unchanged, as the Lean files also prove." -/
+theorem phase_under_tick (h : ℝ) (hh0 : 0 < h) (hhL : h < R.L) (E : ℝ) :
+    (h / R.L < |Real.sin (E * R.tc / R.ℏ)| →
+      ∀ φ : ℝ, ¬ Law.keepsPhaseAt (E * R.tc / R.ℏ) (h / R.L) φ ∧
+        0 < Real.sin (E * R.tc / R.ℏ) *
+          Real.sin (Law.tickPhase (E * R.tc / R.ℏ) (h / R.L) φ - φ)) ∧
+    (|Real.sin (E * R.tc / R.ℏ)| < h / R.L → 0 < Real.cos (E * R.tc / R.ℏ) →
+      ∃ φ₀ : ℝ, Law.keepsPhaseAt (E * R.tc / R.ℏ) (h / R.L) φ₀ ∧
+        ∀ φ : ℝ, -Real.pi - φ₀ < φ → φ < Real.pi - φ₀ →
+          Tendsto (fun k => (Law.tickPhase (E * R.tc / R.ℏ) (h / R.L))^[k] φ) atTop (𝓝 φ₀)) := by
+  have hL := R.L_pos
+  have hε : 0 < h / R.L := div_pos hh0 hL
+  have hε1 : h / R.L < 1 := by rw [div_lt_one hL]; exact hhL
+  refine ⟨fun hout φ => ?_, fun hin hcos => ?_⟩
+  · obtain ⟨-, -, hnk, hturn⟩ := Law.phase_slips _ _ hε hout φ
+    obtain ⟨⟨r, hr, hc, hs⟩, -, -⟩ := Law.tickPhase_spec (E * R.tc / R.ℏ) (h / R.L) φ hε hε1
+    exact ⟨hnk, hturn r _ hr hc hs⟩
+  · set φ₀ := Real.arcsin (Real.sin (E * R.tc / R.ℏ) / (h / R.L)) with hφ₀
+    refine ⟨φ₀, ?_, fun φ h1 h2 => Law.tick_converges _ _ φ₀ hε hε1 hin hcos hφ₀ φ h1 h2⟩
+    exact (Law.kept_phases _ _ φ₀ hε hε1 hin hcos hφ₀ φ₀).2 ⟨0, Or.inl (by push_cast; ring)⟩
 
 /-- **The spread of the strings' energies, in turns per tick** (Sec. IV.C).  With the strings'
 energies spread at the horizon's temperature (`hspread`) and `k_BT_dS = ℏ/(Lt_c)` (`I1dS`), the
@@ -1661,7 +2886,10 @@ chained into one statement whose hypotheses are exactly the inputs, each named:
   spread of the strings' energies (`threshold_from_spread`);
 * `hb`, Postulate 1 with the probability rule of Sec. IV.A: a string that carries the body's
   information is one of its qubits, so the body's share at a string enters as the amplitude
-  `√(E/u)`, in units of the matter a string holds on average (`Sources.P1.share_amplitude`); a
+  `√(E/u)`, in units of the matter a string holds on average (`Sources.Approx.share_amplitude`,
+  the leading order in `1/L` of the exact amplitude, which `Main.share_amplitude` derives from
+  the count of the bits that the share fills for `E ≤ u` and takes on the condition of the same
+  scale for `E > u`; `Law.share_amplitude`, `Law.share_leading_order`); a
   string carries that information when its phase holds against the share, that is, to leading
   order in `1/L`, when the amplitude exceeds the string's threshold, so the carriers are the
   fraction `b` of the strings whose threshold lies below it (`Sources.Approx.carriers_leading`).

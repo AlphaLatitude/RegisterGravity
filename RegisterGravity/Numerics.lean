@@ -44,7 +44,8 @@ of `L`, `10⁶⁴` to `10¹⁰⁹`, and Davies' `10¹²²`; and `1 MeV = 1.60217
 `π` and `ln 2` are Mathlib's `Real.pi` and `Real.log 2`, and they enter through Mathlib's bounds
 `3.141592 < π < 3.141593` (`Real.pi_gt_d6`, `Real.pi_lt_d6`) and
 `0.6931471803 < ln 2 < 0.6931471808` (`Real.log_two_gt_d9`, `Real.log_two_lt_d9`); `e` enters
-the values of the law, the departure at Neptune and `ln(L_cos²/4)`, through `Real.exp_one_gt_d9`,
+the values of the law, the departures at Neptune and at `500` and `1500 au` from the Sun, and
+`ln(L_cos²/4)`, through `Real.exp_one_gt_d9`,
 `Real.exp_one_lt_d9`, `Real.quadratic_le_exp_of_nonneg`,
 `Real.exp_bound'`, `Real.exp_bound_div_one_sub_of_interval'`, `Real.add_one_le_exp` and
 `Real.one_sub_inv_le_log_of_pos`; other values of `exp` are bounded by `1 + x ≤ eˣ` and, for
@@ -1715,6 +1716,135 @@ theorem neptune_departure :
   refine ⟨⟨x1, x2⟩, ?_, ?_⟩
   · rw [lt_div_iff₀ hpos]; linarith
   · rw [div_lt_iff₀ hpos]; linarith
+
+/-- **The departure from the Sun at 500 au and at 1500 au** (Sec. IV.C, Appendix A): with
+`g_N = GM☉/r²` and `h = √(g_N/a₀)`, at `r = 500 au` `h = 14.06` and the departure from Newton's
+law, `e^{−h}/(1 − e^{−h})`, is `7.8×10⁻⁷` of `g_N`; at `r = 1500 au` `h = 4.687` and the departure
+is `0.93%`.  Sec. IV.C: "For the Sun the departure is `8×10⁻⁷` of `g_N` at `500` au and `0.9%` at
+`1500` au."  Appendix A: "At `500` au `h = 14.06` and the departure `e^{−h}/(1 − e^{−h})` is
+`7.8×10⁻⁷`; at `1500` au `h = 4.687` and it is `0.93%`." -/
+theorem sun_departure :
+    let h₅ := Real.sqrt (GMs₀ / (500 * au₀) ^ 2 / a0v)
+    let h₁₅ := Real.sqrt (GMs₀ / (1500 * au₀) ^ 2 / a0v)
+    (14.055 < h₅ ∧ h₅ < 14.065) ∧
+    (7.75e-7 < Real.exp (-h₅) / (1 - Real.exp (-h₅)) ∧
+      Real.exp (-h₅) / (1 - Real.exp (-h₅)) < 7.85e-7) ∧
+    (4.6865 < h₁₅ ∧ h₁₅ < 4.6875) ∧
+    (0.00925 < Real.exp (-h₁₅) / (1 - Real.exp (-h₁₅)) ∧
+      Real.exp (-h₁₅) / (1 - Real.exp (-h₁₅)) < 0.00935) := by
+  intro h₅ h₁₅
+  obtain ⟨a1, a2⟩ := a0_tight
+  have ha := a0v_pos
+  -- the square roots, bracketed as in `solar_system`
+  have s1 : (14.0616 : ℝ) < h₅ := by
+    show (14.0616 : ℝ) < Real.sqrt (GMs₀ / (500 * au₀) ^ 2 / a0v)
+    rw [Real.lt_sqrt (by norm_num), lt_div_iff₀ ha]
+    have : (14.0616 : ℝ) ^ 2 * 1.199638e-10 < GMs₀ / (500 * au₀) ^ 2 := by norm_num
+    exact (mul_lt_mul_of_pos_left a2 (by norm_num)).trans this
+  have s2 : h₅ < (14.0617 : ℝ) := by
+    show Real.sqrt (GMs₀ / (500 * au₀) ^ 2 / a0v) < (14.0617 : ℝ)
+    rw [Real.sqrt_lt' (by norm_num), div_lt_iff₀ ha]
+    have : GMs₀ / (500 * au₀) ^ 2 < (14.0617 : ℝ) ^ 2 * 1.1996372e-10 := by norm_num
+    exact this.trans (mul_lt_mul_of_pos_left a1 (by norm_num))
+  have t1 : (4.6872 : ℝ) < h₁₅ := by
+    show (4.6872 : ℝ) < Real.sqrt (GMs₀ / (1500 * au₀) ^ 2 / a0v)
+    rw [Real.lt_sqrt (by norm_num), lt_div_iff₀ ha]
+    have : (4.6872 : ℝ) ^ 2 * 1.199638e-10 < GMs₀ / (1500 * au₀) ^ 2 := by norm_num
+    exact (mul_lt_mul_of_pos_left a2 (by norm_num)).trans this
+  have t2 : h₁₅ < (4.6873 : ℝ) := by
+    show Real.sqrt (GMs₀ / (1500 * au₀) ^ 2 / a0v) < (4.6873 : ℝ)
+    rw [Real.sqrt_lt' (by norm_num), div_lt_iff₀ ha]
+    have : GMs₀ / (1500 * au₀) ^ 2 < (4.6873 : ℝ) ^ 2 * 1.1996372e-10 := by norm_num
+    exact this.trans (mul_lt_mul_of_pos_left a1 (by norm_num))
+  -- the exponentials, bounded as in `neptune_departure`
+  have f1 : (1.0009999 : ℝ) < Real.exp 0.001 := by
+    have := Real.add_one_le_exp (0.001 : ℝ); linarith
+  have f2 : Real.exp 0.001 < 1 / (1 - 0.001) :=
+    Real.exp_bound_div_one_sub_of_interval' (by norm_num) (by norm_num)
+  have E1 : (2.7182818283 : ℝ) ^ 14 < Real.exp 14 := by
+    have e : Real.exp 14 = Real.exp 1 ^ 14 := by rw [← Real.exp_nat_mul]; norm_num
+    rw [e]; exact pow_lt_pow_left₀ Real.exp_one_gt_d9 (by norm_num) (by norm_num)
+  have E2 : Real.exp 14 < (2.7182818286 : ℝ) ^ 14 := by
+    have e : Real.exp 14 = Real.exp 1 ^ 14 := by rw [← Real.exp_nat_mul]; norm_num
+    rw [e]; exact pow_lt_pow_left₀ Real.exp_one_lt_d9 (Real.exp_pos 1).le (by norm_num)
+  have F1 : (2.7182818283 : ℝ) ^ 4 < Real.exp 4 := by
+    have e : Real.exp 4 = Real.exp 1 ^ 4 := by rw [← Real.exp_nat_mul]; norm_num
+    rw [e]; exact pow_lt_pow_left₀ Real.exp_one_gt_d9 (by norm_num) (by norm_num)
+  have F2 : Real.exp 4 < (2.7182818286 : ℝ) ^ 4 := by
+    have e : Real.exp 4 = Real.exp 1 ^ 4 := by rw [← Real.exp_nat_mul]; norm_num
+    rw [e]; exact pow_lt_pow_left₀ Real.exp_one_lt_d9 (Real.exp_pos 1).le (by norm_num)
+  have g1 : (1.0009999 : ℝ) ^ 61 * 1.0006 < Real.exp 0.0616 := by
+    have e : Real.exp 0.0616 = Real.exp 0.001 ^ 61 * Real.exp 0.0006 := by
+      rw [← Real.exp_nat_mul, ← Real.exp_add]; norm_num
+    rw [e]
+    apply mul_lt_mul (pow_lt_pow_left₀ f1 (by norm_num) (by norm_num))
+    · have := Real.add_one_le_exp (0.0006 : ℝ); linarith
+    · norm_num
+    · positivity
+  have g2 : Real.exp 0.0617 < (1 / (1 - 0.001)) ^ 61 * (1 / (1 - 0.0007)) := by
+    have e : Real.exp 0.0617 = Real.exp 0.001 ^ 61 * Real.exp 0.0007 := by
+      rw [← Real.exp_nat_mul, ← Real.exp_add]; norm_num
+    rw [e]
+    exact mul_lt_mul'' (pow_lt_pow_left₀ f2 (Real.exp_pos _).le (by norm_num))
+      (Real.exp_bound_div_one_sub_of_interval' (by norm_num) (by norm_num))
+      (by positivity) (by positivity)
+  have k1 : (1.0009999 : ℝ) ^ 687 * 1.0002 < Real.exp 0.6872 := by
+    have e : Real.exp 0.6872 = Real.exp 0.001 ^ 687 * Real.exp 0.0002 := by
+      rw [← Real.exp_nat_mul, ← Real.exp_add]; norm_num
+    rw [e]
+    apply mul_lt_mul (pow_lt_pow_left₀ f1 (by norm_num) (by norm_num))
+    · have := Real.add_one_le_exp (0.0002 : ℝ); linarith
+    · norm_num
+    · positivity
+  have k2 : Real.exp 0.6873 < (1 / (1 - 0.001)) ^ 687 * (1 / (1 - 0.0003)) := by
+    have e : Real.exp 0.6873 = Real.exp 0.001 ^ 687 * Real.exp 0.0003 := by
+      rw [← Real.exp_nat_mul, ← Real.exp_add]; norm_num
+    rw [e]
+    exact mul_lt_mul'' (pow_lt_pow_left₀ f2 (Real.exp_pos _).le (by norm_num))
+      (Real.exp_bound_div_one_sub_of_interval' (by norm_num) (by norm_num))
+      (by positivity) (by positivity)
+  have LB5 : (2.7182818283 : ℝ) ^ 14 * ((1.0009999 : ℝ) ^ 61 * 1.0006) < Real.exp h₅ := by
+    refine (mul_lt_mul'' E1 g1 (by norm_num) (by norm_num)).trans ?_
+    rw [← Real.exp_add]; exact Real.exp_lt_exp.2 (by linarith)
+  have UB5 : Real.exp h₅ <
+      (2.7182818286 : ℝ) ^ 14 * ((1 / (1 - 0.001)) ^ 61 * (1 / (1 - 0.0007))) := by
+    refine lt_trans ?_ (mul_lt_mul'' E2 g2 (Real.exp_pos _).le (Real.exp_pos _).le)
+    rw [← Real.exp_add]; exact Real.exp_lt_exp.2 (by linarith)
+  have LB15 : (2.7182818283 : ℝ) ^ 4 * ((1.0009999 : ℝ) ^ 687 * 1.0002) < Real.exp h₁₅ := by
+    refine (mul_lt_mul'' F1 k1 (by norm_num) (by norm_num)).trans ?_
+    rw [← Real.exp_add]; exact Real.exp_lt_exp.2 (by linarith)
+  have UB15 : Real.exp h₁₅ <
+      (2.7182818286 : ℝ) ^ 4 * ((1 / (1 - 0.001)) ^ 687 * (1 / (1 - 0.0003))) := by
+    refine lt_trans ?_ (mul_lt_mul'' F2 k2 (Real.exp_pos _).le (Real.exp_pos _).le)
+    rw [← Real.exp_add]; exact Real.exp_lt_exp.2 (by linarith)
+  -- the departure `e^{−h}/(1 − e^{−h}) = 1/(e^h − 1)`
+  have dep : ∀ x : ℝ, 0 < x →
+      Real.exp (-x) / (1 - Real.exp (-x)) = 1 / (Real.exp x - 1) := by
+    intro x hx
+    have h2 : Real.exp x ≠ 0 := (Real.exp_pos x).ne'
+    rw [← mul_div_mul_right _ _ h2, ← Real.exp_add, neg_add_cancel, Real.exp_zero, sub_mul,
+      ← Real.exp_add, neg_add_cancel, Real.exp_zero, one_mul]
+  have p5 : 0 < h₅ := by linarith
+  have p15 : 0 < h₁₅ := by linarith
+  have q5 : 1 < Real.exp h₅ := Real.one_lt_exp_iff.2 p5
+  have q15 : 1 < Real.exp h₁₅ := Real.one_lt_exp_iff.2 p15
+  refine ⟨⟨by linarith, by linarith⟩, ⟨?_, ?_⟩, ⟨by linarith, by linarith⟩, ⟨?_, ?_⟩⟩
+  · rw [dep _ p5, lt_div_iff₀ (by linarith)]
+    have : (7.75e-7 : ℝ) * ((2.7182818286 : ℝ) ^ 14 * ((1 / (1 - 0.001)) ^ 61 *
+      (1 / (1 - 0.0007))) - 1) < 1 := by norm_num
+    have := mul_lt_mul_of_pos_left UB5 (by norm_num : (0 : ℝ) < 7.75e-7); linarith
+  · rw [dep _ p5, div_lt_iff₀ (by linarith)]
+    have : (1 : ℝ) < 7.85e-7 * ((2.7182818283 : ℝ) ^ 14 * ((1.0009999 : ℝ) ^ 61 * 1.0006) - 1) := by
+      norm_num
+    have := mul_lt_mul_of_pos_left LB5 (by norm_num : (0 : ℝ) < 7.85e-7); linarith
+  · rw [dep _ p15, lt_div_iff₀ (by linarith)]
+    have : (0.00925 : ℝ) * ((2.7182818286 : ℝ) ^ 4 * ((1 / (1 - 0.001)) ^ 687 *
+      (1 / (1 - 0.0003))) - 1) < 1 := by norm_num
+    have := mul_lt_mul_of_pos_left UB15 (by norm_num : (0 : ℝ) < 0.00925); linarith
+  · rw [dep _ p15, div_lt_iff₀ (by linarith)]
+    have : (1 : ℝ) < 0.00935 * ((2.7182818283 : ℝ) ^ 4 * ((1.0009999 : ℝ) ^ 687 * 1.0002) - 1) := by
+      norm_num
+    have := mul_lt_mul_of_pos_left LB15 (by norm_num : (0 : ℝ) < 0.00935); linarith
 
 /-- the law as a function of `x = g_N/a₀`: `a/g_N = 1/(1 − e^{−√x})` -/
 noncomputable def rar (x : ℝ) : ℝ := 1 / (1 - Real.exp (-Real.sqrt x))

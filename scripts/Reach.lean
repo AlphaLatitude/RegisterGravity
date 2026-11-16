@@ -37,6 +37,16 @@ def paperRoots : Array Name := #[
   -- exactly when `Δ` is within `arcsin(h/L)` of a whole number of turns, as the Lean files
   -- prove.", with the condition at every turn that gives it
   `Register.Law.steady_phase_iff_turns, `Register.Law.steady_phase_all_turns,
+  -- Sec. IV.C, the phase of a unit state under one tick, at every phase: which phases the tick
+  -- keeps, the sense in which the phase moves outside and inside the range, and the approach to
+  -- the kept phase: "Where the slip per tick is larger, the global phase slips at every tick and
+  -- the string takes no phase from the body."  "Where it is smaller, the ticks draw the global
+  -- phase to a phase that they leave unchanged, as the Lean files also prove."  The result
+  -- `Main.phase_under_tick` states the two sentences for a string of the register.
+  `Register.Law.tick_components, `Register.Law.tick_turn, `Register.Law.tick_polar,
+  `Register.Law.keepsPhaseAt_iff, `Register.Law.keepsPhase_iff_kept, `Register.Law.phase_slips,
+  `Register.Law.kept_phases, `Register.Law.phase_drawn, `Register.Law.tickPhase_spec,
+  `Register.Law.tick_between, `Register.Law.tick_converges, `Register.Law.tick_contracts,
   -- Sec. IV.A, which states a pairing shows exactly, most product states not among them, the
   -- pairing not fixed by the strings, the probability of a joint outcome as the product of the
   -- frequencies on its blocks, what a block resolves, the state from the strings and their
