@@ -31,7 +31,7 @@ Formal counterpart of five sentences of Sec. II that the other files took in wor
 * `Register.Strings.bit_kept`: "Every string has kept its bit since: an interaction changes its
   sense without making either likelier, and no law favors a sense (Postulate 2)".
 * `Register.Strings.unscattered`: "the fraction of strings not yet scattered after `t` such times
-  is `e^{−t}`, so after `ln R ≈ 282` of them fewer than one of the `R` strings is out of
+  is `e^{−t}`, so after `ln R ≈ 282` of them about one of the `R` strings is still out of
   equilibrium".
 -/
 
@@ -196,13 +196,16 @@ theorem bit_kept (p flip : Bool → ℝ) (hp : p true = 1 / 2 ∧ p false = 1 / 
   constructor <;> ring
 
 /-- **The strings not yet scattered** (Sec. II: "the fraction of strings not yet scattered after
-`t` such times is `e^{−t}`, so after `ln R ≈ 282` of them fewer than one of the `R` strings is out
-of equilibrium").  `f t` is the fraction of the strings not yet scattered after `t` scattering
+`t` such times is `e^{−t}`, so after `ln R ≈ 282` of them about one of the `R` strings is still
+out of equilibrium").  `f t` is the fraction of the strings not yet scattered after `t` scattering
 times.  Scattering at the rate of one per scattering time takes from it at the rate `f` itself,
-`f′ = −f`, from `f(0) = 1`, so `f(t) = e^{−t}`.  Of `R` strings fewer than one is then left,
-`R e^{−t} < 1`, exactly when `t > ln R`. -/
+`f′ = −f`, from `f(0) = 1`, so `f(t) = e^{−t}`, the first part.  Of `R` strings one is then left
+at `t = ln R`, `R e^{−ln R} = 1`, the second part, and fewer than one, `R e^{−t} < 1`, exactly
+when `t > ln R`, the third part.  The paper's `ln R ≈ 282` is a rounded value, so it says that
+about one string is left. -/
 theorem unscattered (f : ℝ → ℝ) (hf : ∀ t, HasDerivAt f (-f t) t) (h0 : f 0 = 1) :
     (∀ t, f t = Real.exp (-t)) ∧
+      (∀ R : ℝ, 0 < R → R * f (Real.log R) = 1) ∧
       ∀ R t : ℝ, 0 < R → (R * f t < 1 ↔ Real.log R < t) := by
   have hg : ∀ t, HasDerivAt (fun t => f t * Real.exp t) 0 t := by
     intro t
@@ -216,7 +219,9 @@ theorem unscattered (f : ℝ → ℝ) (hf : ∀ t, HasDerivAt f (-f t) t) (h0 : 
     have h1 : f t * Real.exp t = 1 := by simpa [h0] using h
     rw [Real.exp_neg]
     exact eq_inv_of_mul_eq_one_left h1
-  refine ⟨hft, fun R t hR => ?_⟩
+  refine ⟨hft, fun R hR => ?_, fun R t hR => ?_⟩
+  · rw [hft, Real.exp_neg, Real.exp_log hR]
+    exact mul_inv_cancel₀ hR.ne'
   rw [hft t]
   have hRe : R * Real.exp (-t) = Real.exp (Real.log R - t) := by
     rw [sub_eq_add_neg, Real.exp_add, Real.exp_log hR]

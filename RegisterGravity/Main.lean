@@ -22,25 +22,29 @@ derives (`Approx.`), the units the results are stated in (`Units.`), or a premis
 states and the files do not derive, listed as open (`Open.`), a namespace that holds none.  The
 rule of Sec. IV.C by which a string carries a body's information, which the files up to v18-68
 took as a premise (`P1.carriers_by_amplitude`), with the distribution of a string's threshold as
-a premise of thermodynamics (`Thermo.max_entropy_threshold`), is derived in `carriers_exact`.  Its premises are the share's
-equal parts, one per tick for each of the string's `L` bits (`P1.share_in_parts`), the rule that
-a string carries when its global phase holds against the share, whatever the turn of its free
-tick (`P1.carriers_hold_phase`), and the spread of the strings' energies
-(`Thermo.energies_thermal`).  `galactic_law` and `scale_mean` take the rule to leading order in
+a premise of thermodynamics (`Thermo.max_entropy_threshold`), is derived in `carriers_exact`.  Its premises are the
+change of a string's phase with the body's, the body's change and the turn of the rest of the
+string's energy in one sense or the other (`P1.phase_with_body`), the share's equal
+parts, one per tick for each of the string's `L` bits (`P1.share_in_parts`), the rule that a
+string carries when the tick keeps its phase against the body's (`P1.carriers_hold_phase`), and
+the spread of the strings' energies (`Thermo.energies_thermal`).  `galactic_law` and `scale_mean` take the rule to leading order in
 `1/L` (`Approx.carriers_leading`), and `carriers_leading_order` and `law_bounds` bound that
 step.  `phase_under_tick` states the tick's action on the phase of a string of the register,
-with the amplitude `ε = h/L` that one tick adds (`P1.share_in_parts`).  The amplitude of the share, which the files up to v18-69 took as one premise,
+with the amplitude `ε = h/L` that one tick adds (`P1.share_in_parts`), and `phase_against_body`
+states it for the string's phase against the body (`P1.phase_with_body`), over any number of
+ticks and whatever the body's changes are.  The amplitude of the share, which the files up to v18-69 took as one premise,
 `h = √(E/u)` (`P1.share_amplitude`), is derived in `share_amplitude`
 (`Derived.share_amplitude_exact`).  Where one string can hold the share, `E ≤ u`, its premises
 are the mass energy found in the bits of its cells, which adds over cells (`P1.mass_in_bits`)
-and is the same in every cell (`P2.cells_hold_alike`), the string's matter on all its bits
-(`P1.string_matter_in_bits`), the share filling whole bits of the string with `h` their
+and is the same in every cell (`P2.cells_hold_alike`), the strings' mean matter on all the bits of the one string on which the count is
+made (`P1.string_matter_in_bits`), the share filling whole bits of the string with `h` their
 amplitude (`P1.share_bits`), and the bits as the possible outcomes, alike
 (`P1.ring_bits_alike`).  For a larger share it takes the paper's definition of `h` on the same
 scale as a condition (`Condition.same_scale`).  `fill_fraction`, `galactic_law`, `law_bounds`
-and `scale_mean` take the amplitude to leading order in `1/L`, `h = √(E/u)`
-(`Approx.share_amplitude`); `share_leading_order` bounds that step in `h`, and
-`law_whole_bits` bounds what it changes in the law.  The gates of
+and `scale_mean` take the amplitude to leading order in `1/L`, `h = √(E/u)`, for a share that
+one string can hold (`Approx.share_amplitude`), and the same condition for a larger share;
+`share_leading_order` bounds that step in `h`, and `law_whole_bits` bounds what it changes in
+the law.  The gates of
 Sec. IV.A, the paper's
 input from quantum mechanics, are the premise
 of `return_bound`.
@@ -1327,17 +1331,17 @@ theorem temperature_led (R : Reg) (G Λ rh a gN T' TdS TN : ℝ) (hgN : Conditio
 
 /-- **The share of a body's energy among its carriers, Eq. (share)** (Sec. IV.C).  The body's
 energy is held by the carriers (`hcar`, Postulate 1), the fraction `b` of the sphere's strings
-(`hNcar`), each at the share `κT_a` of equipartition (`hκ`), and Newton's equal share, Eq. (E), is
-`κT_N` for each string of the sphere (`hκN`); with `I1` for the Unruh temperatures of `g_N` and of
-`a`, and Jacobson's `G`, `κ = 2k_B ln 2`, two Landauer energies per string, and `a = g_N/b`.  Each
-carrier then holds `ε_c = E/b`, with `E = Mc²/N_s` the body's energy per string of the sphere,
-and that is at least `E` where `b ≤ 1` (Sec. IV.C: "those strings then hold the larger share
-`E/b` of Eq. (share)").  It is two Landauer energies at the sphere's temperature,
+(`hNcar`), at the mean share `κT_a` of equipartition (`hκ`), and Newton's mean share, Eq. (E), is
+`κT_N` per string of the sphere (`hκN`); with `I1` for the Unruh temperatures of `g_N` and of
+`a`, and Jacobson's `G`, `κ = 2k_B ln 2`, two Landauer energies per string on average, and
+`a = g_N/b`.  The carriers' mean share is then `ε_c = E/b`, with `E = Mc²/N_s` the body's energy
+per string of the sphere, the mean over the sphere's strings, and that is at least `E` where
+`b ≤ 1` (Sec. IV.C: "those strings then hold the larger mean share `E/b` of Eq. (share)").  It is two Landauer energies at the sphere's temperature,
 `ε_c = 2k_BT_a ln 2`, and no premise or condition of the statement compares `E` with the matter
 `u` that a string holds on average ("The body's share is then still held, since by Eq. (share)
-each string that carries the body's information holds two Landauer energies at the sphere's
-temperature, whatever `f` is.  So `u` sets the unit of `h`; it does not limit what a string
-holds").
+the strings that carry the body's information hold on average two Landauer energies each at
+the sphere's temperature, whatever `f` is.  So `u` sets the unit of `h`; it does not limit what a
+string holds").
 Sources: Postulate 1's first sentence for a body's energy; equipartition and the thermal horizons
 (thermodynamics); `G` (`Derived`); and the conditions: `M, r, a > 0`, the carrier fraction. -/
 theorem carriers_share (R : Reg) (G M r a TN Ta b Ncar εc κ : ℝ)
@@ -1412,35 +1416,38 @@ theorem carriers_share (R : Reg) (G M r a TN Ta b Ncar εc κ : ℝ)
 string is on a ring whose cells are the type `Cell`, `n` in number.  `held S` is the mass energy
 that a measurement on the manifold finds in the cells of `S`: it adds over cells (`hmass`), and
 the bit of each cell holds the same (`hcells`).  So a set of cells holds the number of its cells
-times what one cell's bit holds (`Law.mass_counts_bits`).  The string holds its matter
-`u = (1 − ln 2)ε_s` on all its bits (`hstring`), so a set of `m` of its `n` cells holds `(m/n)u`
-(`Law.mass_of_cells`).  The body's share at the string is its energy per string of the sphere,
+times what one cell's bit holds (`Law.mass_counts_bits`).  The count sets the matter
+`u = (1 − ln 2)ε_s`, the mean over all strings, on all the bits of the one string on which the count is
+made (`hstring`), so a set of `m` of its `n` cells holds `(m/n)u` (`Law.mass_of_cells`).  The result
+is stated for that mean; it does not say that each string holds `u`, nor that a string that
+carries the body's information does.  The body's share at the string is its energy per string of the sphere,
 `E = 2k_BT_N ln 2` (Eq. (E)), which is positive for `T_N > 0`.  Where one string can hold it,
 `E ≤ u`, the share fills a set of the string's cells and not one more, and `h` is the amplitude
 of their bits (`hbits`).  Each cell's bit is one possible outcome among the ring's (`halike`),
 so the probability that the outcome is one of those bits is their number over `n`, and `h` is
 its square root: `h` is not negative, `h²` is a whole number of bits over `n`, and
-`E/u − 1/n < h² ≤ E/u` (`Law.filled_bits`).  Where the share exceeds what one string holds,
+`E/u − 1/n < h² ≤ E/u` (`Law.filled_bits`).  Where the share is larger than `u`,
 `E > u`, no count of bits names a set of the string's cells.  There `h = √(E/u)`, the paper's
 definition of `h` on the same scale, which the result takes as a condition (`hscale`,
 `Condition.same_scale`).  The two cases are the exact amplitude (`Law.share_amplitude`).  The
 premises can hold at once at every share: every share `0 ≤ E ≤ u` fills such a set of cells
 (`Law.fills_exists`, `Law.share_bits_model`).  `share_leading_order` bounds the step from this
-amplitude to `h = √(E/u)`, which `fill_fraction`, `galactic_law`, `law_bounds` and `scale_mean`
-take (`Approx.share_amplitude`), and `law_whole_bits` bounds what the step changes in the law.
+amplitude to `h = √(E/u)` for `E ≤ u` (`Approx.share_amplitude`), and `law_whole_bits` bounds
+what the step changes in the law.  `fill_fraction`, `galactic_law`, `law_bounds` and
+`scale_mean` take the step and the condition `Condition.same_scale`.
 Up to v18-69 the files took `h = √(E/u)` as one premise, `P1.share_amplitude`.  Sec. IV.C:
 "Mass is measured on the manifold, at places, and a place is a cell (Sec. II)."  "The measurement finds the bits in those cells and nothing else (Postulate 1), so mass energy is
-counted in bits: cells without such bits show no mass."  "No cell differs from another (Postulate 2), so every bit counts the same."  "The strings hold the matter `u` per string, on the `L` bits of one whole qubit, so for `f ≤ 1` a
-string's share of the body, `E = fu`, fills the fraction `f` of its bits, to within one bit."  "That fraction is the probability of Eq. (raqm), and its amplitude is `√f`, Eq. (qubit)."
+counted in bits: cells without such bits show no mass."  "No cell differs from another (Postulate 2), so every bit counts the same."  "The strings hold the matter `u` per string on average, on the `L` bits of one whole qubit, so for `f ≤ 1` the
+mean share of the body, `E = fu`, fills the fraction `f` of a string's bits, to within one bit."  "That fraction is the probability of Eq. (raqm), and its amplitude is `√f`, Eq. (qubit)."
 Data availability: "For Sec. IV.C the files count mass energy in bits, each step of the count a
 named hypothesis, and derive from it the amplitude of a body's share, where one string's bits
 hold the share."
 Sources: mass
-energy found in the bits of its cells, the string's matter on all its bits, the share filling
+energy found in the bits of its cells, the strings' mean matter on all the bits of the one string on which the count is made, the share filling
 whole bits of the string with `h` their amplitude, and the bits as the possible outcomes,
 alike, on the ring of one string (Postulate 1); no cell differing from another, for the mass
-energy in a cell (Postulate 2); and the conditions: `u > 0`, `T_N > 0`, and the same scale for
-a share larger than what one string holds. -/
+energy in a cell (Postulate 2); and the conditions: `u > 0`, `T_N > 0`, and the same scale
+for a share larger than `u`. -/
 theorem share_amplitude {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
     (R : Reg) (held : Finset Cell → ℝ) (read : Cell → ℝ) (h TN εs : ℝ)
     (hu : Condition.pos (R.matter εs)) (hTN : Condition.pos TN)
@@ -1461,14 +1468,14 @@ amplitude that the step `Approx.share_amplitude` takes.  The first and second pa
 is at least `h` and exceeds it by at most `1/√n`.  The third part: where the share is at least
 one bit, `E/u ≥ 1/n`, it exceeds `h` by at most `1/(n√(E/u))`.  The fourth part: where the
 share is a whole number of bits, `E/u = k/n`, the two are equal.  The fifth part: a share that
-one string can hold and that is below one bit, `E/u < 1/n`, fills no bit, and `h = 0`.  For a
-share larger than what one string holds the two are equal, on the condition of the same scale
+one string can hold and that is below one bit, `E/u < 1/n`, fills no bit, and `h = 0`.  For
+a share larger than `u` the two are equal, on the condition of the same scale
 (`Condition.same_scale`).  On a largest ring `n = L` (`Horizon.card_ring`), so at every fraction
 `E/u > 0`, `h = √(E/u)` is the leading order of the exact amplitude in `1/L`.  So much the step
 `Approx.share_amplitude` changes `h`, as `carriers_leading_order` bounds what the step
 `Approx.carriers_leading` changes in `b`.  The bounds are those of the amplitude alone
 (`Law.share_leading_order`), and `law_whole_bits` bounds what the step changes in the law.
-Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
 bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files."
 Sources: the exact amplitude of the body's share (`Derived`, `share_amplitude`). -/
@@ -1504,19 +1511,21 @@ Gibbs distribution at the horizon's temperature (`hGibbs`; `Carriers.string_ener
 `a₀` and takes no premise.  The third part: the body's energy per string exceeds the matter a
 string holds on average exactly where `g_N > a₀` ("Nearer the body `f > 1`, and farther out
 `f < 1`").  The fourth and fifth parts: the amplitude of the body's share against a string's one
-whole qubit, `h = √(E/u)` (`hh`, the amplitude to leading order in `1/L`,
-`Approx.share_amplitude`; `share_amplitude` derives the exact amplitude and
-`share_leading_order` bounds the step), is `h = √(g_N/a₀)`, and it is positive.  Sources: the
+whole qubit, `h = √(E/u)`, is `h = √(g_N/a₀)`, and it is positive.  Where `E ≤ u` it is the
+amplitude to leading order in `1/L` (`hh`, `Approx.share_amplitude`; `share_amplitude` derives
+the exact amplitude and `share_leading_order` bounds the step), and where `E > u` it is the
+amplitude on the same scale (`hscale`, `Condition.same_scale`).  Sources: the
 strings' energies spread at the horizon's temperature,
 and the thermal horizons (thermodynamics); the constant `Λ = 3/R_Λ²` (`Derived`); the amplitude
-of the body's share, in units of the matter a string holds on average, to leading order in
-`1/L` (`Approx`, `hh`); and the
-conditions: `g_N > 0`, `r_h` the radius of the horizon. -/
+of the body's share, in units of the matter a string holds on average, to leading order in `1/L`
+for a share that one string can hold (`Approx`, `hh`); and the conditions: `g_N > 0`, `r_h` the
+radius of the horizon, and the same scale for a larger share (`hscale`). -/
 theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ → ℝ)
     (hgN : Condition.pos gN)
     (hdS : Derived.deSitter_horizon R G Λ) (hrh : Condition.horizon_radius R G Λ rh)
     (I1N : Thermo.horizon_thermal R gN TN) (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
-    (hGibbs : Thermo.energies_thermal R TdS εs above) (hh : Approx.share_amplitude R h TN εs) :
+    (hGibbs : Thermo.energies_thermal R TdS εs above) (hh : Approx.share_amplitude R h TN εs)
+    (hscale : Condition.same_scale R h TN εs) :
     Derived.fill_fraction R gN TN εs ∧
     R.a0 = (1 - R.ln2) * R.c ^ 2 / (2 * R.ln2 * R.RL) ∧
     (R.a0 < gN ↔ R.matter εs < 2 * R.kB * TN * R.ln2) ∧
@@ -1535,7 +1544,8 @@ theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ →
     exact mul_pos hm hTpos
   -- the amplitude of the share, `√(E/u)`, is `√(g_N/a₀)`
   have hh' : h = Real.sqrt (gN / R.a0) := by
-    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
+      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
     rw [h1, hff]
   refine ⟨hff, rfl, ?_, hh', ?_⟩
   · rw [← one_lt_div R.a0_pos, ← hff, one_lt_div hu]
@@ -1546,46 +1556,61 @@ theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ →
 share has the amplitude `h` against a string's one whole qubit, with `0 < h < L`.  It reaches the
 string in equal parts, one per tick for each of the string's bits, and the parts add as
 amplitudes (`hparts`).  A largest ring has `L` cells (`Horizon.card_ring`), so each tick adds the
-amplitude `ε = h/L`: the second part.  A free tick turns the global phase of a string of energy
-`E` by `Et_c/ℏ`, and the string carries the body's information when its phase holds against the
-share, whatever that turn is (`hcarry`).  For every turn the phase holds exactly when the turn
-lies within `arcsin(h/L)` of a whole number of turns (`Law.steady_phase_all_turns`,
-`Reg.phase_all_turns`): the third part.  So the carriers are the strings of energy at most
+amplitude `ε = h/L`: the second part.  In a free tick a string's global phase changes by the
+body's change `Δb` and by the turn `E_st_c/ℏ` of the rest of its energy, in one sense or the
+other, for every `E_s` (`hwith`), so the string parts from the body by `E_st_c/ℏ` per tick in one
+sense or the other (`slip_against_body`).  The string carries the body's information when the
+tick keeps its phase against the body's (`hcarry`, `Law.keepsAgainstBody`), and that holds
+exactly when the tick with the slip keeps a phase, `Law.keepsPhase (E_st_c/ℏ) ε`
+(`Law.keepsAgainstBody_either`), whatever that slip is and whichever way it turns.  For every
+slip the phase holds exactly when the slip lies within `arcsin(h/L)` of a whole number of turns
+(`Law.steady_phase_all_turns`, `Reg.phase_all_turns`): the third part.  So the carriers are the strings of energy at most
 `E_thr = (ℏ/t_c) arcsin(h/L)`, the first range, and the strings of energy within `E_thr` of
 `2πkℏ/t_c` for a whole number `k ≥ 1`.  The first range's threshold `E_thr` lies between
 `h k_BT_dS` and `h k_BT_dS/√(1 − (h/L)²)` (`Reg.threshold_bounds`): the fourth and fifth parts.
-The strings' energies are spread at the horizon's temperature (`hGibbs`), whose thermal energy
-is `ℏ/(Lt_c)` (`I1dS`, `Reg.thermal_lap`), and `b` is the fraction that every distribution of
-the energies with that spread gives to the carriers (`hcarry`).  Such a distribution exists
+The energies `E_s` are spread at the horizon's temperature (`hGibbs`), whose thermal energy
+is `ℏ/(Lt_c)` (`I1dS`, `Reg.thermal_lap`).  Sec. IV.C: "Apart from the body's energy, the strings
+of the sphere are like all other strings, so the energies `E_s` are spread over them at the horizon's temperature (Sec. IV.E), by the principle of maximum entropy, the
+fraction `e^{−x}` of them above `x k_BT_dS`."  "So the fraction `e^{−h}` of the strings have
+`E_s > h k_BT_dS`, and those strings miss the body."  The fraction `b` is the one that every
+distribution of the energies with that spread gives to the carriers (`hcarry`).  Such a distribution exists
 (`Law.gibbs_measure_exists`), and it gives the carriers the fraction
 `b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))`
-(`Reg.carriers_rule_iff`): the first part.  That fraction is at least `1 − e^{−h}`, Eq. (b), and
+(`Reg.carriers_rule_iff`): the first part.  The premises hold for every change `Δb` of the
+body's phase in the tick, of any size and either sense, for every phase `θ` of the body, and
+whichever way each string's own turn goes, and so does the result: the fraction depends on none
+of them.  That fraction is at least `1 − e^{−h}`, Eq. (b), and
 at most `(1 − e^{−h/√(1 − (h/L)²)})(1 + 4e^{−3πL/2})` (`Law.fraction_bounds`): the sixth and
 seventh parts.  The eighth and ninth parts: `b` exceeds the first range's fraction
 `1 − e^{−L arcsin(h/L)}` by the fraction of the strings whose turn lies near one or more whole
 turns (`Law.range_fractions`), which is positive and below `e^{−3πL/2}`
-(`Law.whole_turns_bounds`).  Sec. IV.C: "The exceptions are the strings that a tick turns to
+(`Law.whole_turns_bounds`).  Sec. IV.C: "The exceptions are the strings whose slip per tick lies
 within `arcsin(h/L)` of one or more whole turns."  "A whole turn is no turn, so they carry the
 body's information too; they are a fraction below `e^{−3πL/2}` of the strings."  The seventh
 part uses `L ≥ 1`, which the count's `4 ≤ L` gives (`Horizon.four_le`).  Up to v18-68 the files
 took the carriers as a premise, the strings whose threshold the amplitude of the share exceeds
 (`P1.carriers_by_amplitude`), with the threshold's distribution as a premise
 (`Thermo.max_entropy_threshold`); `carriers_leading_order` bounds the step from the derived rule
-to Eq. (b).  Sources: the share's parts per tick and the rule of the phase (Postulate 1, with
-Sec. II's definition of energy); the strings' energies spread at the horizon's temperature, and
+to Eq. (b).  Sources: the change of a string's phase with the body's, the share's parts per
+tick and the rule of the phase (Postulate 1, with Sec. II's definition of energy); the strings' energies spread at the horizon's temperature, and
 the horizon thermal at the temperature of its period (thermodynamics); the constant
 `Λ = 3/R_Λ²` (`Derived`); Sec. II's largest ring of `L` cells and Postulate 2's fourth clause,
 which gives `4 ≤ L` (the structure `Horizon`); and the conditions: `R.L = L`, `0 < h < L`, `r_h`
-the radius of the horizon. -/
+the radius of the horizon.  Data availability: "From these the files derive the rule by which a
+string carries that information, and they prove that the ticks draw the string's phase to a phase
+that holds."  The rule is this result, from the three statements that Data availability names
+(`P1.phase_with_body`, `P1.share_in_parts`, `P1.carriers_hold_phase`) and the thermodynamic
+premises above; the ticks' draw is `phase_against_body`, with `phase_under_tick`. -/
 theorem carriers_exact (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     (G Λ rh TdS εs h ε b : ℝ) (above : ℝ → ℝ) (hrange : Condition.share_below_L R h)
     (hdS : Derived.deSitter_horizon R G Λ) (hrh : Condition.horizon_radius R G Λ rh)
     (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
     (hGibbs : Thermo.energies_thermal R TdS εs above)
-    (hparts : P1.share_in_parts H h ε) (hcarry : P1.carriers_hold_phase R b ε above) :
+    (turn : ℝ → ℝ) (Δb θ : ℝ) (hwith : P1.phase_with_body R turn Δb)
+    (hparts : P1.share_in_parts H h ε) (hcarry : P1.carriers_hold_phase b ε above turn Δb θ) :
     Derived.carriers_exact R b h ∧ ε = h / R.L ∧
-    (∀ E : ℝ, 0 ≤ E → (Law.keepsPhase (E * R.tc / R.ℏ) ε ↔
-      ∃ k : ℕ, |E * R.tc / R.ℏ - 2 * Real.pi * k| ≤ Real.arcsin (h / R.L))) ∧
+    (∀ Es : ℝ, 0 ≤ Es → (Law.keepsAgainstBody (turn Es) Δb ε θ ↔
+      ∃ k : ℕ, |Es * R.tc / R.ℏ - 2 * Real.pi * k| ≤ Real.arcsin (h / R.L))) ∧
     h * (R.kB * TdS) ≤ R.ℏ / R.tc * Real.arcsin (h / R.L) ∧
     R.ℏ / R.tc * Real.arcsin (h / R.L) ≤ h * (R.kB * TdS) / Real.sqrt (1 - (h / R.L) ^ 2) ∧
     1 - Real.exp (-h) ≤ b ∧
@@ -1614,37 +1639,55 @@ theorem carriers_exact (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     field_simp
   have hε0 : 0 < ε := by rw [hε]; exact div_pos hh0 hLpos
   have hε1 : ε < 1 := by rw [hε, div_lt_one hLpos]; exact hhL
+  -- the string's change is the body's change and its slip in one sense or the other, so the
+  -- condition against the body is the condition of the slip alone
+  have hkeep : ∀ Es : ℝ, Law.keepsAgainstBody (turn Es) Δb ε θ ↔
+      Law.keepsPhase (Es * R.tc / R.ℏ) ε :=
+    fun Es => Law.keepsAgainstBody_either (turn Es) (Es * R.tc / R.ℏ) Δb ε θ (hwith Es)
+  have hset : {Es : ℝ | 0 ≤ Es ∧ Law.keepsAgainstBody (turn Es) Δb ε θ} =
+      {E : ℝ | 0 ≤ E ∧ Law.keepsPhase (E * R.tc / R.ℏ) ε} := by
+    ext Es
+    simp only [Set.mem_ofPred_eq, hkeep Es]
+  have hcarry' : ∀ (μ : MeasureTheory.Measure ℝ) [MeasureTheory.IsProbabilityMeasure μ],
+      (∀ x : ℝ, 0 ≤ x → (μ (Set.Ioi x)).toReal = above x) →
+      b = (μ {E : ℝ | 0 ≤ E ∧ Law.keepsPhase (E * R.tc / R.ℏ) ε}).toReal := by
+    intro μ _ hμ
+    rw [← hset]
+    exact hcarry μ hμ
   -- the rule of the phase over every turn, with the spread of the strings' energies
   have hb : b = (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) *
       (1 + (Real.exp (R.L * Real.arcsin (h / R.L)) + 1) /
         (Real.exp (2 * Real.pi * R.L) - 1)) := by
-    have h1 := (R.carriers_rule_iff TdS b ε above hε0 hε1 I1' hGibbs.2).1 hcarry
+    have h1 := (R.carriers_rule_iff TdS b ε above hε0 hε1 I1' hGibbs.2).1 hcarry'
     rwa [hε] at h1
   -- the carriers at every turn
-  have hturns : ∀ E : ℝ, 0 ≤ E → (Law.keepsPhase (E * R.tc / R.ℏ) ε ↔
-      ∃ k : ℕ, |E * R.tc / R.ℏ - 2 * Real.pi * k| ≤ Real.arcsin (h / R.L)) := by
-    intro E hE
-    rw [← hε]
-    exact (R.phase_all_turns ε E hε0 hε1 hE).1
+  have hturns : ∀ Es : ℝ, 0 ≤ Es → (Law.keepsAgainstBody (turn Es) Δb ε θ ↔
+      ∃ k : ℕ, |Es * R.tc / R.ℏ - 2 * Real.pi * k| ≤ Real.arcsin (h / R.L)) := by
+    intro Es hEs
+    rw [hkeep Es, ← hε]
+    exact (R.phase_all_turns ε Es hε0 hε1 hEs).1
   obtain ⟨ht1, ht2⟩ := R.threshold_bounds TdS h I1' hh0.le hhL
   obtain ⟨hb1, hb2⟩ := Law.fraction_bounds R.L h b hL1 hh0.le hhL hb
   obtain ⟨-, hw1, hw2⟩ := Law.whole_turns_bounds R.L h b hLpos hh0 hb
   exact ⟨hb, hε, hturns, ht1, ht2, hb1, hb2, hw1, hw2⟩
 
-/-- **The tick's action on the phase of a string of the register** (Sec. IV.C).  A free tick
-turns the global phase of a string of energy `E` by `Δ = Et_c/ℏ`, Sec. II's definition of
-energy, as in `P1.carriers_hold_phase`, and it adds to the string the amplitude `ε` of the
-body's share.  The first part: `ε = h/L`, since the share's parts add up to its amplitude `h`
+/-- **The tick's action on the phase of a string of the register** (Sec. IV.C).  The turn per
+tick is `Δ = Et_c/ℏ`, Sec. II's definition of energy at the energy `E`, and the tick adds to the
+string the amplitude `ε` of the body's share.  The statement holds for every real `E`.  With
+`E = E_s` or `E = −E_s`, `Δ` is the slip of the string against the body per tick in the one sense
+or the other (`slip_against_body`), so the two parts below hold in both senses.  The statement gives the two parts for a tick with a given turn `Et_c/ℏ`;
+`phase_against_body` states them for the string's phase against the body, from
+`P1.phase_with_body`.  The first part: `ε = h/L`, since the share's parts add up to its amplitude `h`
 (`hparts`) and a largest ring has `L` cells (`Horizon.card_ring`), as in `carriers_exact`.  The
-second part, outside the range in which a phase holds: where `ε < |sin Δ|`, the tick keeps no
+second part: where the added amplitude is smaller than the size of the sine of the turn, `ε < |sin Δ|`, the tick keeps no
 phase (`Law.keepsPhaseAt`), and for every phase `φ` the phase after the tick (`Law.tickPhase`)
 differs from `φ` by an angle whose sine has the sign of `sin Δ`, so the phase moves in the same
 sense at every tick (`Law.phase_slips`, `Law.tickPhase_spec`).  The third part, inside the
 range: where `|sin Δ| < ε` and `cos Δ > 0`, the tick keeps the phase `φ₀ = arcsin(sin Δ/ε)`
 (`Law.kept_phases`), and from every phase strictly between `−π − φ₀` and `π − φ₀` the repeated
 tick converges to `φ₀` (`Law.tick_converges`); `Reg.phase_under_tick` states both parts for
-`ε = h/L`.  The edge of the range, `|sin Δ| = ε`, is not covered by the third part, and neither
-by the second.  Sec. IV.C: "Where the slip per tick is larger, the global phase slips at every
+`ε = h/L`.  Neither part treats the edge of the range, `|sin Δ| = ε` with `cos Δ > 0`, where the tick keeps a phase (`Law.steady_phase_all_turns`, `Law.keepsPhase_iff_kept`) and no
+convergence is stated, or the turns within `arcsin ε` of an odd number of half turns, where `|sin Δ| ≤ ε` and `cos Δ < 0`.  At the turns within `arcsin ε` of an odd number of half turns, which are outside the range, the tick keeps no phase either (`Law.keepsPhase_iff_kept`), and no statement gives the sense in which the phase moves.  Of the first sentence quoted below, the files prove that the tick keeps no phase at any turn outside the range, and that the phase moves in the same sense at every tick where `ε < |sin Δ|`.  Sec. IV.C: "Where the slip per tick is larger, the global phase slips at every
 tick and the string takes no phase from the body."  "Where it is smaller, the ticks draw the
 global phase to a phase that they leave unchanged, as the Lean files also prove."  Data
 availability: "From these the files derive the rule by which a string carries that
@@ -1675,6 +1718,156 @@ theorem phase_under_tick (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
   refine ⟨hε, ?_⟩
   rw [hε]
   exact R.phase_under_tick h hh0 hhL E
+
+/-- **The slip of a string against the body** (Sec. IV.C).  In a free tick the global phase of
+every string changes by the body's change `Δb` and by the turn `E_st_c/ℏ` of the rest of its
+energy, in one sense or the other (`hwith`).  The statement holds for every `E_s`, every `Δb` and
+either sense.  The first part: the string parts from the body by `E_st_c/ℏ` per tick in one sense
+or the other, `turn E_s − Δb = ±E_st_c/ℏ`.  The second part: where `E_s = 0`, the string holding
+the body's energy alone, it does not part from the body.  The third part: for every phase `θ` of
+the body and every amplitude `ε`, the tick keeps the string's phase against the body's
+(`Law.keepsAgainstBody (turn E_s) Δb ε θ`, the condition of `P1.carriers_hold_phase` at the
+energy `E_s`) exactly when `Law.keepsPhase (E_st_c/ℏ) ε` (`Law.keepsAgainstBody_either`).  The
+fourth part: the tick that changes the string's phase by `turn E_s` and the body's by `Δb`, and
+adds to the string the amplitude `ε` at the body's phase after the tick, leaves the string's phase
+`φ` against the body unchanged, the new phase being `φ + Δb` with a positive amplitude, exactly
+when the tick of the slip keeps the phase `φ − θ`, `Law.keepsPhaseAt (E_st_c/ℏ) ε (φ − θ)`, for
+every `θ`, `φ` and `ε`; or, where the string's own turn goes the other way, exactly when it keeps
+the mirror phase `θ − φ` (`Law.kept_against_body`, `Law.keepsPhaseAt_neg`).  Sec. IV.C: "Whether
+the string keeps the body's phase depends on how its own global phase moves against the body's."
+"The body's energy on the string changes the string's phase and the body's together, so the two
+part only by what the rest of the string's energy `E_s` does: `E_st_c/ℏ` per tick, whichever way
+it turns the phase."  "A string that held the body's energy alone would not slip."  Data availability: "The
+body's energy on a string changes the string's phase and the body's together."
+`phase_against_body` follows the string's phase against the body under the ticks of this slip.
+Sources: the change of a string's phase with the body's (Postulate 1, with Sec. II's definition
+of energy). -/
+theorem slip_against_body (R : Reg) (turn : ℝ → ℝ) (Δb : ℝ)
+    (hwith : P1.phase_with_body R turn Δb) :
+    ∀ Es : ℝ,
+      (turn Es - Δb = Es * R.tc / R.ℏ ∨ turn Es - Δb = -(Es * R.tc / R.ℏ)) ∧
+      (Es = 0 → turn Es - Δb = 0) ∧
+      (∀ θ ε : ℝ, Law.keepsAgainstBody (turn Es) Δb ε θ ↔ Law.keepsPhase (Es * R.tc / R.ℏ) ε) ∧
+      ((∀ θ φ ε : ℝ, (∃ r : ℝ, 0 < r ∧
+          Real.cos (φ + turn Es) + ε * Real.cos (θ + Δb) = r * Real.cos (φ + Δb) ∧
+          Real.sin (φ + turn Es) + ε * Real.sin (θ + Δb) = r * Real.sin (φ + Δb)) ↔
+        Law.keepsPhaseAt (Es * R.tc / R.ℏ) ε (φ - θ)) ∨
+       (∀ θ φ ε : ℝ, (∃ r : ℝ, 0 < r ∧
+          Real.cos (φ + turn Es) + ε * Real.cos (θ + Δb) = r * Real.cos (φ + Δb) ∧
+          Real.sin (φ + turn Es) + ε * Real.sin (θ + Δb) = r * Real.sin (φ + Δb)) ↔
+        Law.keepsPhaseAt (Es * R.tc / R.ℏ) ε (θ - φ))) := by
+  intro Es
+  rcases hwith Es with h | h
+  · have hΔ : turn Es = Es * R.tc / R.ℏ + Δb := by rw [h]; ring
+    refine ⟨Or.inl (by rw [hΔ]; ring), fun h0 => by rw [hΔ, h0]; ring,
+      fun θ ε => Law.keepsAgainstBody_either _ _ _ ε θ (Or.inl h), Or.inl fun θ φ ε => ?_⟩
+    rw [hΔ, ← (Law.kept_against_body θ (Es * R.tc / R.ℏ) Δb ε).2.1 φ]
+  · have hΔ : turn Es = -(Es * R.tc / R.ℏ) + Δb := by rw [h]; ring
+    refine ⟨Or.inr (by rw [hΔ]; ring), fun h0 => by rw [hΔ, h0]; ring,
+      fun θ ε => Law.keepsAgainstBody_either _ _ _ ε θ (Or.inr h), Or.inr fun θ φ ε => ?_⟩
+    rw [hΔ, (Law.kept_against_body θ (-(Es * R.tc / R.ℏ)) Δb ε).2.1 φ, Law.keepsPhaseAt_neg,
+      neg_sub]
+
+/-- **The string's phase against the body under the ticks** (Sec. IV.C).  In a free tick the
+global phase of every string changes by the body's change `Δb` and by the turn `E_st_c/ℏ` of the
+rest of its energy, in one sense or the other (`hwith`), and the tick adds to the string the
+amplitude `ε` of the body's share at the body's phase after the tick.  The statement holds for
+every `E_s`, every `Δb` and either sense.  The first part: `ε = h/L`, since the share's parts add
+up to its amplitude `h` (`hparts`) and a largest ring has `L` cells (`Horizon.card_ring`), as in
+`carriers_exact`.  For every `E_s` the slip is `turn E_s − Δb`, which is `E_st_c/ℏ` in one sense
+or the other (`slip_against_body`).  The second part: the tick of the premise takes the string's
+phase against the body from `φ − θ` to `Law.tickPhase (turn E_s − Δb) ε (φ − θ)`, with a positive
+amplitude, for every phase `θ` of the body and `φ` of the string (`Law.tickPhase_against_body`).
+The third part: with the same slip at every tick, the phase against the body after `k` ticks is
+the `k`-th iterate of that map, whatever the body's changes `Δb' 0, Δb' 1, …` in the ticks are
+(`Law.ticks_against_body`).  The repeated tick takes the phase that one tick gives as the phase
+before the next, at unit amplitude each time, as in `Law.tick_converges`.  The fourth part:
+where the added amplitude is smaller than the size of the sine of the slip, `ε < |sin(E_st_c/ℏ)|`, the tick keeps no phase
+against the body (`Law.keepsPhaseAt`), and for every phase `ψ` against the body the phase after
+the tick differs from `ψ` by an angle whose sine has the sign of the slip's sine, so the phase
+against the body moves in the same sense at every tick (`Law.phase_slips`,
+`Law.tickPhase_spec`).  The fifth part, inside the range: where `|sin(E_st_c/ℏ)| < ε` and
+`cos(E_st_c/ℏ) > 0`, the tick keeps a phase `ψ₀` against the body (`Law.kept_phases`), and from
+every phase strictly between `−π − ψ₀` and `π − ψ₀` the repeated tick converges to `ψ₀`
+(`Law.tick_converges`).  The two conditions are the same in both senses of the string's own
+turn.  Neither part treats the edge of the range, `|sin(E_st_c/ℏ)| = ε` with `cos(E_st_c/ℏ) > 0`, where the tick keeps a phase against the body (`Law.steady_phase_all_turns`, `Law.keepsPhase_iff_kept`, `Law.keepsAgainstBody_either`) and no convergence is stated, or the slips within `arcsin ε` of an odd number of half turns, where `|sin(E_st_c/ℏ)| ≤ ε` and `cos(E_st_c/ℏ) < 0`.  At the slips within `arcsin ε` of an odd number of half turns, which are outside the range, the tick keeps no phase against the body either (`Law.keepsPhase_iff_kept`, `Law.keepsAgainstBody_either`), and no statement gives the sense in which the phase moves.  Of the first sentence quoted below, the files prove that the tick keeps no phase at any slip outside the range, and that the phase moves in the same sense at every tick where `ε < |sin(E_st_c/ℏ)|`.  `phase_under_tick`
+states the last two parts for a tick with a given turn `Et_c/ℏ`.  Sec. IV.C: "Where the slip per
+tick is larger, the global phase slips at every tick and the string takes no phase from the
+body."  "Where it is smaller, the ticks draw the global phase to a phase that they leave
+unchanged, as the Lean files also prove."  Data availability: "From these the files derive the
+rule by which a string carries that information, and they prove that the ticks draw the
+string's phase to a phase that holds."  Sources: the change of a string's phase with the body's
+and the share's parts per tick (Postulate 1, with Sec. II's definition of energy); Sec. II's
+largest ring of `L` cells (the structure `Horizon`); and the conditions: `R.L = L` and
+`0 < h < L`. -/
+theorem phase_against_body (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
+    (h ε : ℝ) (hrange : Condition.share_below_L R h) (hparts : P1.share_in_parts H h ε)
+    (turn : ℝ → ℝ) (Δb : ℝ) (hwith : P1.phase_with_body R turn Δb) :
+    ε = h / R.L ∧ ∀ Es : ℝ,
+      (∀ θ φ : ℝ, ∃ r : ℝ, 0 < r ∧
+        Real.cos (φ + turn Es) + ε * Real.cos (θ + Δb) =
+          r * Real.cos (Law.tickPhase (turn Es - Δb) ε (φ - θ) + (θ + Δb)) ∧
+        Real.sin (φ + turn Es) + ε * Real.sin (θ + Δb) =
+          r * Real.sin (Law.tickPhase (turn Es - Δb) ε (φ - θ) + (θ + Δb))) ∧
+      (∀ (Δb' : ℕ → ℝ) (θ₀ ψ : ℝ) (k : ℕ), ∃ r : ℝ, 0 < r ∧
+        Real.cos (((Law.tickPhase (turn Es - Δb) ε)^[k] ψ + (θ₀ + ∑ i ∈ Finset.range k, Δb' i)) +
+            ((turn Es - Δb) + Δb' k)) +
+            ε * Real.cos ((θ₀ + ∑ i ∈ Finset.range k, Δb' i) + Δb' k) =
+          r * Real.cos ((Law.tickPhase (turn Es - Δb) ε)^[k + 1] ψ +
+            (θ₀ + ∑ i ∈ Finset.range (k + 1), Δb' i)) ∧
+        Real.sin (((Law.tickPhase (turn Es - Δb) ε)^[k] ψ + (θ₀ + ∑ i ∈ Finset.range k, Δb' i)) +
+            ((turn Es - Δb) + Δb' k)) +
+            ε * Real.sin ((θ₀ + ∑ i ∈ Finset.range k, Δb' i) + Δb' k) =
+          r * Real.sin ((Law.tickPhase (turn Es - Δb) ε)^[k + 1] ψ +
+            (θ₀ + ∑ i ∈ Finset.range (k + 1), Δb' i))) ∧
+      (ε < |Real.sin (Es * R.tc / R.ℏ)| →
+        ∀ ψ : ℝ, ¬ Law.keepsPhaseAt (turn Es - Δb) ε ψ ∧
+          0 < Real.sin (turn Es - Δb) * Real.sin (Law.tickPhase (turn Es - Δb) ε ψ - ψ)) ∧
+      (|Real.sin (Es * R.tc / R.ℏ)| < ε → 0 < Real.cos (Es * R.tc / R.ℏ) →
+        ∃ ψ₀ : ℝ, Law.keepsPhaseAt (turn Es - Δb) ε ψ₀ ∧
+          ∀ ψ : ℝ, -Real.pi - ψ₀ < ψ → ψ < Real.pi - ψ₀ →
+            Tendsto (fun k => (Law.tickPhase (turn Es - Δb) ε)^[k] ψ) atTop (𝓝 ψ₀)) := by
+  obtain ⟨hh0, hhL⟩ := hrange
+  have hLpos := R.L_pos
+  -- a largest ring has `L` cells, so each tick adds the amplitude `h/L`
+  have hε : ε = h / R.L := by
+    obtain ⟨l⟩ := H.exists_ring
+    have h1 : ((Fintype.card {x // x ∈ H.cells l} : ℕ) : ℝ) * ε = h := hparts l
+    have hc : Fintype.card {x // x ∈ H.cells l} = L := H.card_ring l
+    have hRL' : R.L = L := hRL
+    rw [hc, ← hRL'] at h1
+    rw [← h1]
+    field_simp
+  have hε0 : 0 < ε := by rw [hε]; exact div_pos hh0 hLpos
+  have hε1 : ε < 1 := by rw [hε, div_lt_one hLpos]; exact hhL
+  refine ⟨hε, fun Es => ?_⟩
+  -- the slip is `E_st_c/ℏ` in one sense or the other, so its sine and cosine are known
+  have hslip : turn Es - Δb = Es * R.tc / R.ℏ ∨ turn Es - Δb = -(Es * R.tc / R.ℏ) := by
+    rcases hwith Es with h1 | h1
+    · left; rw [h1]; ring
+    · right; rw [h1]; ring
+  have hsin : |Real.sin (turn Es - Δb)| = |Real.sin (Es * R.tc / R.ℏ)| := by
+    rcases hslip with h1 | h1
+    · rw [h1]
+    · rw [h1, Real.sin_neg, abs_neg]
+  have hcos : Real.cos (turn Es - Δb) = Real.cos (Es * R.tc / R.ℏ) := by
+    rcases hslip with h1 | h1
+    · rw [h1]
+    · rw [h1, Real.cos_neg]
+  refine ⟨fun θ φ => ?_, fun Δb' θ₀ ψ k => Law.ticks_against_body _ ε hε0 hε1 Δb' θ₀ ψ k,
+    fun hout ψ => ?_, fun hin hc => ?_⟩
+  · have e : turn Es = (turn Es - Δb) + Δb := by ring
+    have h1 := Law.tickPhase_against_body φ θ (turn Es - Δb) Δb ε hε0 hε1
+    rwa [← e] at h1
+  · rw [← hsin] at hout
+    obtain ⟨-, -, hnk, hturn⟩ := Law.phase_slips _ _ hε0 hout ψ
+    obtain ⟨⟨r, hr, hc, hs⟩, -, -⟩ := Law.tickPhase_spec (turn Es - Δb) ε ψ hε0 hε1
+    exact ⟨hnk, hturn r _ hr hc hs⟩
+  · rw [← hsin] at hin
+    rw [← hcos] at hc
+    set ψ₀ := Real.arcsin (Real.sin (turn Es - Δb) / ε) with hψ₀
+    refine ⟨ψ₀, ?_, fun ψ h1 h2 => Law.tick_converges _ _ ψ₀ hε0 hε1 hin hc hψ₀ ψ h1 h2⟩
+    exact (Law.kept_phases _ _ ψ₀ hε0 hε1 hin hc hψ₀ ψ₀).2 ⟨0, Or.inl (by push_cast; ring)⟩
 
 /-- **The carriers' fraction at leading order** (Sec. IV.C, Eq. (b)): the exact fraction of
 `carriers_exact`, `b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))`
@@ -1715,20 +1908,20 @@ theorem carriers_leading_order (H : Horizon L) (R : Reg) (hRL : Condition.same_L
 /-- **The galactic law, Eq. (law)** (Sec. IV.C), from its sources, with the carriers' fraction
 and the amplitude of the body's share at leading order in `1/L`: about all the
 mass `M` inside a sphere of radius `r`, the acceleration is `a = g_N/(1 − e^{−√(g_N/a₀)})` with
-`g_N = GM/r²` and `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`, `R_Λ = √(3/Λ)`; Newton's equal share is
-Eq. (newton) at `g_N`; and a string's share is `κT` with `κ = 2k_B ln 2`
+`g_N = GM/r²` and `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`, `R_Λ = √(3/Λ)`; Newton's mean share is
+Eq. (newton) at `g_N`; and the mean share is `κT` with `κ = 2k_B ln 2`
 (`Reg.radial_acceleration_relation`).  Sources: `G` (`Derived`, Jacobson); the constant
 `Λ = 3/R_Λ²` (`Derived`); the thermal horizons, the cosmological one and those of `g_N` and of `a`
 (thermodynamics); a body's energy held by its carriers (Postulate 1); the strings' energies spread
 at the horizon's temperature, for the mean and for the fraction above an energy, and equipartition
 (thermodynamics); the amplitude of the body's share, in units of the matter a string holds on
-average, to leading order in `1/L` (`Approx`, `hh`; `share_amplitude` derives the exact
-amplitude, `share_leading_order` bounds the step in `h`, and `law_whole_bits` bounds what it
+average, to leading order in `1/L` for a share that one string can hold (`Approx`, `hh`;
+`share_amplitude` derives the exact amplitude, `share_leading_order` bounds the step in `h`, and `law_whole_bits` bounds what it
 changes in the law); the carriers as the strings of energy at
 most `hℏ/(Lt_c)`, the
 leading order in `1/L` of the rule that `carriers_exact` derives (`Approx`, `hb`;
-`carriers_leading_order` and `law_bounds` bound the step); and the conditions:
-`M, r, a > 0`, `r_h` the radius of the horizon, the carrier fraction. -/
+`carriers_leading_order` and `law_bounds` bound the step); and the conditions: `M, r, a > 0`, `r_h` the radius of the horizon, the carrier fraction, and
+the same scale for a larger share (`hscale`). -/
 theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : ℝ)
     (above : ℝ → ℝ) (hM : Condition.pos M) (hr : Condition.pos r) (ha : Condition.pos a)
     (hJ : Derived.jacobson_G R G) (hdS : Derived.deSitter_horizon R G Λ)
@@ -1736,7 +1929,8 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : �
     (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
     (I1N : Thermo.horizon_thermal R (G * M / r ^ 2) TN) (I1a : Thermo.horizon_thermal R a Ta)
     (hGibbs : Thermo.energies_thermal R TdS εs above)
-    (hh : Approx.share_amplitude R h TN εs) (hb : Approx.carriers_leading R b h above)
+    (hh : Approx.share_amplitude R h TN εs) (hscale : Condition.same_scale R h TN εs)
+    (hb : Approx.carriers_leading R b h above)
     (hcar : P1.energy_in_carriers R M Ncar εc) (hNcar : Condition.carrier_fraction R b Ncar r)
     (hκ : Thermo.equipartition κ εc Ta) (hκN : Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN) :
     Derived.galactic_law R a (G * M / r ^ 2) ∧
@@ -1757,7 +1951,8 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : �
   -- the carriers at leading order, with the amplitude of the share
   have hb' : b = 1 - above (Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) *
       (R.ℏ / (R.L * R.tc))) := by
-    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
+      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
     have h1 : b = 1 - above (h * (R.ℏ / (R.L * R.tc))) := hb
     rw [h0] at h1
     exact h1
@@ -1768,8 +1963,9 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : �
 (Sec. IV.C).  The acceleration is `a = g_N/b`, Eq. (share) (`hab`, `carriers_share`); the
 carriers are the exact fraction
 `b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))` (`hb`,
-`carriers_exact`); and the amplitude of the share, to leading order in `1/L`, is
-`h = √(g_N/a₀)` (`hh`, `Approx.share_amplitude`, with Eq. (f), `hf`).
+`carriers_exact`); and the amplitude of the share, to leading order in `1/L` for a share that one
+string can hold and on the same scale for a larger share, is `h = √(g_N/a₀)` (`hh`,
+`Approx.share_amplitude`, `hscale`, `Condition.same_scale`, with Eq. (f), `hf`).
 So the acceleration is `g_N` over that fraction at `h = √(g_N/a₀)`: the first part.  It is at
 least `g_N/((1 − e^{−h/√(1 − (h/L)²)})(1 + 4e^{−3πL/2}))` and at most `g_N/(1 − e^{−h})`, the
 acceleration of Eq. (law): the second and third parts (`Law.law_bounds`).  The fourth part:
@@ -1781,11 +1977,13 @@ taken as `carriers_share` derives it, with `G` from the count at leading order
 `share_leading_order` bounds in `h`.  `law_whole_bits` bounds what that step changes in the
 law: it takes the exact amplitude of whole bits in place of `h = √(g_N/a₀)`.  Sources: Eq. (f),
 the carriers' exact fraction and `a = g_N/b` (`Derived`); the amplitude of the body's share to
-leading order in `1/L` (`Approx`, `hh`); Postulate 2's fourth clause, which gives the count's
-`4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L` and `0 < h < L`. -/
+leading order in `1/L` for a share that one string can hold (`Approx`, `hh`); Postulate 2's
+fourth clause, which gives the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L`,
+`0 < h < L`, and the same scale for a larger share (`hscale`). -/
 theorem law_bounds (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     (gN a b h TN εs : ℝ) (hrange : Condition.share_below_L R h)
-    (hh : Approx.share_amplitude R h TN εs) (hf : Derived.fill_fraction R gN TN εs)
+    (hh : Approx.share_amplitude R h TN εs) (hscale : Condition.same_scale R h TN εs)
+    (hf : Derived.fill_fraction R gN TN εs)
     (hb : Derived.carriers_exact R b h) (hab : Derived.share_acceleration a gN b) :
     a = gN / ((1 - Real.exp (-(R.L * Real.arcsin (Real.sqrt (gN / R.a0) / R.L)))) *
       (1 + (Real.exp (R.L * Real.arcsin (Real.sqrt (gN / R.a0) / R.L)) + 1) /
@@ -1807,7 +2005,8 @@ theorem law_bounds (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     linarith
   -- the amplitude of the share is `√(g_N/a₀)`
   have hh' : h = Real.sqrt (gN / R.a0) := by
-    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
+      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
     have h2 : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
     rw [h1, h2]
   -- `g_N > 0`, since the amplitude is positive
@@ -1856,7 +2055,7 @@ leading order (`Derived.jacobson_G`).  Sources: Eq. (f), the exact amplitude of 
 share, the carriers' exact fraction and `a = g_N/b` (`Derived`); Postulate 2's fourth clause,
 which gives the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L` and
 `0 < h < L`.
-Sec. IV.C: a string's share of the body fills the fraction `f` of its bits "to within one
+Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
 bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files." -/
 theorem law_whole_bits (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
@@ -1881,7 +2080,7 @@ theorem law_whole_bits (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     rw [hRL']
     linarith
   have hLpos := R.L_pos
-  -- Eq. (f): the body's energy per string, in units of a string's matter, is `g_N/a₀`
+  -- Eq. (f): the body's energy per string, in units of the matter a string holds on average, is `g_N/a₀`
   have hff : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
   -- the exact amplitude on a string of `L` bits: `g_N/a₀ − 1/L < h² ≤ g_N/a₀`
   have hbits : gN / R.a0 - 1 / R.L < h ^ 2 ∧ h ^ 2 ≤ gN / R.a0 := by
@@ -1977,13 +2176,14 @@ theorem classical_share (a0 gN a b r : ℝ) (v : ℝ → ℝ) (hgN : Condition.p
 energies spread at `μ` times the horizon's thermal energy (`Condition.threshold_mean`), so that the
 threshold has the mean `μ` in place of one qubit, the law keeps its form with the scale `μ²a₀`, so
 the measured scale fixes `μ`.  The result is stated at leading order in `1/L`, as `galactic_law`
-is.  Sources: Eq. (f) and `a = g_N/b` (`Derived`); the amplitude of the body's share, the
-amplitude of `share_amplitude` at leading order in `1/L` (`Approx`, `hh`);
-the carriers as the strings of energy at most `hℏ/(Lt_c)`, the rule of
-`carriers_exact` at leading order in `1/L` (`Approx`, `hb`); the conditions: `μ > 0` and the
-threshold's mean. -/
+is.  Sources: Eq. (f) and `a = g_N/b` (`Derived`); the amplitude of the body's share, the amplitude
+of `share_amplitude` at leading order in `1/L`, for a share that one string can hold (`Approx`,
+`hh`); the carriers as the strings of energy at most `hℏ/(Lt_c)`, the rule of `carriers_exact`
+at leading order in `1/L` (`Approx`, `hb`); the conditions: `μ > 0`, the threshold's mean, and
+the same scale for a larger share (`hscale`). -/
 theorem scale_mean (R : Reg) (gN a b h μ TN εs : ℝ) (above : ℝ → ℝ) (hμ : Condition.pos μ)
     (hME : Condition.threshold_mean R μ above) (hh : Approx.share_amplitude R h TN εs)
+    (hscale : Condition.same_scale R h TN εs)
     (hb : Approx.carriers_leading R b h above)
     (hf : Derived.fill_fraction R gN TN εs) (hab : Derived.share_acceleration a gN b) :
     a = gN / (1 - Real.exp (-Real.sqrt (gN / (μ ^ 2 * R.a0)))) := by
@@ -1999,7 +2199,8 @@ theorem scale_mean (R : Reg) (gN a b h μ TN εs : ℝ) (above : ℝ → ℝ) (h
     show above (x * (R.ℏ / (R.L * R.tc))) = Real.exp (-x / μ)
     rw [hME _ (mul_nonneg hx hθ.le), ← neg_mul, mul_div_mul_right _ _ hθ.ne']
   have hb' : b = 1 - (fun y => above (y * (R.ℏ / (R.L * R.tc)))) (Real.sqrt (gN / R.a0)) := by
-    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
+    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
+      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
     have h1 : b = 1 - above (h * (R.ℏ / (R.L * R.tc))) := hb
     have h2 : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
     rw [h0, h2] at h1
@@ -2704,7 +2905,7 @@ so are the temperature of the sphere there, which is the Unruh temperature of th
 (`I1a`, `I1a'`), and the share `b = g_N/a` of the strings that carry the body's information
 (`hb`, `hb'`); and Eq. (law), which holds for the proper acceleration without the field
 (`hlaw`), holds for the proper acceleration with it: the law stands in the body's freely falling
-frame as for a body alone ("For a test body in the field of a mass the law stands, with no
+frame as in no external field ("For a test body in the field of a mass the law stands, with no
 external-field effect").  That the field of a given source is a common acceleration of the body
 and of free fall across the sphere is the condition; the files do not derive it.  The first
 three parts are kinematics and take no premise of a source.  Sources: the law and `a = g_N/b`
@@ -2844,7 +3045,9 @@ end Register.Main
   Register.Main.massive_horizon Register.Main.black_hole_horizon
   Register.Main.temperature_led Register.Main.carriers_share Register.Main.share_amplitude
   Register.Main.share_leading_order Register.Main.fill_fraction
-  Register.Main.carriers_exact Register.Main.phase_under_tick Register.Main.carriers_leading_order
+  Register.Main.carriers_exact Register.Main.phase_under_tick Register.Main.slip_against_body
+  Register.Main.phase_against_body
+  Register.Main.carriers_leading_order
   Register.Main.galactic_law Register.Main.law_bounds Register.Main.law_whole_bits
   Register.Main.near_limit Register.Main.deep_limit
   Register.Main.tully_fisher Register.Main.classical_share Register.Main.scale_mean

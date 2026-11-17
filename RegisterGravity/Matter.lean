@@ -13,11 +13,12 @@ energy per string (`Reg.string_split`, `Reg.vacuum_per_string`).  The rest is ma
 Sec. IV.C counts a body's energy per string of the sphere in this unit: "The body is a mass, and
 a mass is matter, not heat, so we count the body's energy per string of the sphere in units of the
 matter a string holds on average, `f = E/u`".  The derived amplitude of a body's share, its
-leading order and the derived Eq. (f) are stated with `Reg.matter`
+leading order for a share that one string can hold and the derived Eq. (f) are stated with
+`Reg.matter`
 (`Sources.Derived.share_amplitude_exact`, `Sources.Approx.share_amplitude`,
 `Sources.Derived.fill_fraction`), and so are the premises from which `Main.share_amplitude`
 derives the amplitude (`Sources.P1.string_matter_in_bits`, `Sources.P1.share_bits`) and the
-condition that it takes for a share larger than what one string holds
+condition that it and the results of the law take for a share larger than `u`
 (`Sources.Condition.same_scale`), so the unit is named where it enters.  Up to v18-69 the
 amplitude was one premise, `Sources.P1.share_amplitude`.
 
@@ -47,8 +48,8 @@ the part that is not heat, `u = (1 − ln 2) ε_s`.  The string's heat, the hori
 times its one bit, is `ε_s ln 2`, the vacuum's energy per string (`string_split`).  A body is a
 mass, and a mass is matter, not heat, so the body's energy per string of a sphere is counted in
 this unit (`Sources.Derived.share_amplitude_exact`, `Sources.Approx.share_amplitude`,
-`Sources.Derived.fill_fraction`).  A string holds this matter on all its bits
-(`Sources.P1.string_matter_in_bits`). -/
+`Sources.Condition.same_scale`, `Sources.Derived.fill_fraction`).  The count of bits sets this
+mean matter on all the bits of a string (`Sources.P1.string_matter_in_bits`). -/
 noncomputable def matter (εs : ℝ) : ℝ := (1 - R.ln2) * εs
 
 /-- the matter a string holds on average is its mean energy less its heat -/

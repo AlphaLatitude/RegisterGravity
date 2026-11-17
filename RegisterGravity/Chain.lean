@@ -146,7 +146,7 @@ The energy of a string (`Carriers.lean`, `Cosmo.lean`):
   it is `ln 2` (`Cosmo.vacuum_share`).
 * The galactic law (Sec. IV.C, `Carriers.lean`): the body's energy is held by the strings that
   carry its information (`hcar`, Postulate 1's first sentence for a body's energy), the fraction
-  `b` of the sphere's strings, each at the share `κT` of equipartition (`hκ`, `hκN`,
+  `b` of the sphere's strings, at the mean share `κT` of equipartition (`hκ`, `hκN`,
   `Sources.Thermo.equipartition`), so `a = g_N/b` (`Carriers.share_acceleration`); the body's
   energy per string of the sphere, in units of the matter a string holds on average, is `f = g_N/a₀` with
   `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)` (`Carriers.fill_fraction`); a string that carries the body's
@@ -154,14 +154,23 @@ The energy of a string (`Carriers.lean`, `Cosmo.lean`):
   the whole bits that the share fills, where one string can hold the share, and `√f` beyond, the
   paper's definition of `h` on the same scale, which the files take as a condition
   (`Sources.Condition.same_scale`; `Sources.Derived.share_amplitude_exact`,
-  `Main.share_amplitude`, `Carriers.share_amplitude`); `h = √f` is its leading order in `1/L`
-  (`Sources.Approx.share_amplitude`, with `Main.share_leading_order` for what the step changes
+  `Main.share_amplitude`, `Carriers.share_amplitude`); for a share that one string can hold,
+  `h = √f` is its leading order in `1/L` (`Sources.Approx.share_amplitude`, with `Main.share_leading_order` for what the step changes
   in `h` and `Main.law_whole_bits` for what it changes in the law; up to v18-69 the files took
-  `h = √f` as one premise, `Sources.P1.share_amplitude`); the share reaches a string in equal
+  `h = √f` as one premise, `Sources.P1.share_amplitude`), and the law takes that step with the
+  condition of the same scale for a larger share; the share reaches a string in equal
   parts, one per tick for each of the string's `L` bits, so each tick adds the amplitude `h/L`
-  (`Sources.P1.share_in_parts`); and the string carries the body's information when its global
-  phase holds against the share, whatever the turn of its free tick
-  (`Sources.P1.carriers_hold_phase`).  The phase holds where that turn lies within
+  (`Sources.P1.share_in_parts`); and the string carries the body's information when the tick
+  keeps its phase against the body's (`Sources.P1.carriers_hold_phase`).  The body's energy on
+  the string changes the string's phase and the body's together, so in a free tick the string's
+  phase changes by the body's change and by the turn of the rest of its energy, in one sense or
+  the other (`Sources.P1.phase_with_body`).  So the string parts from the body by `E_st_c/ℏ` per
+  tick in one sense or the other, with `E_s` the rest of its energy (`Main.slip_against_body`),
+  and the phase holds against the body exactly when the tick with that slip keeps a phase
+  (`Law.keepsAgainstBody_either`).  Under the ticks the phase against the body follows the
+  repeated tick of that slip alone, whatever the body's changes are, and inside the range, away from
+  its edge (`|sin(E_st_c/ℏ)| < h/L`, `cos(E_st_c/ℏ) > 0`), the ticks draw it to a kept phase
+  (`Main.phase_against_body`).  The phase holds where that slip lies within
   `arcsin(h/L)` of a whole number of turns: up to the energy `(ℏ/t_c) arcsin(h/L)`, and within
   that energy of `2πkℏ/t_c` for a whole number `k ≥ 1` (`Carriers.steady_phase_all_turns`,
   `Carriers.phase_all_turns`).  With the Gibbs spread of the strings' energies the carriers are
@@ -516,8 +525,8 @@ theorem eta_eq : R.η = R.pi * R.kB * R.ln2 / (4 * R.ℓc ^ 2) := by
   field_simp; ring
 
 /-- **The Clausius relation with the register's entropy**, Eq. (clausius): with `I1` for the
-Unruh temperature `T_a` of a local Rindler horizon, a ring the horizon gains takes in its
-temperature times one bit, `k_BT_a ln 2`, Landauer's energy of a bit; energy crossing the horizon
+Unruh temperature `T_a` of a local Rindler horizon, the horizon takes in its temperature times
+one bit, `k_BT_a ln 2`, Landauer's energy of a bit, for each ring it gains; energy crossing the horizon
 adds `2πc/(ℏa ln 2)` rings per unit of energy, and with a ring's share `4ℓ_c²/π` the area
 `(8ℓ_c²c/(ℏa ln 2)) δQ` (Sec. III.B). -/
 theorem clausius (a T δQ : ℝ) (ha : 0 < a) (I1 : R.kB * T = R.ℏ / (R.La a * R.tc)) :
@@ -733,8 +742,8 @@ theorem horizon_radius_eq (G Λ r : ℝ) (hdS : R.fSdS G 0 Λ R.RL = 0) (hr : 0 
 the solution at its constant `Λ` (`pull`; the rest of the field is the push of `push`), is
 `a = GM/r²` at every `Λ`.  With `I1` for the period `L_a`, in ticks, of the horizon of an observer
 held at the acceleration `a` (`T_Unruh`), the energy the mass adds inside the sphere, the Komar
-energy `Mc²` (`komar_mass`), is two Landauer energies `k_BT_a ln 2` for each of its strings,
-`Mc² = 2N_s(r) k_BT_a ln 2`, which is Padmanabhan's equipartition, a definition evaluated here on
+energy `Mc²` (`komar_mass`), is two Landauer energies `k_BT_a ln 2` per string of the sphere
+on average, `Mc² = 2N_s(r) k_BT_a ln 2`, which is Padmanabhan's equipartition, a definition evaluated here on
 the derived solution; in cells,
 `a/a_c = α/(πn² ln 2)` with `α = M/m_c`, and `2N_s k_BT_a ln 2 = πn² ln 2 ℏa/c`
 (`equipartition_in_cells`). -/

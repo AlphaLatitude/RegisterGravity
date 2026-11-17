@@ -11,42 +11,63 @@ that the energy inside the horizon is the strings' and nothing else's (`hin` of
 information (`Sources.P1.energy_in_carriers`).  So are the paper's applications of the
 postulates to a body's share at a string: that mass energy is found in the bits of its cells and
 adds over cells (`Sources.P1.mass_in_bits`), the same in every cell
-(`Sources.P2.cells_hold_alike`), that a string holds its matter on all its bits
-(`Sources.P1.string_matter_in_bits`), that a share which one string can hold fills whole bits of
+(`Sources.P2.cells_hold_alike`), that the count sets the strings' mean matter on all the bits of the one string on which
+the count is made (`Sources.P1.string_matter_in_bits`), that a share which one string can hold fills whole bits of
 the string, with the amplitude of those bits (`Sources.P1.share_bits`), that the share
 reaches the string in equal parts, one per tick for each of the string's `L` bits, which add as
-amplitudes (`Sources.P1.share_in_parts`), and that the string carries the body's information
-when its global phase holds against the share, whatever the turn of its free tick
-(`Sources.P1.carriers_hold_phase`).  From the first four and the bits as the possible outcomes
+amplitudes (`Sources.P1.share_in_parts`), that the body's energy on a string changes the
+string's phase and the body's together, so that the string's phase changes by the body's change
+and by the turn of the rest of its energy in one sense or the other
+(`Sources.P1.phase_with_body`), and that the string carries the body's information when the
+tick keeps its phase against the body's (`Sources.P1.carriers_hold_phase`,
+`Law.keepsAgainstBody`).  From the first four and the bits as the possible outcomes
 (`Sources.P1.ring_bits_alike`) the files derive the exact amplitude of the share where one
 string can hold the share (`Main.share_amplitude`, with `Law.mass_counts_bits`,
 `Law.mass_of_cells`, `Law.filled_bits` and `Law.fills_exists`); the paper's `h = √(E/u)`, in
-units of the matter `u` a string holds on average, is its leading order in `1/L`, a named step
-with its error bounded in `h` (`Sources.Approx.share_amplitude`, `Law.share_leading_order`,
+units of the matter `u` a string holds on average, is its leading order in `1/L` for a share
+that one string can hold, a named step with its error bounded in `h` (`Sources.Approx.share_amplitude`, `Law.share_leading_order`,
 `Main.share_leading_order`) and in the law (`Main.law_whole_bits`, with
 `Law.carriers_fraction_mono`, `Law.one_sub_exp_concave` and `Law.law_whole_bits`); for a larger
 share no count of bits gives an amplitude, and the files take the paper's definition of `h` on
 the same scale as a condition, which they do not derive and no sentence of the postulates
-states (`Sources.Condition.same_scale`); and `Law.share_bits_model` shows that the premises can
+states (`Sources.Condition.same_scale`); the results of the law take the step and the
+condition; and `Law.share_bits_model` shows that the premises can
 hold at once.  Up to v18-69 the files took `h = √(E/u)` as one premise,
 `Sources.P1.share_amplitude`.
 From the
-share's parts per tick, the rule of the phase and the spread of the strings' energies
-the files derive the rule of Sec. IV.C that they took as a premise up to v18-68
-(`Main.carriers_exact`, with `Law.steady_phase_all_turns`, `Reg.carriers_fraction` and
-`Reg.carriers_rule_iff`); its leading order in `1/L` is a named
+change of the string's phase with the body's, the share's parts per tick, the rule of the phase
+and the spread of the strings' energies the files derive the rule of Sec. IV.C that they took
+as a premise up to v18-68 (`Main.carriers_exact`, with `Law.keepsAgainstBody_either`,
+`Law.steady_phase_all_turns`, `Reg.carriers_fraction` and `Reg.carriers_rule_iff`); its leading order in `1/L` is a named
 step with its error bounded (`Sources.Approx.carriers_leading`, `Main.carriers_leading_order`,
 `Main.law_bounds`), and the namespace `Sources.Open` holds no premise.  `Carriers.lean` also
 follows the phase of a unit state through one tick, at every phase.  Where the added amplitude
-is smaller than the sine of the turn, the phase moves in one sense at every tick
-(`Law.phase_slips`).  Inside the range the tick keeps the phase `φ₀ = arcsin(sin Δ/ε)` and the
+is smaller than the size of the sine of the turn, `ε < |sin Δ|`, the phase moves in one sense at
+every tick (`Law.phase_slips`).  Inside the range, away from its edge, where `|sin Δ| < ε` and
+`cos Δ > 0`, the tick keeps the phase `φ₀ = arcsin(sin Δ/ε)` and the
 phase `π − φ₀` (`Law.kept_phases`); from every other phase the phase moves toward `φ₀`
 (`Law.phase_drawn`) without passing it (`Law.tick_between`), the repeated tick converges to
 `φ₀` (`Law.tick_converges`), and a small gap shrinks per tick by the factor
 `cos Δ/(cos Δ + ε cos φ₀)` (`Law.tick_contracts`).  For a string of the register, whose free
 tick turns its phase by `Et_c/ℏ` and adds the amplitude `h/L`, `Reg.phase_under_tick` and
-`Main.phase_under_tick` state both: outside the range the phase slips at every tick, and inside
-it the repeated tick converges to a kept phase.  `Qubit.lean` holds the quantum
+`Main.phase_under_tick` state both cases: where the added amplitude is smaller than the size of the
+sine of the turn, `ε < |sin Δ|`, the phase moves in the same sense at every tick, and inside the
+range, away from its edge, the repeated tick converges to a kept phase.  Neither case covers
+the edge of the range, `|sin Δ| = ε` with `cos Δ > 0`, where the tick keeps a phase and no
+convergence is stated, or the turns within `arcsin ε` of an odd number of half turns, which are
+outside the range and where the tick keeps no phase (`Law.keepsPhase_iff_kept`).  The string's global phase changes per tick by
+the body's change and by the turn of the rest of its energy, in one sense or the other
+(`Sources.P1.phase_with_body`), so the body's change drops out of the tick
+(`Law.tick_against_body`, `Law.kept_against_body`): the string parts from the body by
+`E_st_c/ℏ` per tick in one sense or the other, with `E_s` the rest of its energy, and keeps a
+phase against the body exactly when the tick with that turn keeps a phase, whichever way it
+turns (`Main.slip_against_body`, `Law.keepsAgainstBody_either`, `Law.keepsPhase_neg`,
+`Law.keepsPhaseAt_neg`).  Under the ticks the string's phase against the body follows the
+repeated tick of that turn alone, whatever the body's changes are
+(`Law.tickPhase_against_body`, `Law.ticks_against_body`), so where the added amplitude is smaller than
+the size of the sine of the slip, `ε < |sin(E_st_c/ℏ)|`, it moves in the same sense at every
+tick, and inside the range, away from its edge, the ticks draw it to a kept phase
+(`Main.phase_against_body`).  `Qubit.lean` holds the quantum
 mechanics of one qubit
 that the energy of a free string and the bit per ring rest on: the two outcomes of a free string's
 qubit are its two senses, and the free tick keeps each string of one sense up to one and the same
@@ -629,6 +650,15 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Law.tickPhase_continuousAt
 #print axioms Register.Law.tick_converges
 #print axioms Register.Law.tick_contracts
+#print axioms Register.Law.tick_against_body
+#print axioms Register.Law.kept_against_body
+#print axioms Register.Law.keepsAgainstBody
+#print axioms Register.Law.keepsAgainstBody_iff
+#print axioms Register.Law.keepsPhaseAt_neg
+#print axioms Register.Law.keepsPhase_neg
+#print axioms Register.Law.keepsAgainstBody_either
+#print axioms Register.Law.tickPhase_against_body
+#print axioms Register.Law.ticks_against_body
 #print axioms Register.Law.measure_Icc_of_above
 #print axioms Register.Law.gibbs_measure_exists
 #print axioms Register.Law.whole_turns_sum
@@ -820,6 +850,8 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Main.fill_fraction
 #print axioms Register.Main.carriers_exact
 #print axioms Register.Main.phase_under_tick
+#print axioms Register.Main.slip_against_body
+#print axioms Register.Main.phase_against_body
 #print axioms Register.Main.carriers_leading_order
 #print axioms Register.Main.galactic_law
 #print axioms Register.Main.law_bounds

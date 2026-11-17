@@ -2008,9 +2008,10 @@ theorem galactic_tide : 7.5e-31 < ge₀ / R₀ ∧ ge₀ / R₀ < 7.52e-31 ∧ g
   unfold ge₀ R₀
   refine ⟨?_, ?_, ?_⟩ <;> norm_num
 
-/-- **A test body's excess at `g_N = 10^{−10.15} m/s²`** (Sec. IV.C, Appendix A): `1/(1 − e^{−h})`
-with `h = √(g_N/a₀) = 0.768` is `1.87`, against the `1.43 ± 0.06` that one analysis of the Gaia
-wide binaries reads at that acceleration and the `1.0` of another. -/
+/-- **A test body's acceleration over Newton's at `g_N = 10^{−10.15} m/s²`** (Sec. IV.C,
+Appendix A): the ratio `a/g_N = 1/(1 − e^{−h})` of Eq. (law), with `h = √(g_N/a₀) = 0.768`, is
+`1.87`, against the `1.43 ± 0.06` times Newton's that one analysis of the Gaia wide binaries
+reads at that acceleration and the `1.0` of another. -/
 theorem test_body_excess :
     1.865 < 1 / (1 - Real.exp (-Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v))) ∧
     1 / (1 - Real.exp (-Real.sqrt ((10 : ℝ) ^ (-(10.15 : ℝ)) / a0v))) < 1.866 := by

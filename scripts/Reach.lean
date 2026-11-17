@@ -32,17 +32,29 @@ def paperRoots : Array Name := #[
   `Register.Law.gibbsLadder_eq, `Register.Law.gibbsLadder_within_step, `Register.Reg.string_tick,
   -- Sec. IV.C, the carriers' share in finite form, and Eq. (law)
   `Register.Law.share_of_equipartition, `Register.Reg.law,
-  -- Sec. IV.C, "A state of unit amplitude that a tick turns by `Δ`, and to which the tick adds
-  -- the smaller amplitude `h/L` at a fixed phase, has a phase that the tick leaves unchanged
-  -- exactly when `Δ` is within `arcsin(h/L)` of a whole number of turns, as the Lean files
-  -- prove.", with the condition at every turn that gives it
+  -- Sec. IV.C, "Consider a state of unit amplitude that a tick turns by `Δ` against the body's
+  -- phase, and to which the tick adds the smaller amplitude `h/L` at the body's phase.  It has a
+  -- phase against the body's that the tick leaves unchanged exactly when `Δ` is within
+  -- `arcsin(h/L)` of a whole number of turns, as the Lean files prove.", with the condition at every turn that
+  -- gives it, for a turn `Δ` and an amplitude added at a fixed phase, and the tick against the
+  -- body's phase read as that case, with `Δ` the slip of the string against the body
   `Register.Law.steady_phase_iff_turns, `Register.Law.steady_phase_all_turns,
+  `Register.Law.keepsAgainstBody_iff, `Register.Law.keepsAgainstBody_either,
   -- Sec. IV.C, the phase of a unit state under one tick, at every phase: which phases the tick
-  -- keeps, the sense in which the phase moves outside and inside the range, and the approach to
-  -- the kept phase: "Where the slip per tick is larger, the global phase slips at every tick and
-  -- the string takes no phase from the body."  "Where it is smaller, the ticks draw the global
-  -- phase to a phase that they leave unchanged, as the Lean files also prove."  The result
-  -- `Main.phase_under_tick` states the two sentences for a string of the register.
+  -- keeps, the sense in which the phase moves where the added amplitude is smaller than the size
+  -- of the sine of the turn, `ε < |sin Δ|`, and the approach to the kept phase inside the range,
+  -- away from its edge, where `|sin Δ| < ε` and `cos Δ > 0`: "Where the slip per tick is
+  -- larger, the global phase slips at every tick and the string takes no phase from the body."
+  -- "Where it is smaller, the ticks draw the global phase to a phase that they leave unchanged,
+  -- as the Lean files also prove."  Of the first sentence the files prove that the tick keeps no
+  -- phase at any turn outside the range, and that the phase moves in the same sense at every tick
+  -- where the added amplitude is smaller than the size of the sine of the turn, `ε < |sin Δ|`.
+  -- The convergence is proved inside the range, away from its edge.  Neither the sense of the
+  -- motion nor the convergence is stated at the edge of the range, `|sin Δ| = ε` with
+  -- `cos Δ > 0`, where the tick keeps a phase, or at the turns within `arcsin ε` of an odd number of half turns, which are outside the
+  -- range and where the tick keeps no phase.  The result `Main.phase_under_tick`
+  -- states the two parts for a string of the register, and `Main.phase_against_body` states them
+  -- for the string's phase against the body.
   `Register.Law.tick_components, `Register.Law.tick_turn, `Register.Law.tick_polar,
   `Register.Law.keepsPhaseAt_iff, `Register.Law.keepsPhase_iff_kept, `Register.Law.phase_slips,
   `Register.Law.kept_phases, `Register.Law.phase_drawn, `Register.Law.tickPhase_spec,

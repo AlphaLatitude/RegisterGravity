@@ -890,6 +890,7 @@ Register.Main.fill_fraction
   I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
+  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal; derived Derived.deSitter_horizon; structures none
 Register.Main.carriers_exact
   L : object, ℕ
@@ -910,9 +911,13 @@ Register.Main.carriers_exact
   hrh : Register.Sources.Condition.horizon_radius  (condition) = Condition.horizon_radius R G Λ rh
   I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
+  turn : object, ℝ → ℝ
+  Δb : object, ℝ
+  θ : object, ℝ
+  hwith : Register.Sources.P1.phase_with_body = P1.phase_with_body R turn Δb
   hparts : Register.Sources.P1.share_in_parts = P1.share_in_parts H h ε
-  hcarry : Register.Sources.P1.carriers_hold_phase = P1.carriers_hold_phase R b ε above
-  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.share_in_parts, P1.carriers_hold_phase; derived Derived.deSitter_horizon; structures Horizon
+  hcarry : Register.Sources.P1.carriers_hold_phase = P1.carriers_hold_phase b ε above turn Δb θ
+  rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal, P1.phase_with_body, P1.share_in_parts, P1.carriers_hold_phase; derived Derived.deSitter_horizon; structures Horizon
 Register.Main.phase_under_tick
   L : object, ℕ
   H : object, Horizon L
@@ -924,6 +929,26 @@ Register.Main.phase_under_tick
   hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
   hparts : Register.Sources.P1.share_in_parts = P1.share_in_parts H h ε
   rests on: sources P1.share_in_parts; derived none; structures Horizon
+Register.Main.slip_against_body
+  R : object, Register.Reg
+  turn : object, ℝ → ℝ
+  Δb : object, ℝ
+  hwith : Register.Sources.P1.phase_with_body = P1.phase_with_body R turn Δb
+  Es : object, ℝ
+  rests on: sources P1.phase_with_body; derived none; structures none
+Register.Main.phase_against_body
+  L : object, ℕ
+  H : object, Horizon L
+  R : object, Register.Reg
+  hRL : Register.Sources.Condition.same_L  (condition) = Condition.same_L R L
+  h : object, ℝ
+  ε : object, ℝ
+  hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
+  hparts : Register.Sources.P1.share_in_parts = P1.share_in_parts H h ε
+  turn : object, ℝ → ℝ
+  Δb : object, ℝ
+  hwith : Register.Sources.P1.phase_with_body = P1.phase_with_body R turn Δb
+  rests on: sources P1.share_in_parts, P1.phase_with_body; derived none; structures Horizon
 Register.Main.carriers_leading_order
   L : object, ℕ
   H : object, Horizon L
@@ -964,6 +989,7 @@ Register.Main.galactic_law
   I1a : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a Ta
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
+  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   hb : Register.Sources.Approx.carriers_leading  (leading order) = Approx.carriers_leading R b h above
   hcar : Register.Sources.P1.energy_in_carriers = P1.energy_in_carriers R M Ncar εc
   hNcar : Register.Sources.Condition.carrier_fraction  (condition) = Condition.carrier_fraction R b Ncar r
@@ -983,6 +1009,7 @@ Register.Main.law_bounds
   εs : object, ℝ
   hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
+  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hb : Register.Sources.Derived.carriers_exact  (derived in Main.lean) = Derived.carriers_exact R b h
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
@@ -1057,6 +1084,7 @@ Register.Main.scale_mean
   hμ : Register.Sources.Condition.pos  (condition) = Condition.pos μ
   hME : Register.Sources.Condition.threshold_mean  (condition) = Condition.threshold_mean R μ above
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
+  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   hb : Register.Sources.Approx.carriers_leading  (leading order) = Approx.carriers_leading R b h above
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
@@ -1460,4 +1488,4 @@ derived Derived.jacobson_G_in_time : Derived.jacobson_G at every time
 derived Derived.schwarzschild_deSitter : concluded by Register.Main.schwarzschild_deSitter
 derived Derived.share_acceleration : concluded by Register.Main.carriers_share
 derived Derived.share_amplitude_exact : concluded by Register.Main.share_amplitude
-104 results checked, every theorem of Register.Main before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type, every proposition, predicate or set that a hypothesis takes a variable of the result; every result takes something from a source or states an instance of a structure of the postulates; each of the 14 derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above 100, in its statement or in a definition under it, but for those that state an instance: Register.Main.register_in_band; the largest whole number that the others name is 21, in Register.Main.simple_interpolation
+106 results checked, every theorem of Register.Main before this command: every hypothesis is a definition of Sources.lean, NeZero or Nonempty, every object of an allowed type, every proposition, predicate or set that a hypothesis takes a variable of the result; every result takes something from a source or states an instance of a structure of the postulates; each of the 14 derived statements is concluded by a result or is such a statement at every time; no result names a constant of Numerics.lean, a decimal or a whole number above 100, in its statement or in a definition under it, but for those that state an instance: Register.Main.register_in_band; the largest whole number that the others name is 21, in Register.Main.simple_interpolation
