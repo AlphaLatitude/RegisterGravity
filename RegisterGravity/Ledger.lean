@@ -11,9 +11,12 @@ that the energy inside the horizon is the strings' and nothing else's (`hin` of
 information (`Sources.P1.energy_in_carriers`).  So are the paper's applications of the
 postulates to a body's share at a string: that mass energy is found in the bits of its cells and
 adds over cells (`Sources.P1.mass_in_bits`), the same in every cell
-(`Sources.P2.cells_hold_alike`), that the count sets the strings' mean matter on all the bits of the one string on which
-the count is made (`Sources.P1.string_matter_in_bits`), that a share which one string can hold fills whole bits of
-the string, with the amplitude of those bits (`Sources.P1.share_bits`), that the share
+(`Sources.P2.cells_hold_alike`), that the count sets the body's mean share and the string's own
+matter, the strings' mean matter less the body's part of it (`Reg.ownMatter`), on all the bits
+of the one string on which
+the count is made (`Sources.P1.string_matter_in_bits`), that the share fills whole bits of
+the string, with the amplitude of those bits against that of the rest of the string's bits,
+which hold the string's own matter (`Sources.P1.share_bits`), that the share
 reaches the string in equal parts, one per tick for each of the string's `L` bits, which add as
 amplitudes (`Sources.P1.share_in_parts`), that the body's energy on a string changes the
 string's phase and the body's together, so that the string's phase changes by the body's change
@@ -21,19 +24,20 @@ and by the turn of the rest of its energy in one sense or the other
 (`Sources.P1.phase_with_body`), and that the string carries the body's information when the
 tick keeps its phase against the body's (`Sources.P1.carriers_hold_phase`,
 `Law.keepsAgainstBody`).  From the first four and the bits as the possible outcomes
-(`Sources.P1.ring_bits_alike`) the files derive the exact amplitude of the share where one
-string can hold the share (`Main.share_amplitude`, with `Law.mass_counts_bits`,
-`Law.mass_of_cells`, `Law.filled_bits` and `Law.fills_exists`); the paper's `h = √(E/u)`, in
-units of the matter `u` a string holds on average, is its leading order in `1/L` for a share
-that one string can hold, a named step with its error bounded in `h` (`Sources.Approx.share_amplitude`, `Law.share_leading_order`,
+(`Sources.P1.ring_bits_alike`) the files derive the exact amplitude of the share, at every
+share (`Main.share_amplitude`, with `Law.mass_counts_bits`,
+`Law.mass_of_cells`, `Law.filled_bits` and `Law.fills_exists`); the paper's `h = √(E/u)`, with `u`
+the matter that a string holds on average, is that amplitude to leading order in `1/L`, with the
+body's part of `u` neglected, the body's fraction of all the matter inside the horizon
+(`Numerics.body_fraction`),
+a named step with its error bounded in `h` (`Sources.Approx.share_amplitude`, `Law.share_leading_order`,
 `Main.share_leading_order`) and in the law (`Main.law_whole_bits`, with
-`Law.carriers_fraction_mono`, `Law.one_sub_exp_concave` and `Law.law_whole_bits`); for a larger
-share no count of bits gives an amplitude, and the files take the paper's definition of `h` on
-the same scale as a condition, which they do not derive and no sentence of the postulates
-states (`Sources.Condition.same_scale`); the results of the law take the step and the
-condition; and `Law.share_bits_model` shows that the premises can
+`Law.carriers_fraction_mono`, `Law.one_sub_exp_concave` and `Law.law_whole_bits`); the results
+of the law take the step; and `Law.share_bits_model` shows that the premises can
 hold at once.  Up to v18-69 the files took `h = √(E/u)` as one premise,
-`Sources.P1.share_amplitude`.
+`Sources.P1.share_amplitude`.  Up to v18-72 the count set the strings' mean matter alone on the
+string's bits and ended at a share `E = u`, and for a larger share the files took `h = √(E/u)`
+as a condition (`Sources.Condition.same_scale`), which is gone.
 From the
 change of the string's phase with the body's, the share's parts per tick, the rule of the phase
 and the spread of the strings' energies the files derive the rule of Sec. IV.C that they took
@@ -533,6 +537,7 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Strings.unscattered
 #print axioms Crossing.two_crossings
 #print axioms Register.Reg.matter
+#print axioms Register.Reg.ownMatter
 #print axioms Register.Reg.matter_eq
 #print axioms Register.Reg.split_not_stringwise
 #print axioms Register.Reg.radii_agree
@@ -954,6 +959,7 @@ namespace `Register.Reg`, so that `Carriers.law`, say, is printed below as `Regi
 #print axioms Register.Numerics.string_matter
 #print axioms Register.Numerics.heat_per_string
 #print axioms Register.Numerics.energy_inside_horizon
+#print axioms Register.Numerics.body_fraction
 #print axioms Register.Numerics.vacuum_share
 #print axioms Register.Numerics.tully_fisher_speeds
 #print axioms Register.Numerics.deep_radii

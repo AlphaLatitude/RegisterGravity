@@ -12,18 +12,23 @@ energy per string (`Reg.string_split`, `Reg.vacuum_per_string`).  The rest is ma
 
 Sec. IV.C counts a body's energy per string of the sphere in this unit: "The body is a mass, and
 a mass is matter, not heat, so we count the body's energy per string of the sphere in units of the
-matter a string holds on average, `f = E/u`".  The derived amplitude of a body's share, its
-leading order for a share that one string can hold and the derived Eq. (f) are stated with
+matter a string holds on average, `f = E/u`".  The leading order of the amplitude of a body's
+share and the derived Eq. (f) are stated with
 `Reg.matter`
-(`Sources.Derived.share_amplitude_exact`, `Sources.Approx.share_amplitude`,
-`Sources.Derived.fill_fraction`), and so are the premises from which `Main.share_amplitude`
-derives the amplitude (`Sources.P1.string_matter_in_bits`, `Sources.P1.share_bits`) and the
-condition that it and the results of the law take for a share larger than `u`
-(`Sources.Condition.same_scale`), so the unit is named where it enters.  Up to v18-69 the
-amplitude was one premise, `Sources.P1.share_amplitude`.
+(`Sources.Approx.share_amplitude`,
+`Sources.Derived.fill_fraction`), so the unit is named where it enters.  The mean `u` counts the
+body's matter with all other matter.  Apart from the body's energy, the strings of a sphere
+about the body hold `u` less the body's part of that mean, `Reg.ownMatter`.  The premise from
+which `Main.share_amplitude` derives the exact amplitude sets the body's mean share and this own
+matter on the bits of the string on which the count is made (`Sources.P1.string_matter_in_bits`,
+`Sources.Derived.share_amplitude_exact`).
+Up to v18-69 the amplitude was one premise, `Sources.P1.share_amplitude`, and up to v18-72 a
+condition gave it for a share larger than `u` (`Sources.Condition.same_scale`).
 
 * `Reg.matter`, `Reg.matter_eq`: the matter a string holds on average is its mean energy less its
   heat.
+* `Reg.ownMatter`: the matter that a string holds on average apart from a body of mass `M`, the
+  mean matter less the body's part of that mean, `u − Mc²/R_hor`.
 * `Reg.radii_agree`: "For `r ≪ R_Λ` the two agree" (Sec. II).  In the solution without a mass the
   proper distance from the observer along a radial line lies between the areal radius `r` and
   `r/√(1 − r²/R_Λ²)`.
@@ -47,10 +52,25 @@ variable (R : Reg)
 the part that is not heat, `u = (1 − ln 2) ε_s`.  The string's heat, the horizon's temperature
 times its one bit, is `ε_s ln 2`, the vacuum's energy per string (`string_split`).  A body is a
 mass, and a mass is matter, not heat, so the body's energy per string of a sphere is counted in
-this unit (`Sources.Derived.share_amplitude_exact`, `Sources.Approx.share_amplitude`,
-`Sources.Condition.same_scale`, `Sources.Derived.fill_fraction`).  The count of bits sets this
-mean matter on all the bits of a string (`Sources.P1.string_matter_in_bits`). -/
+this unit (`Sources.Approx.share_amplitude`, `Sources.Derived.fill_fraction`).  The count of bits
+sets this mean matter less the body's part of it (`ownMatter`), with the body's mean share, on all
+the bits of a string (`Sources.P1.string_matter_in_bits`). -/
 noncomputable def matter (εs : ℝ) : ℝ := (1 - R.ln2) * εs
+
+/-- **A string's own matter about a body** (Sec. IV.C): the matter that a string holds on average
+apart from a body of mass `M`, `u − Mc²/R_hor`.  The mean `u = (1 − ln 2)ε_s` (`matter`) is over
+all the strings, and it counts the body's matter with all other matter: the strings hold
+`R_hor u` of matter in all, with `R_hor = L²/4` their number to leading order in `1/L`, and the
+body's energy `Mc²` is the part `Mc²/R_hor` of the mean.  Apart from the body's energy the
+strings of a sphere about the body are like all other strings, so they hold on average the mean
+less that part.  The count of bits sets this own matter, with the body's mean share, on all the
+bits of a string (`Sources.P1.string_matter_in_bits`).  The body's part is the fraction
+`Mc²/(R_hor u)` of `u`, the body's fraction of all the matter inside the horizon, `4.0×10⁻¹²`
+for `10¹¹M_⊙` (`Numerics.body_fraction`).  The paper neglects it and takes the own matter as
+`u`, in the step `Sources.Approx.share_amplitude`, whose error `Main.share_leading_order` and
+`Main.law_whole_bits` bound.
+Sec. IV.C: "Apart from the body's energy they are like all other strings, so they also hold matter of their own: `u` per string on average, less the body's part of that average."  "That part is the body's fraction of all the matter inside the horizon, `4×10⁻¹²` for `10¹¹M_⊙`, and we neglect it." -/
+noncomputable def ownMatter (εs M : ℝ) : ℝ := R.matter εs - M * R.c ^ 2 / R.Rhor
 
 /-- the matter a string holds on average is its mean energy less its heat -/
 theorem matter_eq (εs : ℝ) : R.matter εs = εs - R.ln2 * εs := by

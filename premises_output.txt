@@ -853,24 +853,26 @@ Register.Main.share_amplitude
   held : object, Finset Cell → ℝ
   read : object, Cell → ℝ
   h : object, ℝ
+  M : object, ℝ
   TN : object, ℝ
   εs : object, ℝ
-  hu : Register.Sources.Condition.pos  (condition) = Condition.pos (R.matter εs)
+  hu : Register.Sources.Condition.pos  (condition) = Condition.pos (R.ownMatter εs M)
   hTN : Register.Sources.Condition.pos  (condition) = Condition.pos TN
   hmass : Register.Sources.P1.mass_in_bits = P1.mass_in_bits held
   hcells : Register.Sources.P2.cells_hold_alike = P2.cells_hold_alike held
-  hstring : Register.Sources.P1.string_matter_in_bits = P1.string_matter_in_bits R held εs
+  hstring : Register.Sources.P1.string_matter_in_bits = P1.string_matter_in_bits R held M TN εs
   halike : Register.Sources.P1.ring_bits_alike = P1.ring_bits_alike read
-  hbits : Register.Sources.P1.share_bits = P1.share_bits R held read h TN εs
-  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
+  hbits : Register.Sources.P1.share_bits = P1.share_bits R held read h TN
   rests on: sources P1.mass_in_bits, P2.cells_hold_alike, P1.string_matter_in_bits, P1.ring_bits_alike, P1.share_bits; derived none; structures none
 Register.Main.share_leading_order
   R : object, Register.Reg
   n : object, ℕ
   h : object, ℝ
+  M : object, ℝ
   TN : object, ℝ
   εs : object, ℝ
-  hh : Register.Sources.Derived.share_amplitude_exact  (derived in Main.lean) = Derived.share_amplitude_exact R n h TN εs
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
+  hh : Register.Sources.Derived.share_amplitude_exact  (derived in Main.lean) = Derived.share_amplitude_exact R n h M TN εs
   rests on: sources none; derived Derived.share_amplitude_exact; structures none
 Register.Main.fill_fraction
   R : object, Register.Reg
@@ -890,7 +892,6 @@ Register.Main.fill_fraction
   I1dS : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
-  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   rests on: sources Thermo.horizon_thermal, Thermo.energies_thermal; derived Derived.deSitter_horizon; structures none
 Register.Main.carriers_exact
   L : object, ℕ
@@ -989,7 +990,6 @@ Register.Main.galactic_law
   I1a : Register.Sources.Thermo.horizon_thermal = Thermo.horizon_thermal R a Ta
   hGibbs : Register.Sources.Thermo.energies_thermal = Thermo.energies_thermal R TdS εs above
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
-  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   hb : Register.Sources.Approx.carriers_leading  (leading order) = Approx.carriers_leading R b h above
   hcar : Register.Sources.P1.energy_in_carriers = P1.energy_in_carriers R M Ncar εc
   hNcar : Register.Sources.Condition.carrier_fraction  (condition) = Condition.carrier_fraction R b Ncar r
@@ -1009,7 +1009,6 @@ Register.Main.law_bounds
   εs : object, ℝ
   hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
-  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hb : Register.Sources.Derived.carriers_exact  (derived in Main.lean) = Derived.carriers_exact R b h
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
@@ -1023,10 +1022,12 @@ Register.Main.law_whole_bits
   a : object, ℝ
   b : object, ℝ
   h : object, ℝ
+  M : object, ℝ
   TN : object, ℝ
   εs : object, ℝ
+  hM : Register.Sources.Condition.pos  (condition) = Condition.pos M
   hrange : Register.Sources.Condition.share_below_L  (condition) = Condition.share_below_L R h
-  hh : Register.Sources.Derived.share_amplitude_exact  (derived in Main.lean) = Derived.share_amplitude_exact R L h TN εs
+  hh : Register.Sources.Derived.share_amplitude_exact  (derived in Main.lean) = Derived.share_amplitude_exact R L h M TN εs
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hb : Register.Sources.Derived.carriers_exact  (derived in Main.lean) = Derived.carriers_exact R b h
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
@@ -1065,6 +1066,7 @@ Register.Main.classical_share
   b : object, ℝ
   r : object, ℝ
   v : object, ℝ → ℝ
+  ha0 : Register.Sources.Condition.pos  (condition) = Condition.pos a0
   hgN : Register.Sources.Condition.pos  (condition) = Condition.pos gN
   hb : Register.Sources.Condition.classical_share  (condition) = Condition.classical_share b gN a0
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b
@@ -1084,7 +1086,6 @@ Register.Main.scale_mean
   hμ : Register.Sources.Condition.pos  (condition) = Condition.pos μ
   hME : Register.Sources.Condition.threshold_mean  (condition) = Condition.threshold_mean R μ above
   hh : Register.Sources.Approx.share_amplitude  (leading order) = Approx.share_amplitude R h TN εs
-  hscale : Register.Sources.Condition.same_scale  (condition) = Condition.same_scale R h TN εs
   hb : Register.Sources.Approx.carriers_leading  (leading order) = Approx.carriers_leading R b h above
   hf : Register.Sources.Derived.fill_fraction  (derived in Main.lean) = Derived.fill_fraction R gN TN εs
   hab : Register.Sources.Derived.share_acceleration  (derived in Main.lean) = Derived.share_acceleration a gN b

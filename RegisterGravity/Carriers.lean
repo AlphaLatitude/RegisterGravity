@@ -37,23 +37,26 @@ those names.
   at the Unruh temperature of `g_N`, counted in units of the matter a string holds on average,
   `u = (1 − ln 2)k_BT_dS`,
   is `f = g_N/a₀` with `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`.
-* The amplitude of the body's share (Sec. IV.C), derived from the count of bits where one string
-  can hold the share.  The mass energy that a measurement finds in cells adds over them, and the
-  bit of each cell holds the same, so a set of cells holds the number of its cells times what
-  one cell's bit holds (`Law.mass_empty`, `Law.mass_counts_bits`).  Where all the bits
-  of a string together hold the matter `u`, a set of `m` of its `n` cells holds `(m/n)u`
-  (`Law.mass_of_cells`).
-  A share `E ≤ u` fills whole bits: a set of cells whose bits hold at most the share and, with
+* The amplitude of the body's share (Sec. IV.C), derived from the count of bits, at every share.
+  The mass energy that a measurement finds in cells adds over them, and the bit of each cell
+  holds the same, so a set of cells holds the number of its cells times what one cell's bit
+  holds (`Law.mass_empty`, `Law.mass_counts_bits`).  Where all the bits of a string together
+  hold the mass energy `w`, a set of `m` of its `n` cells holds `(m/n)w` (`Law.mass_of_cells`).
+  A share `E ≤ w` fills whole bits: a set of cells whose bits hold at most the share and, with
   one bit more, more than the share (`Law.fills_exists`).  Each cell's bit is one possible
   outcome among the ring's, so the probability `p` of those bits is a whole number of bits over
-  `n` with `E/u − 1/n < p ≤ E/u`, and `p = E/u` where some set of cells holds the share exactly
-  (`Law.filled_bits`, `Law.bits_of_share`).  The amplitude of the share is the square root of
-  that probability, and for a share larger than `u` it is `√(E/u)`, the paper's definition of
-  `h` on the same scale, taken as a condition (`Law.share_amplitude`).  The paper's `h = √(E/u)`
-  is the leading order in `1/n`:
-  the exact amplitude falls short of it by at most `1/√n`, and by at most `1/(n√(E/u))` where
-  the share is at least one bit; where the share is below one bit the exact amplitude is zero
-  (`Law.share_leading_order`).  `Law.share_bits_model` shows that the hypotheses can hold at
+  `n` with `E/w − 1/n < p ≤ E/w`, and `p = E/w` where some set of cells holds the share exactly
+  (`Law.filled_bits`, `Law.bits_of_share`).  The bits of the string on which the count is made hold
+  the body's share and the string's own matter, `w = E + u_o` with `u_o > 0`, where `u_o` is the
+  matter `u` that a string holds on average less the body's part of that mean (`Reg.ownMatter`).
+  The share's bits are then fewer than the string's, the string's own matter is in the rest, and the
+  amplitude `h` of the share against that of the string's own matter is the square root of the ratio
+  of the two probabilities: `h² = m/(n − m)`, with `m` the whole number of bits that the share fills
+  (`Law.share_amplitude`).  With `f_o = E/u_o`, the exact `h²` falls short of `f_o` by less than
+  `(1 + f_o)²/n`, and the exact amplitude falls short of `√f_o` by at most `(1 + f_o)/√n`, and
+  by at most `(1 + f_o)²/(n√f_o)` where the share is positive; where the share is below one bit
+  the exact amplitude is zero (`Law.share_leading_order`).  The paper's `h = √(E/u)` is `√f_o`
+  with the body's part of `u` neglected.  `Law.share_bits_model` shows that the hypotheses can hold at
   once, for every share.
 * The rule by which a string carries the body's information (Sec. IV.C), derived, for every turn
   of the string's phase per tick.  Each tick adds to a string the amplitude `ε = h/L` of the
@@ -88,11 +91,12 @@ those names.
 * The law with the exact amplitude of whole bits (Sec. IV.C).  The carriers' exact fraction `b`
   increases with the amplitude `h` (`Law.carriers_fraction_mono`), and `1 − e^{−t}` is concave
   in `t` and vanishes at `t = 0` (`Law.one_sub_exp_concave`).  With the amplitude of whole bits
-  on a string of `L` bits, `0 < h < L` and `f − 1/L < h² ≤ f`, the acceleration `a = g_N/b` is
-  at least `1 − (√f/L)² − 5e^{−3πL/2}` times the value `g_N/(1 − e^{−√f})` of Eq. (law) where
-  `√f ≤ L/2`, at most that value over `√(1 − 1/(L·f))` where `f > 1/L`, and at most
-  `1 + 1/(L·f)` times it where `f ≥ 2/L` (`Law.law_whole_bits`, with
-  `Law.inv_sqrt_one_sub_le`).
+  on a string of `L` bits, `0 < h < L` and `f_o − δ < h² ≤ f_o` with `δ = (1 + f_o)²/L`, and with
+  Eq. (law) taken at a fraction `f ≤ f_o`, the acceleration `a = g_N/b` is at least
+  `√(f/f_o)(1 − (√f_o/L)² − 5e^{−3πL/2})` times the value `g_N/(1 − e^{−√f})` of Eq. (law) where
+  `√f_o ≤ L/2`, at most that value over `√(1 − δ/f_o)` where `δ < f_o`, and at most `1 + δ/f_o`
+  times it where `2δ ≤ f_o` (`Law.law_whole_bits`, with `Law.inv_sqrt_one_sub_le`).  The paper's
+  fraction is `f = E/u`, with the body's part of `u` neglected, so that `f/f_o = u_o/u`.
 * The phase of a unit state under one tick (Sec. IV.C), at every phase `φ`.  A state of unit
   amplitude at the phase `φ` is turned by `Δ`, and the amplitude `ε` is added at the phase zero.
   The new state has the component `cos Δ + ε cos φ` along the old direction and
@@ -114,9 +118,9 @@ those names.
 * `Reg.law_scale_mean`: a threshold of mean `μ` would give the scale `μ²a₀`.
 * `Reg.a0_depends_on_product` and `Reg.Lambda_from_a0`: only the product `Lℓ_c` enters `a₀`, and
   with `Λ = 3/R_Λ²` the scale gives `Λ = 12(ln 2)²a₀²/((1 − ln 2)²c⁴)` (Secs. IV.C and V).
-* `Law.classical_limit`: a classical share, the probability `b = f` in place of the amplitude,
-  would give `a = a₀` and rotation speeds rising as `√r`; flat rotation curves therefore support
-  Postulate 1.
+* `Law.classical_limit`: a classical share, the probability `b = f/(1 + f)` of the body's bits
+  in place of the amplitude, would give `a = g_N + a₀`, which tends to `a₀` far from the body,
+  and rotation speeds rising as `√r` there; flat rotation curves therefore support Postulate 1.
 * `Reg.scale_over_time`: with Jacobson's `G`, `a₀` is a fixed fraction of the Planck acceleration
   `√(c⁷/ℏG)`; the same formula with another `G'` gives twice the scale only if `G' = G/4`.
 * `Law.near_limit`, `Law.deep_limit` and `Law.tully_fisher`, Eqs. (deep) and (btfr): near the
@@ -136,18 +140,22 @@ those names.
   and `Reg.hypotheses_consistent`, which shows that the hypotheses can hold at once.
 
 Up to v18-69 the files took the amplitude `h = √f` of the body's share, `h = √(E/u)`, as one
-premise (`Sources.P1.share_amplitude`).  The exact amplitude is derived for `f ≤ 1`
-(`Law.share_amplitude`, `Main.share_amplitude`): the count sets the matter `u`, the mean over
-all strings, on all the bits of the one string on which the count is made, the bits of one whole qubit, so the
-body's mean share fills whole bits of that string, and the amplitude of the share is the square
-root of the probability of those bits.  The count is made for that mean; it does not say that
-each string holds `u`, nor that a string that carries the body's information does.  For `f ≤ 1` that amplitude is `√f` to leading order in
-`1/L`, in units of one whole qubit, a step (`Sources.Approx.share_amplitude`,
+premise (`Sources.P1.share_amplitude`).  The exact amplitude is derived at every share
+(`Law.share_amplitude`, `Main.share_amplitude`): the count sets the body's mean share `E` and
+the string's own matter `u_o`, the mean matter `u` over all strings less the body's part of that
+mean (`Reg.ownMatter`), on all the bits of the one string on which the count
+is made, so the body's mean share fills whole bits of that string, the string's own matter is in
+the rest, and the amplitude of the share against that of the string's own matter is the square
+root of the ratio of the two probabilities.  The count is made for the two means; it does not
+say that each string holds them, nor that a string that carries the body's information does.
+That amplitude is `√f` to leading order in `1/L` and with the body's part of `u` neglected, a
+step (`Sources.Approx.share_amplitude`,
 `Law.share_leading_order`, `Main.share_leading_order`), and `Law.law_whole_bits` and
-`Main.law_whole_bits` bound what the step to `√f` changes in the law.  For `f > 1` the amplitude
-`√f` is the paper's definition of `h` on the same scale, which the files take as a condition
-(`Sources.Condition.same_scale`).  `Main.fill_fraction`, `Main.galactic_law`, `Main.law_bounds`
-and `Main.scale_mean` take the step and the condition.  In
+`Main.law_whole_bits` bound what the step to `√f` changes in the law.  Up to v18-72 the count
+set `u` alone on the string's bits and ended at `f = 1`, and for `f > 1` the files took the
+amplitude `√f` as a condition (`Sources.Condition.same_scale`); the condition is gone.
+`Main.fill_fraction`, `Main.galactic_law`, `Main.law_bounds` and `Main.scale_mean` take the
+step.  In
 `Reg.law` the amplitude is the argument of the threshold's survival function (`hb`).  At leading
 order in `1/L` the fraction `b` of carriers is the probability that a string's threshold lies
 below `h`, and so the fraction of the sphere's strings that carry the body's information.
@@ -232,17 +240,17 @@ theorem mass_counts_bits {Cell : Type*} [DecidableEq Cell] (held : Finset Cell �
     ring
 
 /-- **What a set of a string's cells holds** (Sec. IV.C).  With the count of `mass_counts_bits`,
-and with all the string's cells together holding the matter `u` (`hall`,
-`Sources.P1.string_matter_in_bits`), for a ring that is not empty: the bit of each of its `n`
-cells holds `u/n`, so a set of `m` cells holds `(m/n)u`, its share of the cells
-times `u`.  Sec. IV.C: "The strings hold the matter `u` per string on average, on the `L` bits of one whole qubit, so for `f ≤ 1` the
-mean share of the body, `E = fu`, fills the fraction `f` of a string's bits, to within one bit." -/
+and with all the string's cells together holding the mass energy `w` (`hall`), for a ring that
+is not empty: the bit of each of its `n` cells holds `w/n`, so a set of `m` cells holds
+`(m/n)w`, its share of the cells times `w`.  `share_amplitude` takes it with the body's mean
+share and the string's own matter on the string's bits, `w = E + u_o`
+(`Sources.P1.string_matter_in_bits`).  Sec. IV.C: "We make the count once, for the sphere, with these two means on the `L` bits of one string." -/
 theorem mass_of_cells {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
     (held : Finset Cell → ℝ)
     (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
-    (hcell : ∀ x y : Cell, held {x} = held {y}) (u : ℝ) (hall : held univ = u)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (w : ℝ) (hall : held univ = w)
     (S : Finset Cell) :
-    held S = (S.card / Fintype.card Cell) * u := by
+    held S = (S.card / Fintype.card Cell) * w := by
   obtain ⟨x⟩ := ‹Nonempty Cell›
   have hL : (Fintype.card Cell : ℝ) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
   have h1 := mass_counts_bits held hadd hcell univ x
@@ -252,68 +260,71 @@ theorem mass_of_cells {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty
 
 /-- **A set of cells that holds a share exactly: its fraction, its probability and its
 amplitude** (Sec. IV.C).  A set `S` of the string's cells holds the share `E`, no more and no
-less (`hS`), and all the string's cells together hold the matter `u ≠ 0` (`hall`).  The first part: by
-`mass_of_cells` the set is the fraction `E/u` of the string's cells, so the share is that
-fraction of the string's bits, and it is a whole number of bits, the number of the cells of
-`S`.  The second part: each cell's bit is one possible outcome among the ring's (`halike`,
+less (`hS`), and all the string's cells together hold the mass energy `w ≠ 0` (`hall`).  The
+first part: by `mass_of_cells` the set is the fraction `E/w` of the string's cells, so the share
+is that fraction of the string's bits, and it is a whole number of bits, the number of the cells
+of `S`.  The second part: each cell's bit is one possible outcome among the ring's (`halike`,
 `Sources.P1.ring_bits_alike`), so the probability that the outcome is the bit of a cell of `S`
-is the set's share of the cells (`Capacity.share_read`), which is `E/u`.  The third part: the
-square root of that probability, the amplitude of those bits, is `√(E/u)`. -/
+is the set's share of the cells (`Capacity.share_read`), which is `E/w`.  The third part: the
+square root of that probability, the amplitude of those bits, is `√(E/w)`.  With the body's
+share and the string's own matter on the string's bits, `w = E + u_o`, the fraction is
+`E/(E + u_o)`. -/
 theorem bits_of_share {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
-    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E u : ℝ) (hu : u ≠ 0)
+    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E w : ℝ) (hw : w ≠ 0)
     (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
-    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = w)
     (halike : ∀ x, read x = 1 / Fintype.card Cell) (S : Finset Cell) (hS : held S = E) :
-    (S.card : ℝ) / Fintype.card Cell = E / u ∧ ∑ x ∈ S, read x = E / u ∧
-      Real.sqrt (∑ x ∈ S, read x) = Real.sqrt (E / u) := by
-  have hfrac : (S.card : ℝ) / Fintype.card Cell = E / u := by
-    rw [← hS, mass_of_cells held hadd hcell u hall S, mul_div_assoc, div_self hu, mul_one]
-  have hprob : ∑ x ∈ S, read x = E / u := by
+    (S.card : ℝ) / Fintype.card Cell = E / w ∧ ∑ x ∈ S, read x = E / w ∧
+      Real.sqrt (∑ x ∈ S, read x) = Real.sqrt (E / w) := by
+  have hfrac : (S.card : ℝ) / Fintype.card Cell = E / w := by
+    rw [← hS, mass_of_cells held hadd hcell w hall S, mul_div_assoc, div_self hw, mul_one]
+  have hprob : ∑ x ∈ S, read x = E / w := by
     rw [Capacity.share_read read halike S, hfrac]
   exact ⟨hfrac, hprob, by rw [hprob]⟩
 
-/-- **The bits that a share fills** (Sec. IV.C).  All the string's cells together hold the
-matter `u > 0` (`hall`), and the share is one that the string can hold, `E ≤ u`.  The share fills a set `S`
-of the string's cells and not one cell more: the bits of `S` hold at most the share (`hS`), and
+/-- **The bits that a share fills** (Sec. IV.C).  All the string's cells together hold the mass
+energy `w > 0` (`hall`), and the share is at most that, `E ≤ w`.  The share fills a set `S` of
+the string's cells and not one cell more: the bits of `S` hold at most the share (`hS`), and
 with the bit of any further cell they would hold more than the share (`hnext`; the two are the
 first part of `Sources.P1.share_bits`).  Each cell's bit is one possible outcome among the
 ring's (`halike`, `Sources.P1.ring_bits_alike`).  The first part: the probability `p` that the
 outcome is the bit of a cell of `S` is the set's share of the cells, a whole number of bits over
 the number `n` of the ring's cells (`Capacity.share_read`).  The second and third parts: that
-probability lies less than one bit below the fraction `E/u`, `E/u − 1/n < p ≤ E/u`
+probability lies less than one bit below the fraction `E/w`, `E/w − 1/n < p ≤ E/w`
 (`mass_of_cells`).  The fourth part: where some set of cells holds the share exactly, so that
-the share is a whole number of bits, `p = E/u` (`bits_of_share`).  Sec. IV.C: "The strings hold the matter `u` per string on average, on the `L` bits of one whole qubit, so for `f ≤ 1` the
-mean share of the body, `E = fu`, fills the fraction `f` of a string's bits, to within one bit." -/
+the share is a whole number of bits, `p = E/w` (`bits_of_share`).  With the body's share and the
+string's own matter on the string's bits, `w = E + u_o`, the fraction is `E/(E + u_o)`.
+Sec. IV.C: "The body's share fills the fraction `E/(E+u)` of them, to within one bit, and the string's own matter fills the rest, the fraction `u/(E+u)`." -/
 theorem filled_bits {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
-    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E u : ℝ) (hu : 0 < u) (hEu : E ≤ u)
+    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E w : ℝ) (hw : 0 < w) (hEw : E ≤ w)
     (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
-    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = w)
     (halike : ∀ x, read x = 1 / Fintype.card Cell) (S : Finset Cell)
     (hS : held S ≤ E) (hnext : ∀ x, x ∉ S → E < held (insert x S)) :
     ∑ x ∈ S, read x = S.card / Fintype.card Cell ∧
-    E / u - 1 / Fintype.card Cell < ∑ x ∈ S, read x ∧ ∑ x ∈ S, read x ≤ E / u ∧
-    ((∃ T : Finset Cell, held T = E) → ∑ x ∈ S, read x = E / u) := by
+    E / w - 1 / Fintype.card Cell < ∑ x ∈ S, read x ∧ ∑ x ∈ S, read x ≤ E / w ∧
+    ((∃ T : Finset Cell, held T = E) → ∑ x ∈ S, read x = E / w) := by
   have hn : (0 : ℝ) < Fintype.card Cell := by exact_mod_cast Fintype.card_pos
   have hp : ∑ x ∈ S, read x = S.card / Fintype.card Cell := Capacity.share_read read halike S
-  have hheld := mass_of_cells held hadd hcell u hall
+  have hheld := mass_of_cells held hadd hcell w hall
   -- the set holds at most the share
-  have hle : (S.card : ℝ) / Fintype.card Cell ≤ E / u := by
-    rw [le_div_iff₀ hu, ← hheld S]
+  have hle : (S.card : ℝ) / Fintype.card Cell ≤ E / w := by
+    rw [le_div_iff₀ hw, ← hheld S]
     exact hS
   -- one bit more would hold more than the share
-  have hlt : E / u - 1 / Fintype.card Cell < (S.card : ℝ) / Fintype.card Cell := by
+  have hlt : E / w - 1 / Fintype.card Cell < (S.card : ℝ) / Fintype.card Cell := by
     by_cases hall' : ∀ x, x ∈ S
     · have hSuniv : S = univ := Finset.eq_univ_iff_forall.2 hall'
       rw [hSuniv, Finset.card_univ, div_self hn.ne']
-      have h1 : E / u ≤ 1 := (div_le_one hu).2 hEu
+      have h1 : E / w ≤ 1 := (div_le_one hw).2 hEw
       have h2 : (0 : ℝ) < 1 / Fintype.card Cell := by positivity
       linarith
     · push Not at hall'
       obtain ⟨x, hx⟩ := hall'
       have h1 := hnext x hx
       rw [hheld (insert x S), Finset.card_insert_of_notMem hx] at h1
-      have h2 : E / u < ((S.card + 1 : ℕ) : ℝ) / Fintype.card Cell := by
-        rw [div_lt_iff₀ hu]
+      have h2 : E / w < ((S.card + 1 : ℕ) : ℝ) / Fintype.card Cell := by
+        rw [div_lt_iff₀ hw]
         exact h1
       push_cast at h2
       have h3 : ((S.card : ℝ) + 1) / Fintype.card Cell
@@ -322,7 +333,7 @@ theorem filled_bits {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty C
   refine ⟨hp, by rw [hp]; exact hlt, by rw [hp]; exact hle, ?_⟩
   rintro ⟨T, hT⟩
   -- a set that holds the share exactly has as many cells
-  have hfrac := (bits_of_share held read E u hu.ne' hadd hcell hall halike T hT).1
+  have hfrac := (bits_of_share held read E w hw.ne' hadd hcell hall halike T hT).1
   rw [hp, ← hfrac]
   rw [← hfrac] at hle hlt
   have h1 : (S.card : ℝ) ≤ T.card := by
@@ -339,141 +350,242 @@ theorem filled_bits {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty C
   have h6 : S.card = T.card := by omega
   rw [h6]
 
-/-- **Every share that one string can hold fills a set of cells and not one more**
-(Sec. IV.C).  With mass energy counted in bits (`hadd`, `hcell`) and all the string's cells together
-holding the matter `u > 0` (`hall`), for every share `0 ≤ E ≤ u` there is a set of cells whose
-bits hold at most the share and, with the bit of any further cell, more than the share: a set
-of `⌊nE/u⌋` of the ring's `n` cells, the whole bits that the share fills.  So the first part of
-`Sources.P1.share_bits` can be met for every such share.  Sec. IV.C: "The strings hold the matter `u` per string on average, on the `L` bits of one whole qubit, so for `f ≤ 1` the
-mean share of the body, `E = fu`, fills the fraction `f` of a string's bits, to within one bit." -/
+/-- **Every share fills a set of cells and not one more** (Sec. IV.C).  With mass energy
+counted in bits (`hadd`, `hcell`) and all the string's cells together holding the mass energy
+`w > 0` (`hall`), for every share `0 ≤ E ≤ w` there is a set of cells whose bits hold at most
+the share and, with the bit of any further cell, more than the share: a set of `⌊nE/w⌋` of the
+ring's `n` cells, the whole bits that the share fills.  With the body's share and the string's
+own matter on the string's bits, `w = E + u_o` with `u_o > 0`, every share `E ≥ 0` is at most `w`,
+so the first part of `Sources.P1.share_bits` can be met for every share.
+Sec. IV.C: "The body's share fills the fraction `E/(E+u)` of them, to within one bit, and the string's own matter fills the rest, the fraction `u/(E+u)`." -/
 theorem fills_exists {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
-    (held : Finset Cell → ℝ) (E u : ℝ) (hu : 0 < u) (hE : 0 ≤ E) (hEu : E ≤ u)
+    (held : Finset Cell → ℝ) (E w : ℝ) (hw : 0 < w) (hE : 0 ≤ E) (hEw : E ≤ w)
     (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
-    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u) :
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = w) :
     ∃ S : Finset Cell, held S ≤ E ∧ ∀ x, x ∉ S → E < held (insert x S) := by
   have hn : (0 : ℝ) < Fintype.card Cell := by exact_mod_cast Fintype.card_pos
-  have hheld := mass_of_cells held hadd hcell u hall
-  have hf0 : 0 ≤ (Fintype.card Cell : ℝ) * (E / u) := by positivity
-  have hf1 : (Fintype.card Cell : ℝ) * (E / u) ≤ Fintype.card Cell := by
-    have : E / u ≤ 1 := (div_le_one hu).2 hEu
+  have hheld := mass_of_cells held hadd hcell w hall
+  have hf0 : 0 ≤ (Fintype.card Cell : ℝ) * (E / w) := by positivity
+  have hf1 : (Fintype.card Cell : ℝ) * (E / w) ≤ Fintype.card Cell := by
+    have : E / w ≤ 1 := (div_le_one hw).2 hEw
     nlinarith
   -- the whole bits that the share fills
-  have hm : ⌊(Fintype.card Cell : ℝ) * (E / u)⌋₊ ≤ (univ : Finset Cell).card := by
+  have hm : ⌊(Fintype.card Cell : ℝ) * (E / w)⌋₊ ≤ (univ : Finset Cell).card := by
     rw [Finset.card_univ]
     exact Nat.floor_le_of_le hf1
   obtain ⟨S, -, hS⟩ := Finset.exists_subset_card_eq hm
   refine ⟨S, ?_, fun x hx => ?_⟩
   · rw [hheld S, hS]
     have h1 := Nat.floor_le hf0
-    have h2 : (⌊(Fintype.card Cell : ℝ) * (E / u)⌋₊ : ℝ) / Fintype.card Cell ≤ E / u := by
+    have h2 : (⌊(Fintype.card Cell : ℝ) * (E / w)⌋₊ : ℝ) / Fintype.card Cell ≤ E / w := by
       rw [div_le_iff₀ hn]; linarith
-    rw [le_div_iff₀ hu] at h2
+    rw [le_div_iff₀ hw] at h2
     exact h2
   · rw [hheld (insert x S), Finset.card_insert_of_notMem hx, hS]
-    have h1 := Nat.lt_floor_add_one ((Fintype.card Cell : ℝ) * (E / u))
-    have h2 : E / u < ((⌊(Fintype.card Cell : ℝ) * (E / u)⌋₊ + 1 : ℕ) : ℝ) / Fintype.card Cell := by
+    have h1 := Nat.lt_floor_add_one ((Fintype.card Cell : ℝ) * (E / w))
+    have h2 : E / w < ((⌊(Fintype.card Cell : ℝ) * (E / w)⌋₊ + 1 : ℕ) : ℝ) / Fintype.card Cell := by
       rw [lt_div_iff₀ hn]; push_cast; linarith
-    rw [div_lt_iff₀ hu] at h2
+    rw [div_lt_iff₀ hw] at h2
     exact h2
 
 /-- **The exact amplitude of a body's share** (Sec. IV.C), in the form in which
-`Main.share_amplitude` states it from the sources.  The first part, for a share that one string
-can hold, `0 ≤ E ≤ u`: the share fills a set of the string's cells and not one more, and `h` is
-the amplitude of their bits (`hbits`, `Sources.P1.share_bits`).  So `h` is not negative, `h²` is
-a whole number of bits over the number `n` of the ring's cells, and `E/u − 1/n < h² ≤ E/u`
-(`filled_bits`).  The second part, for a larger share, `E > u`: `h = √(E/u)`, the paper's
-definition of `h` on the same scale, a condition (`hscale`, `Sources.Condition.same_scale`), and
-no count of bits.
-`share_leading_order` bounds the step from this amplitude to `√(E/u)`.  Up to v18-69 the files
-took `h = √(E/u)` as one premise, `Sources.P1.share_amplitude`. -/
+`Main.share_amplitude` states it from the sources.  All the bits of the string on which the count is
+made hold the body's share `E ≥ 0` and the string's own matter `u_o > 0` (`hall`,
+`Sources.P1.string_matter_in_bits`, where `u_o` is the matter that a string holds on average
+less the body's part of that mean, `Reg.ownMatter`), and mass energy is counted in bits (`hadd`,
+`hcell`), so each of the string's `n` bits holds `(E + u_o)/n` (`mass_of_cells`).  The share
+fills a set of the string's cells and not one more, and `h` is the amplitude of their bits
+against the amplitude of the bits of the other cells, which hold the string's own matter
+(`hbits`, `Sources.P1.share_bits`).  Let `m` be the number of the cells that the share fills.
+All the cells hold more than the share, since `u_o > 0`, so `m < n`: the share never fills every
+bit.  The `m` bits hold at most the share, `m(E + u_o) ≤ nE`, and one bit more would hold more
+than the share, `nE < (m + 1)(E + u_o)` (`filled_bits`).  Each cell's bit is one possible
+outcome among the ring's (`halike`), so the probability of the share's bits is `m/n` and that of
+the other bits is `(n − m)/n` (`Capacity.share_read`).  So `h` is not negative and
+`h² = m/(n − m)`.  The statement holds at every share: no share fills more than the string's
+bits.  `share_leading_order` bounds the step from this amplitude to `√(E/u_o)`.  Up to v18-69
+the files took `h = √(E/u)` as one premise, `Sources.P1.share_amplitude`.  Up to v18-72 the
+string's bits held `u` alone, the count ended at `E = u`, and for a larger share `h = √(E/u)`
+was a condition (`Sources.Condition.same_scale`).
+Sec. IV.C: "The body's share fills the fraction `E/(E+u)` of them, to within one bit, and the string's own matter fills the rest, the fraction `u/(E+u)`."  "A fraction of a string's bits is a probability, Eq. (raqm), and its square root is an amplitude, Eq. (qubit)."  "Neither fraction exceeds one, so the count holds at every `f`." -/
 theorem share_amplitude {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
-    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E u h : ℝ) (hu : 0 < u) (hE : 0 ≤ E)
+    (held : Finset Cell → ℝ) (read : Cell → ℝ) (E uo h : ℝ) (huo : 0 < uo) (hE : 0 ≤ E)
     (hadd : ∀ S T : Finset Cell, Disjoint S T → held (S ∪ T) = held S + held T)
-    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = u)
+    (hcell : ∀ x y : Cell, held {x} = held {y}) (hall : held univ = E + uo)
     (halike : ∀ x, read x = 1 / Fintype.card Cell)
-    (hbits : 0 ≤ E → E ≤ u → ∃ S : Finset Cell, held S ≤ E ∧
-      (∀ x, x ∉ S → E < held (insert x S)) ∧ h = Real.sqrt (∑ x ∈ S, read x))
-    (hscale : u < E → h = Real.sqrt (E / u)) :
-    (E ≤ u → 0 ≤ h ∧ (∃ m : ℕ, h ^ 2 = m / Fintype.card Cell) ∧
-      E / u - 1 / Fintype.card Cell < h ^ 2 ∧ h ^ 2 ≤ E / u) ∧
-    (u < E → h = Real.sqrt (E / u)) := by
-  refine ⟨fun hEu => ?_, hscale⟩
-  obtain ⟨S, hS, hnext, hh⟩ := hbits hE hEu
-  obtain ⟨hp, hlo, hhi, -⟩ :=
-    filled_bits held read E u hu hEu hadd hcell hall halike S hS hnext
+    (hbits : 0 ≤ E → ∃ S : Finset Cell, held S ≤ E ∧
+      (∀ x, x ∉ S → E < held (insert x S)) ∧
+      h = Real.sqrt (∑ x ∈ S, read x) / Real.sqrt (∑ x ∈ Sᶜ, read x)) :
+    0 ≤ h ∧ ∃ m : ℕ, m < Fintype.card Cell ∧ h ^ 2 = m / ((Fintype.card Cell : ℝ) - m) ∧
+      m * (E + uo) ≤ Fintype.card Cell * E ∧ Fintype.card Cell * E < (m + 1) * (E + uo) := by
+  obtain ⟨S, hS, hnext, hh⟩ := hbits hE
+  have hn : (0 : ℝ) < Fintype.card Cell := by exact_mod_cast Fintype.card_pos
+  have hw : 0 < E + uo := by linarith
+  -- the probability of the share's bits is a whole number of bits over `n`, less than one bit
+  -- below `E/(E + uo)`
+  obtain ⟨hp, hplo, hphi, -⟩ :=
+    filled_bits held read E (E + uo) hw (by linarith) hadd hcell hall halike S hS hnext
+  -- all the cells hold more than the share, so the share does not fill every cell
+  have hlt1 : E / (E + uo) < 1 := (div_lt_one hw).2 (by linarith)
+  have hcard : S.card < Fintype.card Cell := by
+    have h1 : (S.card : ℝ) / Fintype.card Cell < 1 := by rw [← hp]; linarith
+    have h2 : (S.card : ℝ) < Fintype.card Cell := by rwa [div_lt_one hn] at h1
+    exact_mod_cast h2
+  -- the bits of `S` hold at most the share
+  have hlo : (S.card : ℝ) * (E + uo) ≤ Fintype.card Cell * E := by
+    have h1 := hphi
+    rw [hp, div_le_div_iff₀ hn hw] at h1
+    linarith
+  -- one bit more would hold more than the share
+  have hhi : (Fintype.card Cell : ℝ) * E < ((S.card : ℝ) + 1) * (E + uo) := by
+    have h1 : E / (E + uo) < ((S.card : ℝ) + 1) / Fintype.card Cell := by
+      have h2 : ((S.card : ℝ) + 1) / Fintype.card Cell
+          = (S.card : ℝ) / Fintype.card Cell + 1 / Fintype.card Cell := by ring
+      rw [hp] at hplo
+      linarith
+    rw [div_lt_iff₀ hw, div_mul_eq_mul_div, lt_div_iff₀ hn] at h1
+    linarith
+  -- the probabilities of the share's bits and of the other bits
+  have hd : (0 : ℝ) < (Fintype.card Cell : ℝ) - S.card := by
+    have h1 : (S.card : ℝ) < Fintype.card Cell := by exact_mod_cast hcard
+    linarith
+  have hq : ∑ x ∈ Sᶜ, read x = ((Fintype.card Cell : ℝ) - S.card) / Fintype.card Cell := by
+    rw [Capacity.share_read read halike Sᶜ, Finset.card_compl, Nat.cast_sub hcard.le]
   have hp0 : 0 ≤ ∑ x ∈ S, read x := by rw [hp]; positivity
-  have hsq : h ^ 2 = ∑ x ∈ S, read x := by rw [hh, Real.sq_sqrt hp0]
-  exact ⟨by rw [hh]; exact Real.sqrt_nonneg _, ⟨S.card, by rw [hsq, hp]⟩, by rw [hsq]; exact hlo,
-    by rw [hsq]; exact hhi⟩
+  have hq0 : 0 ≤ ∑ x ∈ Sᶜ, read x := by rw [hq]; exact div_nonneg hd.le hn.le
+  -- the square of the ratio of the two amplitudes is the ratio of the two probabilities
+  have hsq : h ^ 2 = S.card / ((Fintype.card Cell : ℝ) - S.card) := by
+    rw [hh, div_pow, Real.sq_sqrt hp0, Real.sq_sqrt hq0, hp, hq, div_div_eq_mul_div,
+      div_mul_cancel₀ _ hn.ne']
+  exact ⟨by rw [hh]; positivity, S.card, hcard, hsq, hlo, hhi⟩
 
-/-- **The amplitude of a share at leading order** (Sec. IV.C): what the step from the exact
-amplitude to `√f` changes, with `f = E/u`.  Let `h` be the amplitude of whole bits on a string of
-`n` bits: `h ≥ 0`, `h²` a whole number of bits over `n`, and `f − 1/n < h² ≤ f` (`hexact`, the
-first part of `share_amplitude`).  The first and second parts: `√f` is at least `h` and exceeds
-it by at most `1/√n`, since `(√f − h)² ≤ f − h² < 1/n`.  The third part: where the share is at
-least one bit, `f ≥ 1/n`, `√f` exceeds `h` by at most `1/(n√f)`, since
-`√f − h = (f − h²)/(√f + h)`.  The fourth part: where the share is a whole number of bits,
-`f = k/n`, the two are equal.  The fifth part: where the share is below one bit, `f < 1/n`, it
-fills no bit and `h = 0`, so there the step puts `√f` for the amplitude zero.  The hypothesis
-has `n ≥ 1`: for `n = 0` it would read `f < h² ≤ f`.  Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
+/-- **The amplitude of a share at leading order in `1/n`** (Sec. IV.C): what the step from the
+exact amplitude to `√f_o` changes, with `f_o = E/u_o`.  Let `h` be the amplitude of whole bits on
+a string of `n` bits that hold the share `E` and the string's own matter `u_o`: `h ≥ 0` and
+`h² = m/(n − m)`, with `m < n` the whole number of bits that the share fills,
+`m(E + u_o) ≤ nE < (m + 1)(E + u_o)` (`hexact`, the conclusion of `share_amplitude`).  The first
+and second parts: the two inequalities give `E + u_o > 0`, then `u_o > 0`, since `m + 1 ≤ n`,
+and `E ≥ 0`.  In units of `u_o` they read `m(1 + f_o) ≤ nf_o < (m + 1)(1 + f_o)`.  The third and
+fourth parts: `h²` is at most `f_o` and less than `(1 + f_o)²/n` below it.  The first is
+`m ≤ (n − m)f_o`.  For the second, `f_o − h² < (1 + f_o)/(n − m)`, and `n ≤ (1 + f_o)(n − m)`.
+The fifth and sixth parts: `√f_o` is at least `h` and exceeds it by at most `(1 + f_o)/√n`,
+since `(√f_o − h)² ≤ f_o − h²`.  The seventh part: where the share is positive, `√f_o` exceeds
+`h` by at most `(1 + f_o)²/(n√f_o)`, since `√f_o − h = (f_o − h²)/(√f_o + h)`.  The eighth part:
+where the share is a whole number of bits, `k(E + u_o) = nE`, the two are equal.  The ninth
+part: where the share is below one bit, `nE < E + u_o`, it fills no bit and `h = 0`, so there
+the step puts `√f_o` for the amplitude zero.  `Main.share_leading_order` takes these bounds with
+the string's own matter `u_o = u − Mc²/R_hor` and adds what the neglect of the body's part of
+`u` changes.
+Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits "to within one
 bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files." -/
-theorem share_leading_order (n : ℕ) (f h : ℝ)
-    (hexact : 0 ≤ h ∧ (∃ m : ℕ, h ^ 2 = m / n) ∧ f - 1 / n < h ^ 2 ∧ h ^ 2 ≤ f) :
-    0 ≤ Real.sqrt f - h ∧ Real.sqrt f - h ≤ 1 / Real.sqrt n ∧
-    (1 / n ≤ f → Real.sqrt f - h ≤ 1 / (n * Real.sqrt f)) ∧
-    ((∃ k : ℕ, f = k / n) → h = Real.sqrt f) ∧ (f < 1 / n → h = 0) := by
-  obtain ⟨hh0, ⟨m, hm⟩, hlo, hhi⟩ := hexact
-  have hf0 : 0 ≤ f := le_trans (sq_nonneg h) hhi
+theorem share_leading_order (n : ℕ) (E uo h : ℝ)
+    (hexact : 0 ≤ h ∧ ∃ m : ℕ, m < n ∧ h ^ 2 = m / ((n : ℝ) - m) ∧
+      m * (E + uo) ≤ n * E ∧ n * E < (m + 1) * (E + uo)) :
+    0 < uo ∧ 0 ≤ E ∧
+    h ^ 2 ≤ E / uo ∧ E / uo - (1 + E / uo) ^ 2 / n < h ^ 2 ∧
+    0 ≤ Real.sqrt (E / uo) - h ∧ Real.sqrt (E / uo) - h ≤ (1 + E / uo) / Real.sqrt n ∧
+    (0 < E → Real.sqrt (E / uo) - h ≤ (1 + E / uo) ^ 2 / (n * Real.sqrt (E / uo))) ∧
+    ((∃ k : ℕ, k * (E + uo) = n * E) → h = Real.sqrt (E / uo)) ∧ (n * E < E + uo → h = 0) := by
+  obtain ⟨hh0, m, hmn, hm, hlo, hhi⟩ := hexact
+  have hm0 : (0 : ℝ) ≤ m := Nat.cast_nonneg m
+  have hmn' : (m : ℝ) + 1 ≤ n := by exact_mod_cast hmn
+  have hn : (0 : ℝ) < n := by linarith
+  have hd : (0 : ℝ) < (n : ℝ) - m := by linarith
+  -- all the bits hold more than nothing, the string's own matter is positive, and the share is
+  -- not negative
+  have hw : 0 < E + uo := by nlinarith
+  have huo : 0 < uo := by
+    have h1 : ((m : ℝ) + 1) * (E + uo) ≤ n * (E + uo) := mul_le_mul_of_nonneg_right hmn' hw.le
+    have h2 : (n : ℝ) * 0 < n * uo := by nlinarith
+    exact lt_of_mul_lt_mul_left h2 hn.le
+  have hE : 0 ≤ E := by
+    have h1 : 0 ≤ (m : ℝ) * (E + uo) := mul_nonneg hm0 hw.le
+    have h2 : (n : ℝ) * 0 ≤ n * E := by linarith
+    exact le_of_mul_le_mul_left h2 hn
+  -- the count in units of the string's own matter: `m(1 + f) ≤ nf < (m + 1)(1 + f)`
+  obtain ⟨f, hfdef⟩ : ∃ f : ℝ, f = E / uo := ⟨_, rfl⟩
+  rw [← hfdef]
+  have hf0 : 0 ≤ f := by rw [hfdef]; exact div_nonneg hE huo.le
+  have hEu : E = f * uo := by rw [hfdef, div_mul_cancel₀ _ huo.ne']
+  have hlo' : (m : ℝ) * (1 + f) ≤ n * f := by
+    have h1 : uo * ((m : ℝ) * (1 + f)) ≤ uo * (n * f) := by
+      rw [hEu] at hlo
+      nlinarith
+    exact le_of_mul_le_mul_left h1 huo
+  have hhi' : (n : ℝ) * f < (m + 1) * (1 + f) := by
+    have h1 : uo * ((n : ℝ) * f) < uo * ((m + 1) * (1 + f)) := by
+      rw [hEu] at hhi
+      nlinarith
+    exact lt_of_mul_lt_mul_left h1 huo.le
+  have h1f : 0 < 1 + f := by linarith
+  -- `h² ≤ f`: `m ≤ (n − m)f`
+  have hfh : h ^ 2 ≤ f := by
+    rw [hm, div_le_iff₀ hd]
+    nlinarith
+  -- `f − h² < (1 + f)/(n − m) ≤ (1 + f)²/n`
+  have hlow : f - (1 + f) ^ 2 / n < h ^ 2 := by
+    have e : (f * ((n : ℝ) - m) - m) / ((n : ℝ) - m) = f - (m : ℝ) / ((n : ℝ) - m) := by
+      rw [sub_div, mul_div_cancel_right₀ _ hd.ne']
+    have h1 : f - (m : ℝ) / ((n : ℝ) - m) < (1 + f) / ((n : ℝ) - m) := by
+      rw [← e]
+      exact (div_lt_div_iff_of_pos_right hd).2 (by nlinarith)
+    have h2 : (1 + f) / ((n : ℝ) - m) ≤ (1 + f) ^ 2 / n := by
+      rw [div_le_div_iff₀ hd hn]
+      have h3 : (n : ℝ) ≤ (1 + f) * ((n : ℝ) - m) := by nlinarith
+      nlinarith [mul_le_mul_of_nonneg_left h3 h1f.le]
+    rw [hm]
+    linarith
   have ha0 : 0 ≤ Real.sqrt f := Real.sqrt_nonneg f
   have ha2 : Real.sqrt f ^ 2 = f := Real.sq_sqrt hf0
   -- `h ≤ √f`
-  have hle : h ≤ Real.sqrt f := Real.le_sqrt_of_sq_le hhi
-  -- the number of the cells is not zero: else `f < h² ≤ f`
-  have hn : 0 < n := by
-    rcases Nat.eq_zero_or_pos n with h0 | h0
-    · exfalso
-      rw [h0, Nat.cast_zero, div_zero, sub_zero] at hlo
-      linarith
-    · exact h0
-  have hn' : (0 : ℝ) < n := by exact_mod_cast hn
-  have hsn : 0 < Real.sqrt n := Real.sqrt_pos.2 hn'
-  -- `(√f − h)² ≤ (√f − h)(√f + h) = f − h² < 1/n`
-  have hgap : Real.sqrt f ^ 2 - h ^ 2 < 1 / n := by rw [ha2]; linarith
-  refine ⟨by linarith, ?_, fun h1 => ?_, ?_, fun hlt => ?_⟩
-  · have h2 : (Real.sqrt f - h) ^ 2 ≤ 1 / n := by nlinarith
-    have h3 : Real.sqrt f - h ≤ Real.sqrt (1 / n) := Real.le_sqrt_of_sq_le h2
-    rwa [Real.sqrt_div' 1 hn'.le, Real.sqrt_one] at h3
-  · -- `√f − h = (f − h²)/(√f + h) ≤ (1/n)/√f`
-    have hf : 0 < f := lt_of_lt_of_le (by positivity) h1
+  have hle : h ≤ Real.sqrt f := Real.le_sqrt_of_sq_le hfh
+  have hgap : Real.sqrt f ^ 2 - h ^ 2 < (1 + f) ^ 2 / n := by rw [ha2]; linarith
+  refine ⟨huo, hE, hfh, hlow, by linarith, ?_, fun hEpos => ?_, ?_, fun hlt => ?_⟩
+  · -- `(√f − h)² ≤ (√f − h)(√f + h) = f − h² < (1 + f)²/n`
+    have h2 : (Real.sqrt f - h) ^ 2 ≤ (1 + f) ^ 2 / n := by
+      nlinarith [mul_nonneg hh0 (sub_nonneg.2 hle)]
+    have h3 : Real.sqrt f - h ≤ Real.sqrt ((1 + f) ^ 2 / n) := Real.le_sqrt_of_sq_le h2
+    rwa [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq h1f.le] at h3
+  · -- `√f − h = (f − h²)/(√f + h) ≤ ((1 + f)²/n)/√f`
+    have hf : 0 < f := by rw [hfdef]; exact div_pos hEpos huo
     have ha : 0 < Real.sqrt f := Real.sqrt_pos.2 hf
     rw [le_div_iff₀ (by positivity)]
-    have h2 : (Real.sqrt f - h) * Real.sqrt f ≤ Real.sqrt f ^ 2 - h ^ 2 := by nlinarith
+    have h2 : (Real.sqrt f - h) * Real.sqrt f ≤ Real.sqrt f ^ 2 - h ^ 2 := by
+      nlinarith [mul_nonneg hh0 (sub_nonneg.2 hle)]
     have h3 : (Real.sqrt f - h) * (n * Real.sqrt f) = n * ((Real.sqrt f - h) * Real.sqrt f) := by
       ring
     rw [h3]
-    have h4 : (n : ℝ) * (Real.sqrt f ^ 2 - h ^ 2) < 1 := by
-      have := mul_lt_mul_of_pos_left hgap hn'
-      rwa [mul_one_div_cancel hn'.ne'] at this
-    nlinarith
+    have h4 : (Real.sqrt f ^ 2 - h ^ 2) * n < (1 + f) ^ 2 := (lt_div_iff₀ hn).1 hgap
+    nlinarith [mul_le_mul_of_nonneg_left h2 hn.le]
   · rintro ⟨k, hk⟩
-    -- `k − 1 < m ≤ k`, so `m = k`
-    rw [hm, hk] at hhi
-    rw [hm, hk] at hlo
-    have h1 : (m : ℝ) ≤ k := (div_le_div_iff_of_pos_right hn').1 hhi
-    have h2 : (k : ℝ) - 1 < m := by
-      have h3 : ((k : ℝ) - 1) / n < (m : ℝ) / n := by rw [sub_div]; exact hlo
-      exact (div_lt_div_iff_of_pos_right hn').1 h3
+    -- `k(1 + f) = nf`, so `m ≤ k < m + 1` and `m = k`
+    have hk' : (k : ℝ) * (1 + f) = n * f := by
+      have h1 : uo * ((k : ℝ) * (1 + f)) = uo * (n * f) := by
+        rw [hEu] at hk
+        linarith
+      exact mul_left_cancel₀ huo.ne' h1
+    have h1 : (m : ℝ) ≤ k := by
+      have h2 : (m : ℝ) * (1 + f) ≤ k * (1 + f) := by rw [hk']; exact hlo'
+      exact le_of_mul_le_mul_right h2 h1f
+    have h2 : (k : ℝ) < m + 1 := by
+      have h3 : (k : ℝ) * (1 + f) < (m + 1) * (1 + f) := by rw [hk']; exact hhi'
+      exact lt_of_mul_lt_mul_right h3 h1f.le
     have h4 : m ≤ k := by exact_mod_cast h1
-    have h5 : k < m + 1 := by
-      have : (k : ℝ) < (m : ℝ) + 1 := by linarith
-      exact_mod_cast this
-    have h6 : m = k := by omega
-    have h7 : h ^ 2 = f := by rw [hm, hk, h6]
+    have h5 : k < m + 1 := by exact_mod_cast h2
+    have h6 : k = m := by omega
+    rw [h6] at hk'
+    -- `m = (n − m)f`, so `h² = f`
+    have h7 : h ^ 2 = f := by
+      rw [hm, div_eq_iff hd.ne']
+      linarith
     rw [← h7, Real.sqrt_sq hh0]
-  · -- `m/n = h² ≤ f < 1/n`, so `m = 0`
-    have h1 : (m : ℝ) / n < 1 / n := by rw [← hm]; linarith
-    have h2 : (m : ℝ) < 1 := (div_lt_div_iff_of_pos_right hn').1 h1
+  · -- `m(E + uo) ≤ nE < E + uo`, so `m = 0`
+    have h2 : (m : ℝ) < 1 := by
+      by_contra hge
+      push Not at hge
+      have h3 : 1 * (E + uo) ≤ (m : ℝ) * (E + uo) := mul_le_mul_of_nonneg_right hge hw.le
+      linarith
     have h3 : m = 0 := by
       have : m < 1 := by exact_mod_cast h2
       omega
@@ -481,46 +593,49 @@ theorem share_leading_order (n : ℕ) (f h : ℝ)
     exact (pow_eq_zero_iff two_ne_zero).1 hm
 
 /-- **The hypotheses of the share's amplitude can hold at once** (Sec. IV.C), on a ring of
-`n ≥ 1` cells, for every matter `u > 0` and every share `E`.  There are a count `held` of the
-mass energy in cells that adds over them, with the bit of each cell holding the same and all the
-cells holding `u`; probabilities `read` of the bits, alike; and an amplitude `h`, such that for
-`0 ≤ E ≤ u` the share fills a set of cells and not one more, with `h` the amplitude of its bits
-(`fills_exists`), and for `E > u` the amplitude is `√(E/u)`.  So `Main.share_amplitude` does not
-hold vacuously, at any share. -/
-theorem share_bits_model (n : ℕ) (hn : 0 < n) (E u : ℝ) (hu : 0 < u) :
+`n ≥ 1` cells, for every own matter `u_o > 0` and every share `E`.  There are a count `held` of
+the mass energy in cells that adds over them, with the bit of each cell holding the same and all
+the cells holding `E + u_o`; probabilities `read` of the bits, alike; and an amplitude `h`, such
+that for `E ≥ 0` the share fills a set of cells and not one more, with `h` the amplitude of its
+bits against that of the other bits (`fills_exists`).  So `Main.share_amplitude` does not hold
+vacuously, at any share. -/
+theorem share_bits_model (n : ℕ) (hn : 0 < n) (E uo : ℝ) (huo : 0 < uo) :
     ∃ (held : Finset (Fin n) → ℝ) (read : Fin n → ℝ) (h : ℝ),
       (∀ S T : Finset (Fin n), Disjoint S T → held (S ∪ T) = held S + held T) ∧
-      (∀ x y : Fin n, held {x} = held {y}) ∧ held univ = u ∧
+      (∀ x y : Fin n, held {x} = held {y}) ∧ held univ = E + uo ∧
       (∀ x, read x = 1 / Fintype.card (Fin n)) ∧
-      (0 ≤ E → E ≤ u → ∃ S : Finset (Fin n), held S ≤ E ∧
-        (∀ x, x ∉ S → E < held (insert x S)) ∧ h = Real.sqrt (∑ x ∈ S, read x)) ∧
-      (u < E → h = Real.sqrt (E / u)) := by
+      (0 ≤ E → ∃ S : Finset (Fin n), held S ≤ E ∧
+        (∀ x, x ∉ S → E < held (insert x S)) ∧
+        h = Real.sqrt (∑ x ∈ S, read x) / Real.sqrt (∑ x ∈ Sᶜ, read x)) := by
   have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast hn.ne'
   have hne : Nonempty (Fin n) := ⟨⟨0, hn⟩⟩
-  -- the count: each of the `n` cells holds `u/n`
+  -- the count: each of the `n` cells holds `(E + uo)/n`
   have hadd : ∀ S T : Finset (Fin n), Disjoint S T →
-      ((S ∪ T).card : ℝ) / n * u = (S.card : ℝ) / n * u + (T.card : ℝ) / n * u := by
+      ((S ∪ T).card : ℝ) / n * (E + uo) =
+        (S.card : ℝ) / n * (E + uo) + (T.card : ℝ) / n * (E + uo) := by
     intro A B hAB
     rw [Finset.card_union_of_disjoint hAB]
     push_cast
     ring
   have hcell : ∀ x y : Fin n,
-      (({x} : Finset (Fin n)).card : ℝ) / n * u = (({y} : Finset (Fin n)).card : ℝ) / n * u := by
+      (({x} : Finset (Fin n)).card : ℝ) / n * (E + uo) =
+        (({y} : Finset (Fin n)).card : ℝ) / n * (E + uo) := by
     intro x y
     rw [Finset.card_singleton, Finset.card_singleton]
-  have hall : ((univ : Finset (Fin n)).card : ℝ) / n * u = u := by
+  have hall : ((univ : Finset (Fin n)).card : ℝ) / n * (E + uo) = E + uo := by
     rw [Finset.card_univ, Fintype.card_fin, div_self hn', one_mul]
-  by_cases hcase : 0 ≤ E ∧ E ≤ u
-  · -- a share that the string can hold: the amplitude of the bits that it fills
+  by_cases hE : 0 ≤ E
+  · -- a share: the amplitude of the bits that it fills against that of the other bits
     obtain ⟨S, hS, hnext⟩ :=
-      fills_exists (fun T : Finset (Fin n) => (T.card : ℝ) / n * u) E u hu hcase.1 hcase.2
-        hadd hcell hall
-    exact ⟨fun T => (T.card : ℝ) / n * u, fun _ => 1 / Fintype.card (Fin n),
-      Real.sqrt (∑ x ∈ S, (fun _ : Fin n => (1 : ℝ) / Fintype.card (Fin n)) x), hadd, hcell, hall,
-      fun _ => rfl, fun _ _ => ⟨S, hS, hnext, rfl⟩, fun hlt => absurd hcase.2 (not_le.2 hlt)⟩
-  · -- a larger share, or none: the scale
-    exact ⟨fun T => (T.card : ℝ) / n * u, fun _ => 1 / Fintype.card (Fin n), Real.sqrt (E / u),
-      hadd, hcell, hall, fun _ => rfl, fun h0 h1 => absurd ⟨h0, h1⟩ hcase, fun _ => rfl⟩
+      fills_exists (fun T : Finset (Fin n) => (T.card : ℝ) / n * (E + uo)) E (E + uo)
+        (by linarith) hE (by linarith) hadd hcell hall
+    exact ⟨fun T => (T.card : ℝ) / n * (E + uo), fun _ => 1 / Fintype.card (Fin n),
+      Real.sqrt (∑ x ∈ S, (fun _ : Fin n => (1 : ℝ) / Fintype.card (Fin n)) x) /
+        Real.sqrt (∑ x ∈ Sᶜ, (fun _ : Fin n => (1 : ℝ) / Fintype.card (Fin n)) x),
+      hadd, hcell, hall, fun _ => rfl, fun _ => ⟨S, hS, hnext, rfl⟩⟩
+  · -- no share: the statement of the bits asks nothing
+    exact ⟨fun T => (T.card : ℝ) / n * (E + uo), fun _ => 1 / Fintype.card (Fin n), 0,
+      hadd, hcell, hall, fun _ => rfl, fun h0 => absurd h0 hE⟩
 
 /-! ### The Gibbs mean of the strings' energies (Sec. IV.E) -/
 
@@ -1474,10 +1589,11 @@ with `A = L arcsin(h/L)` (`phase_fraction`), and `L > 0`.  The first part: for `
 increases with `h`, as the arcsine does, and both factors of `b` increase with `A`; the first
 factor is not negative for `A ≥ 0`, and the second is positive.  Lean's arcsine stays at `π/2`
 beyond `1`, so the first part needs no bound on `h₂`, and the second part has `h₂ ≤ L`.
-`law_whole_bits` takes the first part at the amplitude of whole bits and at `√f`.
-Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
-bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
-and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+`law_whole_bits` takes the first part at the amplitude `h` of whole bits and at `√f_o`, with
+`h² ≤ f_o`.  Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits
+"to within one bit".  Data availability: "The three steps at leading order, the count's
+density, the share's amplitude, and the carriers' fraction, are named as such, with their
+errors bounded in the files." -/
 theorem carriers_fraction_mono (L h₁ h₂ : ℝ) (hL : 0 < L) (h0 : 0 ≤ h₁) (h12 : h₁ ≤ h₂) :
     (1 - Real.exp (-(L * Real.arcsin (h₁ / L)))) *
         (1 + (Real.exp (L * Real.arcsin (h₁ / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1)) ≤
@@ -1533,11 +1649,12 @@ theorem carriers_fraction_mono (L h₁ h₂ : ℝ) (hL : 0 < L) (h0 : 0 ≤ h₁
 `(y/x)(1 − e^{−x}) ≤ 1 − e^{−y}`.  The function `t ↦ 1 − e^{−t}` is concave and vanishes at
 `t = 0`, so its value at a point `y` between `0` and `x` is at least the fraction `y/x` of its
 value at `x`.  The proof is the convexity of the exponential (`convexOn_exp`) at the points
-`−x` and `0`, with the weights `y/x` and `1 − y/x`.  `law_whole_bits` takes it at `x = √f` and
-`y = √(f − 1/L)`.
-Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
-bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
-and the carriers' fraction, are named as such, with their errors bounded in the files." -/
+`−x` and `0`, with the weights `y/x` and `1 − y/x`.  `law_whole_bits` takes it twice, with the
+`f_o`, `δ` and `f` of that statement: at `x = √f_o` and `y = √(f_o − δ)`, and at `x = √f_o`
+and `y = √f`.  Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits
+"to within one bit".  Data availability: "The three steps at leading order, the count's
+density, the share's amplitude, and the carriers' fraction, are named as such, with their
+errors bounded in the files." -/
 theorem one_sub_exp_concave (x y : ℝ) (hx : 0 < x) (hy : 0 ≤ y) (hyx : y ≤ x) :
     y / x * (1 - Real.exp (-x)) ≤ 1 - Real.exp (-y) := by
   have ht0 : 0 ≤ y / x := div_nonneg hy hx.le
@@ -1552,7 +1669,7 @@ theorem one_sub_exp_concave (x y : ℝ) (hx : 0 < x) (hy : 0 ≤ y) (hyx : y ≤
 
 /-- `1/√(1 − x) ≤ 1 + x` for `0 ≤ x ≤ 1/2`: the square of `(1 + x)√(1 − x)` is
 `1 + x(1 − x − x²) ≥ 1`.
-Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
+Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits "to within one
 bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files." -/
 lemma inv_sqrt_one_sub_le (x : ℝ) (hx0 : 0 ≤ x) (hx : x ≤ 1 / 2) :
@@ -1573,97 +1690,142 @@ lemma inv_sqrt_one_sub_le (x : ℝ) (hx0 : 0 ≤ x) (hx : x ≤ 1 / 2) :
 /-- **The law with the amplitude of whole bits, between its bounds** (Sec. IV.C).  The carriers
 are the fraction `b = (1 − e^{−A})(1 + (e^{A} + 1)/(e^{2πL} − 1))`, with `A = L arcsin(h/L)`
 (`hb`, `phase_fraction`), `L ≥ 1` and `0 < h < L`, and the acceleration is `a = g_N/b` (`hab`,
-Eq. (share)).  The amplitude `h` is that of whole bits on a string of `L` bits: `h²` is at most
-the fraction `f` and less than one bit below it, `f − 1/L < h² ≤ f` (`hlo`, `hhi`; the first
-part of `share_amplitude` at `n = L`), where Eq. (law) takes `h = √f`.  The first part: where
-`√f ≤ L/2`, the acceleration is at least `1 − (√f/L)² − 5e^{−3πL/2}` times the value
-`g_N/(1 − e^{−√f})` of Eq. (law).  The fraction increases with `h` (`carriers_fraction_mono`)
-and `h ≤ √f`, so `a` is at least the acceleration with the fraction at `√f`, which
-`law_bounds` bounds.  The second part: where `f > 1/L`, the acceleration is at most the value
-of Eq. (law) over `√(1 − 1/(L·f))`.  The fraction is at least `1 − e^{−h}`
-(`fraction_bounds`), `h` exceeds `y = √(f − 1/L)`, and `1 − e^{−y} ≥ (y/√f)(1 − e^{−√f})`
-(`one_sub_exp_concave`), with `y/√f = √(1 − 1/(L·f))`.  The third part: where `f ≥ 2/L`, the
-acceleration is at most `1 + 1/(L·f)` times the value of Eq. (law) (`inv_sqrt_one_sub_le`).
-Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
+Eq. (share)).  The amplitude `h` is that of whole bits: `h²` is at most `f_o` and less than `δ`
+below it, `f_o − δ < h² ≤ f_o`, with `δ > 0` (`hlo`, `hhi`, `hδ`).  On a string of `L` bits that
+hold the body's share and the string's own matter `u_o`, `f_o = E/u_o` and `δ = (1 + f_o)²/L`
+(`share_leading_order` at `n = L`).  Eq. (law) takes `h = √f` at a fraction `0 < f ≤ f_o`
+(`hf`, `hffo`): the paper's `f = E/u`, with the body's part of the strings' mean matter `u`
+neglected, so that `f/f_o = u_o/u`.  At the larger fraction `f_o` Eq. (law) has more carriers,
+and at most `√(f_o/f)` times as many, since `1 − e^{−t}` is concave (`one_sub_exp_concave`).
+The first part: where `√f_o ≤ L/2`, the acceleration is at least
+`√(f/f_o)(1 − (√f_o/L)² − 5e^{−3πL/2})` times the value `g_N/(1 − e^{−√f})` of Eq. (law).  The
+fraction increases with `h` (`carriers_fraction_mono`) and `h ≤ √f_o`, so `a` is at least the
+acceleration with the fraction at `√f_o`, which `law_bounds` bounds.  The second part: where
+`δ < f_o`, the acceleration is at most the value of Eq. (law) over `√(1 − δ/f_o)`.  The
+fraction is at least `1 − e^{−h}` (`fraction_bounds`), `h` exceeds `y = √(f_o − δ)`, and
+`1 − e^{−y} ≥ (y/√f_o)(1 − e^{−√f_o})` (`one_sub_exp_concave`), with
+`y/√f_o = √(1 − δ/f_o)`.  The third part: where `2δ ≤ f_o`, the acceleration is at most
+`1 + δ/f_o` times the value of Eq. (law) (`inv_sqrt_one_sub_le`).
+Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits "to within one
 bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files." -/
-theorem law_whole_bits (gN L f h a b : ℝ) (hgN : 0 < gN) (hL : 1 ≤ L) (hh0 : 0 < h) (hhL : h < L)
-    (hlo : f - 1 / L < h ^ 2) (hhi : h ^ 2 ≤ f)
+theorem law_whole_bits (gN L f fo δ h a b : ℝ) (hgN : 0 < gN) (hL : 1 ≤ L) (hh0 : 0 < h)
+    (hhL : h < L) (hδ : 0 < δ) (hf : 0 < f) (hffo : f ≤ fo) (hlo : fo - δ < h ^ 2)
+    (hhi : h ^ 2 ≤ fo)
     (hb : b = (1 - Real.exp (-(L * Real.arcsin (h / L)))) *
       (1 + (Real.exp (L * Real.arcsin (h / L)) + 1) / (Real.exp (2 * Real.pi * L) - 1)))
     (hab : a = gN / b) :
-    (Real.sqrt f / L ≤ 1 / 2 →
-      (1 - (Real.sqrt f / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+    (Real.sqrt fo / L ≤ 1 / 2 →
+      Real.sqrt (f / fo) *
+          (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
         (gN / (1 - Real.exp (-Real.sqrt f))) ≤ a) ∧
-    (1 / L < f → a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - 1 / (L * f))) ∧
-    (2 / L ≤ f → a ≤ (1 + 1 / (L * f)) * (gN / (1 - Real.exp (-Real.sqrt f)))) := by
+    (δ < fo → a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - δ / fo)) ∧
+    (2 * δ ≤ fo → a ≤ (1 + δ / fo) * (gN / (1 - Real.exp (-Real.sqrt f)))) := by
   have hL0 : 0 < L := by linarith
-  have hf : 0 < f := lt_of_lt_of_le (by positivity) hhi
+  have hfo : 0 < fo := lt_of_lt_of_le hf hffo
   have hx : 0 < Real.sqrt f := Real.sqrt_pos.2 hf
-  -- the amplitude of whole bits is at most `√f`
-  have hle : h ≤ Real.sqrt f := Real.le_sqrt_of_sq_le hhi
+  have hxo : 0 < Real.sqrt fo := Real.sqrt_pos.2 hfo
+  have hxle : Real.sqrt f ≤ Real.sqrt fo := Real.sqrt_le_sqrt hffo
+  -- the amplitude of whole bits is at most `√f_o`
+  have hle : h ≤ Real.sqrt fo := Real.le_sqrt_of_sq_le hhi
   obtain ⟨hb1, -⟩ := fraction_bounds L h b hL hh0.le hhL hb
   have hc0 : 0 < 1 - Real.exp (-h) := by linarith [exp_neg_lt_one hh0]
   have hbpos : 0 < b := lt_of_lt_of_le hc0 hb1
+  have hapos : 0 < a := by rw [hab]; exact div_pos hgN hbpos
   have hcx : 0 < 1 - Real.exp (-Real.sqrt f) := by linarith [exp_neg_lt_one hx]
-  -- the lower bound: the fraction at `h` is at most the fraction at `√f`
-  have hlow : Real.sqrt f / L ≤ 1 / 2 →
-      (1 - (Real.sqrt f / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
-        (gN / (1 - Real.exp (-Real.sqrt f))) ≤ a := by
+  have hcxo : 0 < 1 - Real.exp (-Real.sqrt fo) := by linarith [exp_neg_lt_one hxo]
+  -- Eq. (law) at `f` against Eq. (law) at `f_o`: more carriers at the larger fraction
+  have hmono : gN / (1 - Real.exp (-Real.sqrt fo)) ≤ gN / (1 - Real.exp (-Real.sqrt f)) := by
+    have h1 : Real.exp (-Real.sqrt fo) ≤ Real.exp (-Real.sqrt f) :=
+      Real.exp_le_exp.2 (neg_le_neg hxle)
+    exact div_le_div_of_nonneg_left hgN.le hcx (by linarith)
+  -- and at most `√(f_o/f)` times as many, since `1 − e^{−t}` is concave
+  have hconc : Real.sqrt (f / fo) * (gN / (1 - Real.exp (-Real.sqrt f))) ≤
+      gN / (1 - Real.exp (-Real.sqrt fo)) := by
+    have h1 := one_sub_exp_concave (Real.sqrt fo) (Real.sqrt f) hxo hx.le hxle
+    have h2 : Real.sqrt f / Real.sqrt fo * (gN / (1 - Real.exp (-Real.sqrt f))) *
+        (1 - Real.exp (-Real.sqrt fo)) =
+        gN * (Real.sqrt f / Real.sqrt fo * (1 - Real.exp (-Real.sqrt fo))) /
+          (1 - Real.exp (-Real.sqrt f)) := by ring
+    rw [Real.sqrt_div hf.le, le_div_iff₀ hcxo, h2, div_le_iff₀ hcx]
+    exact mul_le_mul_of_nonneg_left h1 hgN.le
+  -- the lower bound against Eq. (law) at `f_o`: the fraction at `h` is at most the fraction at
+  -- `√f_o`
+  have hlow : Real.sqrt fo / L ≤ 1 / 2 →
+      (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+        (gN / (1 - Real.exp (-Real.sqrt fo))) ≤ a := by
     intro hhalf
-    have hxL : Real.sqrt f < L := by
+    have hxL : Real.sqrt fo < L := by
       rw [div_le_iff₀ hL0] at hhalf
       linarith
-    have hmono := (carriers_fraction_mono L h (Real.sqrt f) hL0 hh0.le hle).1
-    rw [← hb] at hmono
-    obtain ⟨-, -, h3⟩ := law_bounds gN L (Real.sqrt f) _ _ hgN hL hx hxL rfl rfl
-    calc (1 - (Real.sqrt f / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
-          (gN / (1 - Real.exp (-Real.sqrt f)))
-        ≤ gN / ((1 - Real.exp (-(L * Real.arcsin (Real.sqrt f / L)))) *
-            (1 + (Real.exp (L * Real.arcsin (Real.sqrt f / L)) + 1) /
+    have hfrac := (carriers_fraction_mono L h (Real.sqrt fo) hL0 hh0.le hle).1
+    rw [← hb] at hfrac
+    obtain ⟨-, -, h3⟩ := law_bounds gN L (Real.sqrt fo) _ _ hgN hL hxo hxL rfl rfl
+    calc (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+          (gN / (1 - Real.exp (-Real.sqrt fo)))
+        ≤ gN / ((1 - Real.exp (-(L * Real.arcsin (Real.sqrt fo / L)))) *
+            (1 + (Real.exp (L * Real.arcsin (Real.sqrt fo / L)) + 1) /
               (Real.exp (2 * Real.pi * L) - 1))) := h3 hhalf
-      _ ≤ gN / b := div_le_div_of_nonneg_left hgN.le hbpos hmono
+      _ ≤ gN / b := div_le_div_of_nonneg_left hgN.le hbpos hfrac
       _ = a := hab.symm
-  -- the upper bound: `h` exceeds `√(f − 1/L)`, and `1 − e^{−t}` is concave
-  have hup : 1 / L < f →
-      a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - 1 / (L * f)) := by
+  -- the upper bound against Eq. (law) at `f_o`: `h` exceeds `√(f_o − δ)`, and `1 − e^{−t}` is
+  -- concave
+  have hup : δ < fo →
+      a ≤ gN / (1 - Real.exp (-Real.sqrt fo)) / Real.sqrt (1 - δ / fo) := by
     intro h1
-    have hd : 0 < f - 1 / L := by linarith
-    have hy : 0 < Real.sqrt (f - 1 / L) := Real.sqrt_pos.2 hd
-    have hyh : Real.sqrt (f - 1 / L) < h := (Real.sqrt_lt' hh0).2 hlo
-    have hyx : Real.sqrt (f - 1 / L) ≤ Real.sqrt f :=
-      Real.sqrt_le_sqrt (by linarith [one_div_pos.2 hL0])
-    -- `√(1 − 1/(L·f)) = √(f − 1/L)/√f`
-    have hr : Real.sqrt (1 - 1 / (L * f)) = Real.sqrt (f - 1 / L) / Real.sqrt f := by
-      rw [← Real.sqrt_div hd.le]
-      congr 1
-      field_simp
-    have hconc := one_sub_exp_concave (Real.sqrt f) (Real.sqrt (f - 1 / L)) hx hy.le hyx
-    have h2 : 1 - Real.exp (-Real.sqrt (f - 1 / L)) ≤ 1 - Real.exp (-h) := by
+    have hd : 0 < fo - δ := by linarith
+    have hy : 0 < Real.sqrt (fo - δ) := Real.sqrt_pos.2 hd
+    have hyh : Real.sqrt (fo - δ) < h := (Real.sqrt_lt' hh0).2 hlo
+    have hyx : Real.sqrt (fo - δ) ≤ Real.sqrt fo := Real.sqrt_le_sqrt (by linarith)
+    -- `√(1 − δ/f_o) = √(f_o − δ)/√f_o`
+    have hr : Real.sqrt (1 - δ / fo) = Real.sqrt (fo - δ) / Real.sqrt fo := by
+      rw [← Real.sqrt_div hd.le, sub_div, div_self hfo.ne']
+    have hcv := one_sub_exp_concave (Real.sqrt fo) (Real.sqrt (fo - δ)) hxo hy.le hyx
+    have h2 : 1 - Real.exp (-Real.sqrt (fo - δ)) ≤ 1 - Real.exp (-h) := by
       have := Real.exp_le_exp.2 (neg_le_neg hyh.le)
       linarith
-    have hden : 0 < Real.sqrt (f - 1 / L) / Real.sqrt f * (1 - Real.exp (-Real.sqrt f)) :=
-      mul_pos (div_pos hy hx) hcx
-    have hb2 : Real.sqrt (f - 1 / L) / Real.sqrt f * (1 - Real.exp (-Real.sqrt f)) ≤ b := by
+    have hden : 0 < Real.sqrt (fo - δ) / Real.sqrt fo * (1 - Real.exp (-Real.sqrt fo)) :=
+      mul_pos (div_pos hy hxo) hcxo
+    have hb2 : Real.sqrt (fo - δ) / Real.sqrt fo * (1 - Real.exp (-Real.sqrt fo)) ≤ b := by
       linarith
-    rw [hab, hr, div_div, mul_comm (1 - Real.exp (-Real.sqrt f))]
+    rw [hab, hr, div_div, mul_comm (1 - Real.exp (-Real.sqrt fo))]
     exact div_le_div_of_nonneg_left hgN.le hden hb2
-  refine ⟨hlow, hup, fun h2 => ?_⟩
-  -- the plainer form: `1/√(1 − t) ≤ 1 + t` at `t = 1/(L·f) ≤ 1/2`
-  have h1 : 1 / L < f := lt_of_lt_of_le (by rw [div_lt_div_iff_of_pos_right hL0]; norm_num) h2
-  have ht0 : 0 ≤ 1 / (L * f) := by positivity
-  have ht : 1 / (L * f) ≤ 1 / 2 := by
-    rw [div_le_iff₀ hL0] at h2
-    rw [div_le_div_iff₀ (by positivity) (by norm_num)]
-    linarith
-  have hinv := inv_sqrt_one_sub_le (1 / (L * f)) ht0 ht
-  have halaw : 0 < gN / (1 - Real.exp (-Real.sqrt f)) := div_pos hgN hcx
-  calc a ≤ gN / (1 - Real.exp (-Real.sqrt f)) / Real.sqrt (1 - 1 / (L * f)) := hup h1
-    _ = gN / (1 - Real.exp (-Real.sqrt f)) * (1 / Real.sqrt (1 - 1 / (L * f))) := by
-        rw [div_eq_mul_one_div]
-    _ ≤ gN / (1 - Real.exp (-Real.sqrt f)) * (1 + 1 / (L * f)) :=
-        mul_le_mul_of_nonneg_left hinv halaw.le
-    _ = (1 + 1 / (L * f)) * (gN / (1 - Real.exp (-Real.sqrt f))) := mul_comm _ _
+  refine ⟨fun hhalf => ?_, fun h1 => ?_, fun h2 => ?_⟩
+  · -- against Eq. (law) at `f`: at `f_o` it has at most `√(f_o/f)` times as many carriers
+    rcases le_or_gt 0 (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L)))
+      with hc | hc
+    · calc Real.sqrt (f / fo) *
+              (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+            (gN / (1 - Real.exp (-Real.sqrt f)))
+          = (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+            (Real.sqrt (f / fo) * (gN / (1 - Real.exp (-Real.sqrt f)))) := by ring
+        _ ≤ (1 - (Real.sqrt fo / L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * L))) *
+            (gN / (1 - Real.exp (-Real.sqrt fo))) := mul_le_mul_of_nonneg_left hconc hc
+        _ ≤ a := hlow hhalf
+    · -- the factor is negative, and the acceleration is positive
+      have h3 : 0 ≤ Real.sqrt (f / fo) * (gN / (1 - Real.exp (-Real.sqrt f))) :=
+        mul_nonneg (Real.sqrt_nonneg _) (div_pos hgN hcx).le
+      nlinarith [mul_nonneg h3 (neg_nonneg.2 hc.le)]
+  · -- against Eq. (law) at `f`: at `f_o` it has more carriers
+    have hs : 0 < Real.sqrt (1 - δ / fo) :=
+      Real.sqrt_pos.2 (by rw [sub_pos, div_lt_one hfo]; exact h1)
+    exact le_trans (hup h1) ((div_le_div_iff_of_pos_right hs).2 hmono)
+  · -- the plainer form: `1/√(1 − t) ≤ 1 + t` at `t = δ/f_o ≤ 1/2`
+    have h1 : δ < fo := by linarith
+    have ht0 : 0 ≤ δ / fo := by positivity
+    have ht : δ / fo ≤ 1 / 2 := by
+      rw [div_le_div_iff₀ hfo (by norm_num)]
+      linarith
+    have hinv := inv_sqrt_one_sub_le (δ / fo) ht0 ht
+    have halaw : 0 < gN / (1 - Real.exp (-Real.sqrt fo)) := div_pos hgN hcxo
+    calc a ≤ gN / (1 - Real.exp (-Real.sqrt fo)) / Real.sqrt (1 - δ / fo) := hup h1
+      _ = gN / (1 - Real.exp (-Real.sqrt fo)) * (1 / Real.sqrt (1 - δ / fo)) := by
+          rw [div_eq_mul_one_div]
+      _ ≤ gN / (1 - Real.exp (-Real.sqrt fo)) * (1 + δ / fo) :=
+          mul_le_mul_of_nonneg_left hinv halaw.le
+      _ = (1 + δ / fo) * (gN / (1 - Real.exp (-Real.sqrt fo))) := mul_comm _ _
+      _ ≤ (1 + δ / fo) * (gN / (1 - Real.exp (-Real.sqrt f))) :=
+          mul_le_mul_of_nonneg_left hmono (by positivity)
 
 /-- The Gibbs mean on a ladder of equal steps `ε`: the mean of the energies `nε`,
 `n = 0, 1, 2, …`, with the weights `e^{−nε/θ}`. -/
@@ -2682,7 +2844,7 @@ tick.  The strings whose phase holds against the share are those of energy at mo
 threshold is `hℏ/(Lt_c)` to leading order in `1/L` (`threshold_bounds`), and the ranges about
 the whole turns hold a fraction of the strings below `e^{−3πL/2}` (`Law.whole_turns_bounds`).
 At that order, with `x = h`, the strings whose energy exceeds the threshold are the fraction
-`e^{−h}`: the threshold, in units of the amplitude of one whole qubit, is exponential with mean
+`e^{−h}`: the threshold, in units of the amplitude of the string's own matter, is exponential with mean
 one.  The energies that enter the rule are the energies `E_s`, the rest of each string's energy
 beyond the body's, which set the slip against the body (`Main.slip_against_body`).
 Sec. IV.C: "Apart from the body's energy, the strings of the sphere are like all other strings, so the energies `E_s` are spread over them at the horizon's temperature
@@ -2935,7 +3097,7 @@ theorem law (gN a b : ℝ) (surv : ℝ → ℝ) (hME : ∀ x, 0 ≤ x → surv x
   rw [hab, hb, hME _ (Real.sqrt_nonneg _)]
 
 /-- **The scale goes as the square of the threshold's mean** (Sec. IV.C).  Were the threshold
-exponential with mean `μ` instead of one qubit (`hME`), the law would keep its form with the scale
+exponential with mean `μ` instead of one (`hME`), the law would keep its form with the scale
 `μ²a₀`; so the measured scale fixes `μ` (`Numerics.threshold_mean_from_data`). -/
 theorem law_scale_mean (gN a b μ : ℝ) (hμ : 0 < μ) (surv : ℝ → ℝ)
     (hME : ∀ x, 0 ≤ x → surv x = Real.exp (-x / μ))
@@ -3087,14 +3249,18 @@ theorem deep_limit (a0 h : ℝ) (ha0 : 0 < a0) (hh : 0 < h) (hh2 : h ≤ 1 / 2) 
           mul_le_mul_of_nonneg_left (by linarith) (by positivity)
 
 /-- **A classical share** (Sec. IV.C).  If a string's share of the body were classical, the string
-would hold a record of the body with the probability `f = g_N/a₀` (`hb`), in place of the
-amplitude.  Far from the body, where `f ≤ 1`, the carriers would be the fraction `b = f`, and
-`a = g_N/b = a₀`.  On a circular orbit `v² = ar = a₀r`, so rotation speeds would rise as `√r`.
+would hold a record of the body with the probability of the body's bits, `f/(1 + f)` with
+`f = g_N/a₀` (`hb`), in place of the amplitude.  The carriers would be that fraction,
+`b = f/(1 + f)`, and `a = g_N/b = g_N + a₀`, which tends to the constant `a₀` far from the body.
+On a circular orbit `v² = ar = (g_N + a₀)r`, so rotation speeds would rise as `√r` there.
 Flat rotation curves therefore support Postulate 1. -/
-theorem classical_limit (a0 gN a b r v : ℝ) (hgN : 0 < gN) (hb : b = gN / a0)
-    (hab : a = gN / b) (hv : v ^ 2 = a * r) : a = a0 ∧ v ^ 2 = a0 * r := by
-  have ha : a = a0 := by
-    rw [hab, hb, div_div_eq_mul_div, mul_comm, mul_div_assoc, div_self hgN.ne', mul_one]
+theorem classical_limit (a0 gN a b r v : ℝ) (ha0 : 0 < a0) (hgN : 0 < gN)
+    (hb : b = gN / a0 / (1 + gN / a0)) (hab : a = gN / b) (hv : v ^ 2 = a * r) :
+    a = gN + a0 ∧ v ^ 2 = (gN + a0) * r := by
+  have ha : a = gN + a0 := by
+    rw [hab, hb]
+    field_simp
+    ring
   exact ⟨ha, by rw [hv, ha]⟩
 
 /-- **The baryonic Tully–Fisher relation**, Eq. (btfr): in the deep regime, `a = √(a₀g_N)` with
@@ -3123,16 +3289,16 @@ chained into one statement whose hypotheses are exactly the inputs, each named:
   of `a`;
 * `hGibbs`, thermodynamics: the strings' energies are spread at the horizon's temperature and do
   not change, so their mean `ε_s` is the mean of the Gibbs distribution at that temperature;
-* `hME`, with Postulate 1's unit: a string's threshold, its slip per tick against the turn per
-  tick `h/L`, has the survival function `e^{−x}`, exponential with mean one qubit by the Gibbs
-  spread of the strings' energies (`threshold_from_spread`);
+* `hME`, in units of the amplitude of the string's own matter: a string's threshold, its slip
+  per tick against the turn per tick `h/L`, has the survival function `e^{−x}`, exponential with
+  mean one by the Gibbs spread of the strings' energies (`threshold_from_spread`);
 * `hb`, Postulate 1 with the probability rule of Sec. IV.A: a string that carries the body's
   information is one of its qubits, so the body's share at a string enters as the amplitude
-  `√(E/u)`, in units of the matter a string holds on average: for `E ≤ u` the leading order in
-  `1/L` of the exact amplitude, which `Main.share_amplitude` derives from the count of the bits
-  that the share fills (`Sources.Approx.share_amplitude`, `Law.share_amplitude`,
-  `Law.share_leading_order`), and for `E > u` the condition of the same scale
-  (`Sources.Condition.same_scale`); a
+  `√(E/u)`, against that of the string's own matter: the leading order in `1/L` of the exact
+  amplitude, with the body's part of the strings' mean matter neglected, which
+  `Main.share_amplitude` derives from the count of the bits that the share
+  fills and of the rest of the string's bits, at every share (`Sources.Approx.share_amplitude`,
+  `Law.share_amplitude`, `Law.share_leading_order`); a
   string carries that information when its phase holds against the share, that is, to leading
   order in `1/L`, when the amplitude exceeds the string's threshold, so the carriers are the
   fraction `b` of the strings whose threshold lies below it (`Sources.Approx.carriers_leading`).

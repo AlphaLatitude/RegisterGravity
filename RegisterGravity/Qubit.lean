@@ -41,10 +41,10 @@ model and are not used here.  A string with `m` 1s is a superposition of the two
 senses, `m/L` the probability of the first (Eq. (raqm)), and its cyclic position, the qubit's phase
 (Postulate 1), is the relative phase of the two.  A string of one sense has the same bit on every
 cell, so the shift leaves it as it is up to its global phase, and that phase changes alike in
-either sense (`hsense`, the sentence as written): no bit moves, and the one thing that changes
-from tick to tick is the global phase common to both senses (`Tick.phase_unique`).  Read instead
-as a pattern of bits that the tick moves one cell, "the string's cyclic position on its ring is the
-qubit's phase" would turn the phase by one cell per tick, `U ∝ diag(1, e^{2πi/L})`, the tick of earlier
+either sense (`hsense`, the sentence as written): the one thing that changes from tick to tick is
+the global phase common to both senses (`Tick.phase_unique`).  Read instead as a pattern of bits
+that the tick moves one cell, "the string's cyclic position on its ring is the qubit's phase"
+would turn the phase by one cell per tick, `U ∝ diag(1, e^{2πi/L})`, the tick of earlier
 versions, which `hsense` excludes.
 
 * `Tick`: the free tick on the qubit, one sentence of the paper taken once, in its words.

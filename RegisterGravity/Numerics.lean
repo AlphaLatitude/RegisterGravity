@@ -1,4 +1,5 @@
 import RegisterGravity.Cosmo
+import RegisterGravity.Matter
 import RegisterGravity.DeSitter
 import RegisterGravity.Capacity
 import Mathlib.Analysis.Real.Pi.Bounds
@@ -2181,6 +2182,54 @@ theorem energy_inside_horizon :
     have : c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) < 1.004e70 * (1 - 0.6931471803) :=
       mul_lt_mul'' e2 (by linarith) (by linarith) (by linarith)
     linarith
+
+/-- **A body's fraction of the matter inside the horizon** (Sec. IV.C, Appendix A).  The strings
+hold the matter `R_hor u` in all, with `R_hor = L²/4` their number (`Reg.Rhor`) and `u` the
+matter that a string holds on average (`Reg.matter`) at the strings' mean energy
+`k_BT_dS = E_c/L`.  The first part: that is the matter inside the horizon,
+`E_Λ(1 − ln 2)/ln 2 = 0.44×10⁷⁰ J` (`energy_inside_horizon`).  The second and third parts: a
+body of `10¹¹M_⊙` has `Mc²/(R_hor u) = 4.0×10⁻¹²`.  That fraction of `u` is the body's part of
+the mean, which the count of Sec. IV.C takes from `u` for the string's own matter
+(`Reg.ownMatter`) and the paper neglects (`Sources.Approx.share_amplitude`, with
+`Main.share_leading_order` and `Main.law_whole_bits` for what the neglect changes).
+Sec. IV.C: "That part is the body's fraction of all the matter inside the horizon, `4×10⁻¹²` for `10¹¹M_⊙`, and we neglect it."  Appendix A: "A body of `10¹¹M_⊙` is the fraction `4.0×10⁻¹²` of the matter `0.44×10⁷⁰` J, the part of `u` that Sec. IV.C neglects." -/
+theorem body_fraction :
+    reg.Rhor * reg.matter (reg.Ec / reg.L)
+      = c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2 ∧
+    4.02e-12 < 1e11 * (GMs₀ / G₀) * c₀ ^ 2 /
+      (c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2) ∧
+    1e11 * (GMs₀ / G₀) * c₀ ^ 2 /
+      (c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2) < 4.03e-12 := by
+  obtain ⟨hE, e1, e2⟩ := EΛ_val
+  have l1 := Real.log_two_gt_d9; have l2 := Real.log_two_lt_d9
+  have hl := ln2_pos
+  -- the strings' matter in all is the matter inside the horizon
+  have hmat : reg.Rhor * reg.matter (reg.Ec / reg.L)
+      = c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2 := by
+    rw [← hE, eq_div_iff hl.ne']
+    unfold Reg.EΛ Reg.Shor Reg.matter Reg.ln2
+    ring
+  -- the matter inside the horizon, between its bounds
+  have hD1 : 0.44402e70 < c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2 := by
+    rw [lt_div_iff₀ hl]
+    have : 1.003e70 * (1 - 0.6931471808) < c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) :=
+      mul_lt_mul'' e1 (by linarith) (by norm_num) (by norm_num)
+    linarith
+  have hD2 : c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2 < 0.4445e70 := by
+    rw [div_lt_iff₀ hl]
+    have : c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) < 1.004e70 * (1 - 0.6931471803) :=
+      mul_lt_mul'' e2 (by linarith) (by linarith) (by linarith)
+    linarith
+  have hD0 : 0 < c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2 := by linarith
+  refine ⟨hmat, ?_, ?_⟩
+  · rw [lt_div_iff₀ hD0]
+    calc 4.02e-12 * (c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2)
+        < 4.02e-12 * 0.4445e70 := mul_lt_mul_of_pos_left hD2 (by norm_num)
+      _ < 1e11 * (GMs₀ / G₀) * c₀ ^ 2 := by norm_num
+  · rw [div_lt_iff₀ hD0]
+    calc 1e11 * (GMs₀ / G₀) * c₀ ^ 2 < 4.03e-12 * 0.44402e70 := by norm_num
+      _ < 4.03e-12 * (c₀ ^ 4 * RL / (2 * G₀) * (1 - Real.log 2) / Real.log 2) :=
+          mul_lt_mul_of_pos_left hD1 (by norm_num)
 
 /-- **The vacuum energy density**: the chain's `ρ_Λ = 3π²ρ_c ln 2/2L²` for these inputs equals
 `Λc⁴/8πG`, which is `5.25×10⁻¹⁰ J/m³` (`5.3` to two figures, as in Sec. IV.D). -/

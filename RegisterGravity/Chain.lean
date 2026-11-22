@@ -151,14 +151,15 @@ The energy of a string (`Carriers.lean`, `Cosmo.lean`):
   energy per string of the sphere, in units of the matter a string holds on average, is `f = g_N/a₀` with
   `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)` (`Carriers.fill_fraction`); a string that carries the body's
   information is one of its qubits, so the share enters as an amplitude `h`: the amplitude of
-  the whole bits that the share fills, where one string can hold the share, and `√f` beyond, the
-  paper's definition of `h` on the same scale, which the files take as a condition
-  (`Sources.Condition.same_scale`; `Sources.Derived.share_amplitude_exact`,
-  `Main.share_amplitude`, `Carriers.share_amplitude`); for a share that one string can hold,
-  `h = √f` is its leading order in `1/L` (`Sources.Approx.share_amplitude`, with `Main.share_leading_order` for what the step changes
+  the whole bits that the share fills, against that of the rest of the string's bits, which hold
+  the string's own matter, at every share (`Sources.Derived.share_amplitude_exact`,
+  `Main.share_amplitude`, `Carriers.share_amplitude`);
+  `h = √f` is that amplitude to leading order in `1/L`, with the body's part of the strings'
+  mean matter neglected (`Sources.Approx.share_amplitude`, with `Main.share_leading_order` for what the step changes
   in `h` and `Main.law_whole_bits` for what it changes in the law; up to v18-69 the files took
-  `h = √f` as one premise, `Sources.P1.share_amplitude`), and the law takes that step with the
-  condition of the same scale for a larger share; the share reaches a string in equal
+  `h = √f` as one premise, `Sources.P1.share_amplitude`, and up to v18-72 they took it for
+  `f > 1` as a condition, `Sources.Condition.same_scale`), and the law takes that step; the
+  share reaches a string in equal
   parts, one per tick for each of the string's `L` bits, so each tick adds the amplitude `h/L`
   (`Sources.P1.share_in_parts`); and the string carries the body's information when the tick
   keeps its phase against the body's (`Sources.P1.carriers_hold_phase`).  The body's energy on

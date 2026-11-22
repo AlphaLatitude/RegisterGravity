@@ -34,15 +34,19 @@ with the amplitude `ε = h/L` that one tick adds (`P1.share_in_parts`), and `pha
 states it for the string's phase against the body (`P1.phase_with_body`), over any number of
 ticks and whatever the body's changes are.  The amplitude of the share, which the files up to v18-69 took as one premise,
 `h = √(E/u)` (`P1.share_amplitude`), is derived in `share_amplitude`
-(`Derived.share_amplitude_exact`).  Where one string can hold the share, `E ≤ u`, its premises
+(`Derived.share_amplitude_exact`), at every share.  Its premises
 are the mass energy found in the bits of its cells, which adds over cells (`P1.mass_in_bits`)
-and is the same in every cell (`P2.cells_hold_alike`), the strings' mean matter on all the bits of the one string on which the count is
-made (`P1.string_matter_in_bits`), the share filling whole bits of the string with `h` their
-amplitude (`P1.share_bits`), and the bits as the possible outcomes, alike
-(`P1.ring_bits_alike`).  For a larger share it takes the paper's definition of `h` on the same
-scale as a condition (`Condition.same_scale`).  `fill_fraction`, `galactic_law`, `law_bounds`
-and `scale_mean` take the amplitude to leading order in `1/L`, `h = √(E/u)`, for a share that
-one string can hold (`Approx.share_amplitude`), and the same condition for a larger share;
+and is the same in every cell (`P2.cells_hold_alike`), the body's mean share and the string's
+own matter, the strings' mean matter less the body's part of it (`Reg.ownMatter`), on all the
+bits of the one string on which the count is
+made (`P1.string_matter_in_bits`), the share filling whole bits of the string, with `h` their
+amplitude against that of the rest of the string's bits (`P1.share_bits`), and the bits as the
+possible outcomes, alike (`P1.ring_bits_alike`).  Up to v18-72 the count ended at `E = u`, and
+for a larger share the result took `h = √(E/u)` as a condition (`Condition.same_scale`); the
+condition is gone.  `fill_fraction`, `galactic_law`, `law_bounds`
+and `scale_mean` take the amplitude to leading order in `1/L` and with the body's part of the
+strings' mean matter neglected, `h = √(E/u)`
+(`Approx.share_amplitude`);
 `share_leading_order` bounds that step in `h`, and `law_whole_bits` bounds what it changes in
 the law.  The gates of
 Sec. IV.A, the paper's
@@ -1338,10 +1342,8 @@ energy is held by the carriers (`hcar`, Postulate 1), the fraction `b` of the sp
 per string of the sphere, the mean over the sphere's strings, and that is at least `E` where
 `b ≤ 1` (Sec. IV.C: "those strings then hold the larger mean share `E/b` of Eq. (share)").  It is two Landauer energies at the sphere's temperature,
 `ε_c = 2k_BT_a ln 2`, and no premise or condition of the statement compares `E` with the matter
-`u` that a string holds on average ("The body's share is then still held, since by Eq. (share)
-the strings that carry the body's information hold on average two Landauer energies each at
-the sphere's temperature, whatever `f` is.  So `u` sets the unit of `h`; it does not limit what a
-string holds").
+`u` that a string holds on average: the strings that carry the body's information hold on
+average two Landauer energies each at the sphere's temperature, whatever `f = E/u` is.
 Sources: Postulate 1's first sentence for a body's energy; equipartition and the thermal horizons
 (thermodynamics); `G` (`Derived`); and the conditions: `M, r, a > 0`, the carrier fraction. -/
 theorem carriers_share (R : Reg) (G M r a TN Ta b Ncar εc κ : ℝ)
@@ -1416,90 +1418,118 @@ theorem carriers_share (R : Reg) (G M r a TN Ta b Ncar εc κ : ℝ)
 string is on a ring whose cells are the type `Cell`, `n` in number.  `held S` is the mass energy
 that a measurement on the manifold finds in the cells of `S`: it adds over cells (`hmass`), and
 the bit of each cell holds the same (`hcells`).  So a set of cells holds the number of its cells
-times what one cell's bit holds (`Law.mass_counts_bits`).  The count sets the matter
-`u = (1 − ln 2)ε_s`, the mean over all strings, on all the bits of the one string on which the count is
-made (`hstring`), so a set of `m` of its `n` cells holds `(m/n)u` (`Law.mass_of_cells`).  The result
-is stated for that mean; it does not say that each string holds `u`, nor that a string that
-carries the body's information does.  The body's share at the string is its energy per string of the sphere,
-`E = 2k_BT_N ln 2` (Eq. (E)), which is positive for `T_N > 0`.  Where one string can hold it,
-`E ≤ u`, the share fills a set of the string's cells and not one more, and `h` is the amplitude
-of their bits (`hbits`).  Each cell's bit is one possible outcome among the ring's (`halike`),
-so the probability that the outcome is one of those bits is their number over `n`, and `h` is
-its square root: `h` is not negative, `h²` is a whole number of bits over `n`, and
-`E/u − 1/n < h² ≤ E/u` (`Law.filled_bits`).  Where the share is larger than `u`,
-`E > u`, no count of bits names a set of the string's cells.  There `h = √(E/u)`, the paper's
-definition of `h` on the same scale, which the result takes as a condition (`hscale`,
-`Condition.same_scale`).  The two cases are the exact amplitude (`Law.share_amplitude`).  The
-premises can hold at once at every share: every share `0 ≤ E ≤ u` fills such a set of cells
-(`Law.fills_exists`, `Law.share_bits_model`).  `share_leading_order` bounds the step from this
-amplitude to `h = √(E/u)` for `E ≤ u` (`Approx.share_amplitude`), and `law_whole_bits` bounds
-what the step changes in the law.  `fill_fraction`, `galactic_law`, `law_bounds` and
-`scale_mean` take the step and the condition `Condition.same_scale`.
-Up to v18-69 the files took `h = √(E/u)` as one premise, `P1.share_amplitude`.  Sec. IV.C:
+times what one cell's bit holds (`Law.mass_counts_bits`).  The strings of the sphere hold the
+body's energy, `E = 2k_BT_N ln 2` per string on average (Eq. (E)), which is positive for
+`T_N > 0`, and matter of their own, `u_o = u − Mc²/R_hor` per string on average: the matter
+`u = (1 − ln 2)ε_s` that a string holds on average less the body's part of that mean
+(`Reg.ownMatter`).  The count is made once, for the sphere, with these two means on all the bits
+of one string (`hstring`), so a set of `m` of its `n` cells holds `(m/n)(E + u_o)`
+(`Law.mass_of_cells`).  The result is stated for the two means; it does not say that each string
+holds them, nor that a string that carries the body's information does.  The share fills a set
+of the string's cells and not one more, the string's own matter is in the bits of the other
+cells, and `h` is the amplitude of the share's bits against that of the others (`hbits`).  All
+the cells hold more than the share, since `u_o > 0`, so the share fills `m < n` cells, with
+`m(E + u_o) ≤ nE < (m + 1)(E + u_o)`.  Each cell's bit is one possible outcome among the ring's
+(`halike`), so the probability that the outcome is one of the share's bits is `m/n`, that of the
+other bits is `(n − m)/n`, and `h` is the square root of their ratio: `h` is not negative, and
+`h² = m/(n − m)` (`Law.share_amplitude`).  No share fills more than the string's bits, so the
+result holds at every share, and it takes no condition on the share.  The premises can hold at
+once at every share: every share `E ≥ 0` fills such a set of cells (`Law.fills_exists`,
+`Law.share_bits_model`).  `share_leading_order` bounds the step from this amplitude to
+`h = √(E/u)` (`Approx.share_amplitude`), which is at leading order in `1/L` and neglects the
+body's part of `u`, and `law_whole_bits` bounds what the step changes in the law.
+`fill_fraction`, `galactic_law`, `law_bounds` and `scale_mean` take the step.
+Up to v18-69 the files took `h = √(E/u)` as one premise, `P1.share_amplitude`.  Up to v18-72
+the count set `u` alone on the string's bits, so it ended at `E = u`, and for a larger share the
+result took `h = √(E/u)` as a condition (`Condition.same_scale`).  Sec. IV.C:
 "Mass is measured on the manifold, at places, and a place is a cell (Sec. II)."  "The measurement finds the bits in those cells and nothing else (Postulate 1), so mass energy is
-counted in bits: cells without such bits show no mass."  "No cell differs from another (Postulate 2), so every bit counts the same."  "The strings hold the matter `u` per string on average, on the `L` bits of one whole qubit, so for `f ≤ 1` the
-mean share of the body, `E = fu`, fills the fraction `f` of a string's bits, to within one bit."  "That fraction is the probability of Eq. (raqm), and its amplitude is `√f`, Eq. (qubit)."
+counted in bits: cells without such bits show no mass."  "No cell differs from another (Postulate 2), so every bit counts the same."  "The strings of the sphere hold the body's energy, `E` per string on average."  "Apart from the body's energy they are like all other strings, so they also hold matter of their own: `u` per string on average, less the body's part of that average."  "We make the count once, for the sphere, with these two means on the `L` bits of one string."  "The body's share fills the fraction `E/(E+u)` of them, to within one bit, and the string's own matter fills the rest, the fraction `u/(E+u)`."  "A fraction of a string's bits is a probability, Eq. (raqm), and its square root is an amplitude, Eq. (qubit)."  "Against the amplitude of the string's own matter, the body's share therefore has the amplitude" `h`, Eq. (h).  "Neither fraction exceeds one, so the count holds at every `f`."
 Data availability: "For Sec. IV.C the files count mass energy in bits, each step of the count a
-named hypothesis, and derive from it the amplitude of a body's share, where one string's bits
-hold the share."
+named hypothesis, and derive from it the amplitude of a body's share, against that of the
+string's own matter, at every share."
 Sources: mass
-energy found in the bits of its cells, the strings' mean matter on all the bits of the one string on which the count is made, the share filling
-whole bits of the string with `h` their amplitude, and the bits as the possible outcomes,
+energy found in the bits of its cells, the body's mean share and the string's own matter on all the bits of the one string on which the count is made, the share filling
+whole bits of the string with `h` their amplitude against that of the string's other bits, and the bits as the possible outcomes,
 alike, on the ring of one string (Postulate 1); no cell differing from another, for the mass
-energy in a cell (Postulate 2); and the conditions: `u > 0`, `T_N > 0`, and the same scale
-for a share larger than `u`. -/
+energy in a cell (Postulate 2); and the conditions: `u_o > 0`, which says that the body is less than
+all the matter of the strings, and `T_N > 0`. -/
 theorem share_amplitude {Cell : Type*} [Fintype Cell] [DecidableEq Cell] [Nonempty Cell]
-    (R : Reg) (held : Finset Cell → ℝ) (read : Cell → ℝ) (h TN εs : ℝ)
-    (hu : Condition.pos (R.matter εs)) (hTN : Condition.pos TN)
+    (R : Reg) (held : Finset Cell → ℝ) (read : Cell → ℝ) (h M TN εs : ℝ)
+    (hu : Condition.pos (R.ownMatter εs M)) (hTN : Condition.pos TN)
     (hmass : P1.mass_in_bits held) (hcells : P2.cells_hold_alike held)
-    (hstring : P1.string_matter_in_bits R held εs) (halike : P1.ring_bits_alike read)
-    (hbits : P1.share_bits R held read h TN εs) (hscale : Condition.same_scale R h TN εs) :
-    Derived.share_amplitude_exact R (Fintype.card Cell) h TN εs := by
+    (hstring : P1.string_matter_in_bits R held M TN εs) (halike : P1.ring_bits_alike read)
+    (hbits : P1.share_bits R held read h TN) :
+    Derived.share_amplitude_exact R (Fintype.card Cell) h M TN εs := by
   reg_facts R
   have hTN' : 0 < TN := hTN
   have hln2 := R.ln2_pos
   have hE : 0 ≤ 2 * R.kB * TN * R.ln2 := by positivity
-  exact Law.share_amplitude held read (2 * R.kB * TN * R.ln2) (R.matter εs) h hu hE hmass hcells
-    hstring halike hbits hscale
+  exact Law.share_amplitude held read (2 * R.kB * TN * R.ln2) (R.ownMatter εs M) h hu hE hmass
+    hcells hstring halike hbits
 
 /-- **The amplitude of a body's share at leading order** (Sec. IV.C, Eq. (h)): the exact
 amplitude `h` of `share_amplitude` (`hh`), on a string of `n` bits, against `√(E/u)`, the
-amplitude that the step `Approx.share_amplitude` takes.  The first and second parts: `√(E/u)`
-is at least `h` and exceeds it by at most `1/√n`.  The third part: where the share is at least
-one bit, `E/u ≥ 1/n`, it exceeds `h` by at most `1/(n√(E/u))`.  The fourth part: where the
-share is a whole number of bits, `E/u = k/n`, the two are equal.  The fifth part: a share that
-one string can hold and that is below one bit, `E/u < 1/n`, fills no bit, and `h = 0`.  For
-a share larger than `u` the two are equal, on the condition of the same scale
-(`Condition.same_scale`).  On a largest ring `n = L` (`Horizon.card_ring`), so at every fraction
-`E/u > 0`, `h = √(E/u)` is the leading order of the exact amplitude in `1/L`.  So much the step
-`Approx.share_amplitude` changes `h`, as `carriers_leading_order` bounds what the step
-`Approx.carriers_leading` changes in `b`.  The bounds are those of the amplitude alone
-(`Law.share_leading_order`), and `law_whole_bits` bounds what the step changes in the law.
-Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
-bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+amplitude that the step `Approx.share_amplitude` takes.  Write `u_o = u − Mc²/R_hor` for the
+string's own matter (`Reg.ownMatter`) and `f_o = E/u_o`.  The step does two things, and the
+result bounds each.  The first seven parts: what the whole bits change, at leading order in
+`1/n`.  `h²` is at most `f_o` and less than `(1 + f_o)²/n` below it.  `√f_o` is at least `h` and
+exceeds it by at most `(1 + f_o)/√n`.  Where the share is positive, `√f_o` exceeds `h` by at
+most `(1 + f_o)²/(n√f_o)`.  Where the share is a whole number of bits, `k(E + u_o) = nE`, the
+two are equal.  A share below one bit, `nE < E + u_o`, fills no bit, and `h = 0`
+(`Law.share_leading_order`).  The last three parts: what the neglect of the body's part of `u`
+changes, for a body of mass `M > 0`.  The amplitude that the step takes is
+`√(E/u) = √(u_o/u) √f_o`, and it is at most `√f_o`.  The factor is `u_o/u = 1 − Mc²/(R_hor u)`,
+one less the body's fraction of all the matter inside the horizon, which is `4.0×10⁻¹²` for
+`10¹¹M_⊙` (`Numerics.body_fraction`).  On a largest ring `n = L` (`Horizon.card_ring`), so at
+every fraction `f_o > 0`, `h = √(E/u)` is the exact amplitude to leading order in `1/L` and in
+the body's fraction of the matter.  So much the step `Approx.share_amplitude` changes `h`, as
+`carriers_leading_order` bounds what the step `Approx.carriers_leading` changes in `b`.  The
+bounds are those of the amplitude alone, and `law_whole_bits` bounds what the step changes in
+the law.
+Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits "to within one
+bit".  "That part is the body's fraction of all the matter inside the horizon, `4×10⁻¹²` for `10¹¹M_⊙`, and we neglect it."  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files."
-Sources: the exact amplitude of the body's share (`Derived`, `share_amplitude`). -/
-theorem share_leading_order (R : Reg) (n : ℕ) (h TN εs : ℝ)
-    (hh : Derived.share_amplitude_exact R n h TN εs) :
-    0 ≤ Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) - h ∧
-    Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) - h ≤ 1 / Real.sqrt n ∧
-    (1 / n ≤ 2 * R.kB * TN * R.ln2 / R.matter εs →
-      Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) - h
-        ≤ 1 / (n * Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs))) ∧
-    ((∃ k : ℕ, 2 * R.kB * TN * R.ln2 / R.matter εs = k / n) →
-      h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs)) ∧
-    (2 * R.kB * TN * R.ln2 ≤ R.matter εs →
-      2 * R.kB * TN * R.ln2 / R.matter εs < 1 / n → h = 0) := by
-  obtain ⟨hle, hgt⟩ := hh
-  rcases le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs) with hc | hc
-  · -- a share that one string can hold: the amplitude of the whole bits that it fills
-    obtain ⟨p1, p2, p3, p4, p5⟩ := Law.share_leading_order n _ h (hle hc)
-    exact ⟨p1, p2, p3, p4, fun _ => p5⟩
-  · -- a larger share: the same scale, the condition of `share_amplitude`
-    have h1 := hgt hc
-    rw [h1, sub_self]
-    exact ⟨le_refl 0, by positivity, fun _ => by positivity, fun _ => rfl,
-      fun hc' => absurd hc' (not_le.2 hc)⟩
+Sources: the exact amplitude of the body's share (`Derived`, `share_amplitude`); and the
+condition `M > 0`. -/
+theorem share_leading_order (R : Reg) (n : ℕ) (h M TN εs : ℝ) (hM : Condition.pos M)
+    (hh : Derived.share_amplitude_exact R n h M TN εs) :
+    h ^ 2 ≤ 2 * R.kB * TN * R.ln2 / R.ownMatter εs M ∧
+    2 * R.kB * TN * R.ln2 / R.ownMatter εs M
+        - (1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / n < h ^ 2 ∧
+    0 ≤ Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) - h ∧
+    Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) - h
+      ≤ (1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) / Real.sqrt n ∧
+    (0 < 2 * R.kB * TN * R.ln2 →
+      Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) - h
+        ≤ (1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 /
+          (n * Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M))) ∧
+    ((∃ k : ℕ, k * (2 * R.kB * TN * R.ln2 + R.ownMatter εs M) = n * (2 * R.kB * TN * R.ln2)) →
+      h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M)) ∧
+    (n * (2 * R.kB * TN * R.ln2) < 2 * R.kB * TN * R.ln2 + R.ownMatter εs M → h = 0) ∧
+    Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs)
+      = Real.sqrt (R.ownMatter εs M / R.matter εs)
+        * Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ∧
+    Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs)
+      ≤ Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ∧
+    R.ownMatter εs M / R.matter εs = 1 - M * R.c ^ 2 / (R.Rhor * R.matter εs) := by
+  reg_facts R
+  have hM' : 0 < M := hM
+  obtain ⟨huo, hE, p1, p2, p3, p4, p5, p6, p7⟩ :=
+    Law.share_leading_order n (2 * R.kB * TN * R.ln2) (R.ownMatter εs M) h hh
+  -- the strings' mean matter is the own matter and the body's part
+  have hR : 0 < R.Rhor := by unfold Reg.Rhor; positivity
+  have hpart : 0 < M * R.c ^ 2 / R.Rhor := by positivity
+  have hown : R.ownMatter εs M = R.matter εs - M * R.c ^ 2 / R.Rhor := rfl
+  have hu : 0 < R.matter εs := by linarith
+  have hle : R.ownMatter εs M ≤ R.matter εs := by linarith
+  refine ⟨p1, p2, p3, p4, p5, p6, p7, ?_, ?_, ?_⟩
+  · have hprod : 2 * R.kB * TN * R.ln2 / R.matter εs
+        = R.ownMatter εs M / R.matter εs * (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) := by
+      field_simp
+    rw [hprod, Real.sqrt_mul (div_nonneg huo.le hu.le)]
+  · exact Real.sqrt_le_sqrt (div_le_div_of_nonneg_left hE huo hle)
+  · rw [hown]
+    field_simp
 
 /-- **What reaches a string, Eqs. (E), (u) and (f)** (Sec. IV.C): the body's energy per string of the
 sphere, two Landauer energies at the Unruh temperature of `g_N` (`I1N`), in units of the mean
@@ -1510,22 +1540,23 @@ Gibbs distribution at the horizon's temperature (`hGibbs`; `Carriers.string_ener
 `f = g_N/a₀` with `a₀ = (1 − ln 2)c²/(2 ln 2 R_Λ)`, Eq. (f).  The second part is the definition of
 `a₀` and takes no premise.  The third part: the body's energy per string exceeds the matter a
 string holds on average exactly where `g_N > a₀` ("Nearer the body `f > 1`, and farther out
-`f < 1`").  The fourth and fifth parts: the amplitude of the body's share against a string's one
-whole qubit, `h = √(E/u)`, is `h = √(g_N/a₀)`, and it is positive.  Where `E ≤ u` it is the
-amplitude to leading order in `1/L` (`hh`, `Approx.share_amplitude`; `share_amplitude` derives
-the exact amplitude and `share_leading_order` bounds the step), and where `E > u` it is the
-amplitude on the same scale (`hscale`, `Condition.same_scale`).  Sources: the
+`f < 1`").  The fourth and fifth parts: the amplitude of the body's share against that of the
+string's own matter, `h = √(E/u)`, is `h = √(g_N/a₀)`, and it is positive.  It is the
+amplitude to leading order in `1/L` and with the body's part of `u` neglected, at every share
+(`hh`, `Approx.share_amplitude`;
+`share_amplitude` derives the exact amplitude and `share_leading_order` bounds the step).
+Sources: the
 strings' energies spread at the horizon's temperature,
 and the thermal horizons (thermodynamics); the constant `Λ = 3/R_Λ²` (`Derived`); the amplitude
-of the body's share, in units of the matter a string holds on average, to leading order in `1/L`
-for a share that one string can hold (`Approx`, `hh`); and the conditions: `g_N > 0`, `r_h` the
-radius of the horizon, and the same scale for a larger share (`hscale`). -/
+of the body's share, against that of the string's own matter, to leading order in `1/L` and
+with the body's part of the strings' mean matter neglected
+(`Approx`, `hh`); and the conditions: `g_N > 0` and `r_h` the
+radius of the horizon. -/
 theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ → ℝ)
     (hgN : Condition.pos gN)
     (hdS : Derived.deSitter_horizon R G Λ) (hrh : Condition.horizon_radius R G Λ rh)
     (I1N : Thermo.horizon_thermal R gN TN) (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
-    (hGibbs : Thermo.energies_thermal R TdS εs above) (hh : Approx.share_amplitude R h TN εs)
-    (hscale : Condition.same_scale R h TN εs) :
+    (hGibbs : Thermo.energies_thermal R TdS εs above) (hh : Approx.share_amplitude R h TN εs) :
     Derived.fill_fraction R gN TN εs ∧
     R.a0 = (1 - R.ln2) * R.c ^ 2 / (2 * R.ln2 * R.RL) ∧
     (R.a0 < gN ↔ R.matter εs < 2 * R.kB * TN * R.ln2) ∧
@@ -1544,8 +1575,7 @@ theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ →
     exact mul_pos hm hTpos
   -- the amplitude of the share, `√(E/u)`, is `√(g_N/a₀)`
   have hh' : h = Real.sqrt (gN / R.a0) := by
-    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
-      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
+    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
     rw [h1, hff]
   refine ⟨hff, rfl, ?_, hh', ?_⟩
   · rw [← one_lt_div R.a0_pos, ← hff, one_lt_div hu]
@@ -1553,7 +1583,7 @@ theorem fill_fraction (R : Reg) (G Λ rh gN TN TdS εs h : ℝ) (above : ℝ →
     exact Real.sqrt_pos.2 (div_pos hgN R.a0_pos)
 
 /-- **The strings that carry a body's information: the rule, derived** (Sec. IV.C).  The body's
-share has the amplitude `h` against a string's one whole qubit, with `0 < h < L`.  It reaches the
+share has the amplitude `h` against that of the string's own matter, with `0 < h < L`.  It reaches the
 string in equal parts, one per tick for each of the string's bits, and the parts add as
 amplitudes (`hparts`).  A largest ring has `L` cells (`Horizon.card_ring`), so each tick adds the
 amplitude `ε = h/L`: the second part.  In a free tick a string's global phase changes by the
@@ -1914,14 +1944,14 @@ Eq. (newton) at `g_N`; and the mean share is `κT` with `κ = 2k_B ln 2`
 `Λ = 3/R_Λ²` (`Derived`); the thermal horizons, the cosmological one and those of `g_N` and of `a`
 (thermodynamics); a body's energy held by its carriers (Postulate 1); the strings' energies spread
 at the horizon's temperature, for the mean and for the fraction above an energy, and equipartition
-(thermodynamics); the amplitude of the body's share, in units of the matter a string holds on
-average, to leading order in `1/L` for a share that one string can hold (`Approx`, `hh`;
+(thermodynamics); the amplitude of the body's share, against that of the string's own matter,
+to leading order in `1/L` and with the body's part of the strings' mean matter neglected
+(`Approx`, `hh`;
 `share_amplitude` derives the exact amplitude, `share_leading_order` bounds the step in `h`, and `law_whole_bits` bounds what it
 changes in the law); the carriers as the strings of energy at
 most `hℏ/(Lt_c)`, the
 leading order in `1/L` of the rule that `carriers_exact` derives (`Approx`, `hb`;
-`carriers_leading_order` and `law_bounds` bound the step); and the conditions: `M, r, a > 0`, `r_h` the radius of the horizon, the carrier fraction, and
-the same scale for a larger share (`hscale`). -/
+`carriers_leading_order` and `law_bounds` bound the step); and the conditions: `M, r, a > 0`, `r_h` the radius of the horizon, and the carrier fraction. -/
 theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : ℝ)
     (above : ℝ → ℝ) (hM : Condition.pos M) (hr : Condition.pos r) (ha : Condition.pos a)
     (hJ : Derived.jacobson_G R G) (hdS : Derived.deSitter_horizon R G Λ)
@@ -1929,7 +1959,7 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : �
     (I1dS : Thermo.horizon_thermal R (-R.gSdS G 0 Λ rh) TdS)
     (I1N : Thermo.horizon_thermal R (G * M / r ^ 2) TN) (I1a : Thermo.horizon_thermal R a Ta)
     (hGibbs : Thermo.energies_thermal R TdS εs above)
-    (hh : Approx.share_amplitude R h TN εs) (hscale : Condition.same_scale R h TN εs)
+    (hh : Approx.share_amplitude R h TN εs)
     (hb : Approx.carriers_leading R b h above)
     (hcar : P1.energy_in_carriers R M Ncar εc) (hNcar : Condition.carrier_fraction R b Ncar r)
     (hκ : Thermo.equipartition κ εc Ta) (hκN : Thermo.equipartition κ (M * R.c ^ 2 / R.Ns r) TN) :
@@ -1951,8 +1981,7 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : �
   -- the carriers at leading order, with the amplitude of the share
   have hb' : b = 1 - above (Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) *
       (R.ℏ / (R.L * R.tc))) := by
-    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
-      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
+    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
     have h1 : b = 1 - above (h * (R.ℏ / (R.L * R.tc))) := hb
     rw [h0] at h1
     exact h1
@@ -1963,9 +1992,9 @@ theorem galactic_law (R : Reg) (G Λ rh M r a TdS TN Ta εs h b Ncar εc κ : �
 (Sec. IV.C).  The acceleration is `a = g_N/b`, Eq. (share) (`hab`, `carriers_share`); the
 carriers are the exact fraction
 `b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))` (`hb`,
-`carriers_exact`); and the amplitude of the share, to leading order in `1/L` for a share that one
-string can hold and on the same scale for a larger share, is `h = √(g_N/a₀)` (`hh`,
-`Approx.share_amplitude`, `hscale`, `Condition.same_scale`, with Eq. (f), `hf`).
+`carriers_exact`); and the amplitude of the share, to leading order in `1/L` and with the
+body's part of the strings' mean matter neglected, is
+`h = √(g_N/a₀)` (`hh`, `Approx.share_amplitude`, with Eq. (f), `hf`).
 So the acceleration is `g_N` over that fraction at `h = √(g_N/a₀)`: the first part.  It is at
 least `g_N/((1 − e^{−h/√(1 − (h/L)²)})(1 + 4e^{−3πL/2}))` and at most `g_N/(1 − e^{−h})`, the
 acceleration of Eq. (law): the second and third parts (`Law.law_bounds`).  The fourth part:
@@ -1977,12 +2006,12 @@ taken as `carriers_share` derives it, with `G` from the count at leading order
 `share_leading_order` bounds in `h`.  `law_whole_bits` bounds what that step changes in the
 law: it takes the exact amplitude of whole bits in place of `h = √(g_N/a₀)`.  Sources: Eq. (f),
 the carriers' exact fraction and `a = g_N/b` (`Derived`); the amplitude of the body's share to
-leading order in `1/L` for a share that one string can hold (`Approx`, `hh`); Postulate 2's
-fourth clause, which gives the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L`,
-`0 < h < L`, and the same scale for a larger share (`hscale`). -/
+leading order in `1/L` (`Approx`, `hh`); Postulate 2's
+fourth clause, which gives the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L`
+and `0 < h < L`. -/
 theorem law_bounds (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     (gN a b h TN εs : ℝ) (hrange : Condition.share_below_L R h)
-    (hh : Approx.share_amplitude R h TN εs) (hscale : Condition.same_scale R h TN εs)
+    (hh : Approx.share_amplitude R h TN εs)
     (hf : Derived.fill_fraction R gN TN εs)
     (hb : Derived.carriers_exact R b h) (hab : Derived.share_acceleration a gN b) :
     a = gN / ((1 - Real.exp (-(R.L * Real.arcsin (Real.sqrt (gN / R.a0) / R.L)))) *
@@ -2005,8 +2034,7 @@ theorem law_bounds (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     linarith
   -- the amplitude of the share is `√(g_N/a₀)`
   have hh' : h = Real.sqrt (gN / R.a0) := by
-    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
-      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
+    have h1 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
     have h2 : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
     rw [h1, h2]
   -- `g_N > 0`, since the amplitude is positive
@@ -2033,44 +2061,56 @@ carriers are the exact fraction
 `b = (1 − e^{−L arcsin(h/L)})(1 + (e^{L arcsin(h/L)} + 1)/(e^{2πL} − 1))` (`hb`,
 `carriers_exact`); and `h` is the exact amplitude of the share at a string of `L` bits (`hh`,
 `share_amplitude` on a largest ring, which has `L` cells, `Horizon.card_ring`), with
-`0 < h < L`.  Write `f = E/u = g_N/a₀` (`hf`, Eq. (f)) and `a_law = g_N/(1 − e^{−√f})`, the
-acceleration of Eq. (law).  Where one string can hold the share, `h` is the amplitude of the
-whole bits that the share fills, so `f − 1/L < h² ≤ f`.  For a larger share `h = √f`, on the
-condition of the same scale (`Condition.same_scale`), so `h² = f` and the same bounds on `h²`
-hold.  The first part: where `√f ≤ L/2`, the acceleration is at least
-`(1 − (√f/L)² − 5e^{−3πL/2}) a_law`, the lower bound of `law_bounds`, unchanged.  The exact
-fraction increases with `h` (`Law.carriers_fraction_mono`) and `h ≤ √f`, so `a` is at least
-the acceleration with the fraction at `√f`, which `law_bounds` bounds.  The second part: where
-the share is more than one bit, `f > 1/L`, the acceleration is at most
-`a_law/√(1 − 1/(L·f))`.  The exact fraction is at least `1 − e^{−h}`, `h` exceeds
-`√(f − 1/L)`, and `1 − e^{−t}` is concave in `t` and vanishes at `t = 0`
-(`Law.one_sub_exp_concave`), so `1 − e^{−h}` is at least `√(1 − 1/(L·f)) (1 − e^{−√f})`.  The
-third part: where the share is at least two bits, `f ≥ 2/L`, the acceleration is at most
-`(1 + 1/(L·f)) a_law` (`Law.law_whole_bits`).  So much the two steps together,
-`Approx.share_amplitude` and `Approx.carriers_leading`, change the law that `galactic_law`
-states: where `√f ≤ L/2` and `f > 1/L`, the acceleration with the exact fraction at the exact
-amplitude lies between `(1 − (√f/L)² − 5e^{−3πL/2}) a_law` and `a_law/√(1 − 1/(L·f))`.  As in
-`law_bounds`, `a = g_N/b` is taken as `carriers_share` derives it, with `G` from the count at
-leading order (`Derived.jacobson_G`).  Sources: Eq. (f), the exact amplitude of the body's
-share, the carriers' exact fraction and `a = g_N/b` (`Derived`); Postulate 2's fourth clause,
-which gives the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L` and
-`0 < h < L`.
-Sec. IV.C: the mean share of the body fills the fraction `f` of a string's bits "to within one
-bit".  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
+`0 < h < L`.  Write `u_o = u − Mc²/R_hor` for the string's own matter (`Reg.ownMatter`),
+`f_o = E/u_o`, `f = E/u = g_N/a₀` (`hf`, Eq. (f)) and `a_law = g_N/(1 − e^{−√f})`, the
+acceleration of Eq. (law).  The amplitude `h` is that of the whole bits that the share fills
+against that of the rest of the string's bits, so `f_o − δ < h² ≤ f_o` with
+`δ = (1 + f_o)²/L` (`share_leading_order`), at every share.  Eq. (law) takes the fraction `f`,
+with the body's part of `u` neglected, where the count has `f_o`, and `f/f_o = u_o/u`.  The
+first part: where `√f_o ≤ L/2`, the acceleration is at least
+`√(u_o/u)(1 − (√f_o/L)² − 5e^{−3πL/2}) a_law`.  The exact fraction increases with `h`
+(`Law.carriers_fraction_mono`) and `h ≤ √f_o`, so `a` is at least the acceleration with the
+fraction at `√f_o`, which `law_bounds` bounds; and Eq. (law) at `f_o` has at most `√(f_o/f)`
+times the carriers that it has at `f`, since `1 − e^{−t}` is concave in `t` and vanishes at
+`t = 0` (`Law.one_sub_exp_concave`).  The second part: where `δ < f_o`, the acceleration is at
+most `a_law/√(1 − δ/f_o)`.  The exact fraction is at least `1 − e^{−h}`, `h` exceeds
+`√(f_o − δ)`, and by the same concavity `1 − e^{−h}` is at least
+`√(1 − δ/f_o)(1 − e^{−√f_o})`, which is at least `√(1 − δ/f_o)(1 − e^{−√f})`.  The third part:
+where `2δ ≤ f_o`, the acceleration is at most `(1 + δ/f_o) a_law` (`Law.law_whole_bits`).  Here
+`δ/f_o = (1 + f_o)²/(L·f_o)`, which is `(1/f_o + 2 + f_o)/L`, and `u_o/u` is one less the
+body's fraction of all the matter inside the horizon (`share_leading_order`,
+`Numerics.body_fraction`).  So much the two steps together, `Approx.share_amplitude` and
+`Approx.carriers_leading`, change the law that `galactic_law` states: where `√f_o ≤ L/2` and
+`δ < f_o`, the acceleration with the exact fraction at the exact amplitude lies between
+`√(u_o/u)(1 − (√f_o/L)² − 5e^{−3πL/2}) a_law` and `a_law/√(1 − δ/f_o)`.  As in `law_bounds`,
+`a = g_N/b` is taken as `carriers_share` derives it, with `G` from the count at leading order
+(`Derived.jacobson_G`).  Sources: Eq. (f), the exact amplitude of the body's share, the
+carriers' exact fraction and `a = g_N/b` (`Derived`); Postulate 2's fourth clause, which gives
+the count's `4 ≤ L` (`Horizon.four_le`); and the conditions `R.L = L`, `0 < h < L` and `M > 0`.
+Sec. IV.C: the body's share fills the fraction `E/(E+u)` of the string's bits "to within one
+bit".  "That part is the body's fraction of all the matter inside the horizon, `4×10⁻¹²` for `10¹¹M_⊙`, and we neglect it."  Data availability: "The three steps at leading order, the count's density, the share's amplitude,
 and the carriers' fraction, are named as such, with their errors bounded in the files." -/
 theorem law_whole_bits (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
-    (gN a b h TN εs : ℝ) (hrange : Condition.share_below_L R h)
-    (hh : Derived.share_amplitude_exact R L h TN εs) (hf : Derived.fill_fraction R gN TN εs)
+    (gN a b h M TN εs : ℝ) (hM : Condition.pos M) (hrange : Condition.share_below_L R h)
+    (hh : Derived.share_amplitude_exact R L h M TN εs) (hf : Derived.fill_fraction R gN TN εs)
     (hb : Derived.carriers_exact R b h) (hab : Derived.share_acceleration a gN b) :
-    (Real.sqrt (gN / R.a0) / R.L ≤ 1 / 2 →
-      (1 - (Real.sqrt (gN / R.a0) / R.L) ^ 2 - 5 * Real.exp (-(3 * Real.pi / 2 * R.L))) *
+    (Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) / R.L ≤ 1 / 2 →
+      Real.sqrt (R.ownMatter εs M / R.matter εs) *
+          (1 - (Real.sqrt (2 * R.kB * TN * R.ln2 / R.ownMatter εs M) / R.L) ^ 2 -
+            5 * Real.exp (-(3 * Real.pi / 2 * R.L))) *
         (gN / (1 - Real.exp (-Real.sqrt (gN / R.a0)))) ≤ a) ∧
-    (1 / R.L < gN / R.a0 →
+    ((1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / R.L
+        < 2 * R.kB * TN * R.ln2 / R.ownMatter εs M →
       a ≤ gN / (1 - Real.exp (-Real.sqrt (gN / R.a0))) /
-        Real.sqrt (1 - 1 / (R.L * (gN / R.a0)))) ∧
-    (2 / R.L ≤ gN / R.a0 →
-      a ≤ (1 + 1 / (R.L * (gN / R.a0))) *
+        Real.sqrt (1 - (1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / R.L /
+          (2 * R.kB * TN * R.ln2 / R.ownMatter εs M))) ∧
+    (2 * ((1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / R.L)
+        ≤ 2 * R.kB * TN * R.ln2 / R.ownMatter εs M →
+      a ≤ (1 + (1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / R.L /
+          (2 * R.kB * TN * R.ln2 / R.ownMatter εs M)) *
         (gN / (1 - Real.exp (-Real.sqrt (gN / R.a0))))) := by
+  reg_facts R
+  have hM' : 0 < M := hM
   obtain ⟨hh0, hhL⟩ := hrange
   have hRL' : R.L = L := hRL
   -- the count's `4 ≤ L`
@@ -2080,36 +2120,52 @@ theorem law_whole_bits (H : Horizon L) (R : Reg) (hRL : Condition.same_L R L)
     rw [hRL']
     linarith
   have hLpos := R.L_pos
+  have ha0 := R.a0_pos
   -- Eq. (f): the body's energy per string, in units of the matter a string holds on average, is `g_N/a₀`
   have hff : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
-  -- the exact amplitude on a string of `L` bits: `g_N/a₀ − 1/L < h² ≤ g_N/a₀`
-  have hbits : gN / R.a0 - 1 / R.L < h ^ 2 ∧ h ^ 2 ≤ gN / R.a0 := by
-    obtain ⟨hle, hgt⟩ := hh
-    rw [hff, ← hRL'] at hle
-    rw [hff] at hgt
-    rcases le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs) with hc | hc
-    · -- a share that one string can hold: the amplitude of the whole bits that it fills
-      obtain ⟨-, -, p3, p4⟩ := hle hc
-      exact ⟨p3, p4⟩
-    · -- a larger share: the same scale, the condition of `share_amplitude`
-      have h1 := hgt hc
-      have hpos : 0 < gN / R.a0 := by
-        rw [h1] at hh0
-        exact Real.sqrt_pos.1 hh0
-      have h2 : h ^ 2 = gN / R.a0 := by rw [h1, Real.sq_sqrt hpos.le]
-      have h3 : 0 < 1 / R.L := one_div_pos.2 hLpos
-      exact ⟨by linarith, h2.le⟩
-  obtain ⟨hlo, hhi⟩ := hbits
-  -- `g_N > 0`, since the amplitude is positive
+  -- the exact amplitude on a string of `L` bits: `f_o − (1 + f_o)²/L < h² ≤ f_o`
+  obtain ⟨huo, hE, hhi, hlo, -⟩ :=
+    Law.share_leading_order L (2 * R.kB * TN * R.ln2) (R.ownMatter εs M) h hh
+  rw [← hRL'] at hlo
+  -- the strings' mean matter is the own matter and the body's part
+  have hR : 0 < R.Rhor := by unfold Reg.Rhor; positivity
+  have hpart : 0 < M * R.c ^ 2 / R.Rhor := by positivity
+  have hown : R.ownMatter εs M = R.matter εs - M * R.c ^ 2 / R.Rhor := rfl
+  have hu : 0 < R.matter εs := by linarith
+  have hle : R.ownMatter εs M ≤ R.matter εs := by linarith
+  -- the share is positive, since the amplitude is
+  have hfo : 0 < 2 * R.kB * TN * R.ln2 / R.ownMatter εs M := lt_of_lt_of_le (by positivity) hhi
+  have hEpos : 0 < 2 * R.kB * TN * R.ln2 := by
+    have h3 := mul_pos hfo huo
+    rwa [div_mul_cancel₀ _ huo.ne'] at h3
+  -- Eq. (law) takes `f = g_N/a₀ ≤ f_o`, with `f/f_o = u_o/u`
+  have hfpos : 0 < gN / R.a0 := by rw [← hff]; exact div_pos hEpos hu
+  have hffo : gN / R.a0 ≤ 2 * R.kB * TN * R.ln2 / R.ownMatter εs M := by
+    rw [← hff]
+    exact div_le_div_of_nonneg_left hEpos.le huo hle
+  have hgen : ∀ E u uo : ℝ, 0 < E → 0 < u → 0 < uo → E / u / (E / uo) = uo / u := by
+    intro E u uo hE hu huo
+    field_simp
+  have hratio : gN / R.a0 / (2 * R.kB * TN * R.ln2 / R.ownMatter εs M)
+      = R.ownMatter εs M / R.matter εs := by
+    rw [← hff]
+    exact hgen _ _ _ hEpos hu huo
   have hgN : 0 < gN := by
-    have hpos : 0 < gN / R.a0 := lt_of_lt_of_le (by positivity) hhi
-    have h3 := mul_pos hpos R.a0_pos
-    rwa [div_mul_cancel₀ _ R.a0_pos.ne'] at h3
+    have h3 := mul_pos hfpos ha0
+    rwa [div_mul_cancel₀ _ ha0.ne'] at h3
+  have hδ : 0 < (1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / R.L := by
+    have h1 : 0 < 1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M := by linarith
+    exact div_pos (pow_pos h1 2) hLpos
   have hb' : b = (1 - Real.exp (-(R.L * Real.arcsin (h / R.L)))) *
       (1 + (Real.exp (R.L * Real.arcsin (h / R.L)) + 1) /
         (Real.exp (2 * Real.pi * R.L) - 1)) := hb
   have hab' : a = gN / b := hab
-  exact Law.law_whole_bits gN R.L (gN / R.a0) h a b hgN hL1 hh0 hhL hlo hhi hb' hab'
+  have key := Law.law_whole_bits gN R.L (gN / R.a0)
+    (2 * R.kB * TN * R.ln2 / R.ownMatter εs M)
+    ((1 + 2 * R.kB * TN * R.ln2 / R.ownMatter εs M) ^ 2 / R.L) h a b hgN hL1 hh0 hhL hδ hfpos
+    hffo hlo hhi hb' hab'
+  rw [hratio] at key
+  exact key
 
 /-- **Near the body** (Sec. IV.C): with `h = √(g_N/a₀)`, the acceleration of the law, Eq. (law)
 (`hlaw`), exceeds Newton's by `g_N e^{−h}/(1 − e^{−h})`, more than `g_N e^{−h}`, and
@@ -2163,27 +2219,28 @@ theorem tully_fisher (a0 G M r : ℝ) (v : ℝ → ℝ) (ha0 : Condition.pos a0)
   Law.tully_fisher a0 G M r (v r) ha0 hG hM hr (hv r hr)
 
 /-- **A classical share would make rotation speeds rise** (Sec. IV.C): were the carriers the
-fraction `f = g_N/a₀` (`Condition.classical_share`, the rejected alternative), the acceleration
-`g_N/b` would be `a₀` and `v² = a₀r` on circular orbits.  Sources: the speeds on circular orbits
-and `a = g_N/b` (`Derived`); the conditions: `g_N > 0`, `r > 0` and the alternative's premise. -/
-theorem classical_share (a0 gN a b r : ℝ) (v : ℝ → ℝ) (hgN : Condition.pos gN)
+fraction `f/(1 + f)` of the body's bits, with `f = g_N/a₀` (`Condition.classical_share`, the
+rejected alternative), the acceleration `g_N/b` would be `g_N + a₀`, which tends to `a₀` far
+from the body, and `v² = (g_N + a₀)r` on circular orbits.  Sources: the speeds on circular
+orbits and `a = g_N/b` (`Derived`); the conditions: `a₀ > 0`, `g_N > 0`, `r > 0` and the
+alternative's premise. -/
+theorem classical_share (a0 gN a b r : ℝ) (v : ℝ → ℝ) (ha0 : Condition.pos a0)
+    (hgN : Condition.pos gN)
     (hb : Condition.classical_share b gN a0) (hab : Derived.share_acceleration a gN b)
     (hv : Derived.circular_speeds (fun _ => a) v) (hr : Condition.pos r) :
-    a = a0 ∧ v r ^ 2 = a0 * r :=
-  Law.classical_limit a0 gN a b r (v r) hgN hb hab (hv r hr)
+    a = gN + a0 ∧ v r ^ 2 = (gN + a0) * r :=
+  Law.classical_limit a0 gN a b r (v r) ha0 hgN hb hab (hv r hr)
 
 /-- **The scale goes as the square of the threshold's mean** (Sec. IV.C): with the strings'
 energies spread at `μ` times the horizon's thermal energy (`Condition.threshold_mean`), so that the
-threshold has the mean `μ` in place of one qubit, the law keeps its form with the scale `μ²a₀`, so
+threshold has the mean `μ` in place of one, the law keeps its form with the scale `μ²a₀`, so
 the measured scale fixes `μ`.  The result is stated at leading order in `1/L`, as `galactic_law`
 is.  Sources: Eq. (f) and `a = g_N/b` (`Derived`); the amplitude of the body's share, the amplitude
-of `share_amplitude` at leading order in `1/L`, for a share that one string can hold (`Approx`,
+of `share_amplitude` at leading order in `1/L` (`Approx`,
 `hh`); the carriers as the strings of energy at most `hℏ/(Lt_c)`, the rule of `carriers_exact`
-at leading order in `1/L` (`Approx`, `hb`); the conditions: `μ > 0`, the threshold's mean, and
-the same scale for a larger share (`hscale`). -/
+at leading order in `1/L` (`Approx`, `hb`); the conditions: `μ > 0` and the threshold's mean. -/
 theorem scale_mean (R : Reg) (gN a b h μ TN εs : ℝ) (above : ℝ → ℝ) (hμ : Condition.pos μ)
     (hME : Condition.threshold_mean R μ above) (hh : Approx.share_amplitude R h TN εs)
-    (hscale : Condition.same_scale R h TN εs)
     (hb : Approx.carriers_leading R b h above)
     (hf : Derived.fill_fraction R gN TN εs) (hab : Derived.share_acceleration a gN b) :
     a = gN / (1 - Real.exp (-Real.sqrt (gN / (μ ^ 2 * R.a0)))) := by
@@ -2199,8 +2256,7 @@ theorem scale_mean (R : Reg) (gN a b h μ TN εs : ℝ) (above : ℝ → ℝ) (h
     show above (x * (R.ℏ / (R.L * R.tc))) = Real.exp (-x / μ)
     rw [hME _ (mul_nonneg hx hθ.le), ← neg_mul, mul_div_mul_right _ _ hθ.ne']
   have hb' : b = 1 - (fun y => above (y * (R.ℏ / (R.L * R.tc)))) (Real.sqrt (gN / R.a0)) := by
-    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) :=
-      (le_or_gt (2 * R.kB * TN * R.ln2) (R.matter εs)).elim hh hscale
+    have h0 : h = Real.sqrt (2 * R.kB * TN * R.ln2 / R.matter εs) := hh
     have h1 : b = 1 - above (h * (R.ℏ / (R.L * R.tc))) := hb
     have h2 : 2 * R.kB * TN * R.ln2 / R.matter εs = gN / R.a0 := hf
     rw [h0, h2] at h1
@@ -2588,13 +2644,13 @@ theorem sense_of_state {State : Type*} (obeys : State → Prop) (sense : State �
     ∀ v : Bool, ∃ σ, obeys σ ∧ sense σ = v :=
   fun v => Strings.sense_of_state obeys sense rev hrev hdir σ₀ h₀ v
 
-/-- **No law reads a free tick** (Sec. II: "So no bit moves and no free tick changes the relative
-phase: what changes from tick to tick is the global phase", with Postulate 1's "The global phase
-of a state is hidden: no law depends on its value").  The free tick multiplies every state of a
-string by one factor, a phase (`Qubit.Tick.phase_unique`, `Qubit.Tick.norm_scalar`), so a law that
-does not depend on the global phase (`hhidden`) reads the same off a state after the tick as
-before it.  Sources: Postulate 1's sentence on the global phase; Sec. II's sentence on the tick of
-a string of one sense (the structure `Tick`). -/
+/-- **No law reads a free tick** (Sec. II: "So no free tick changes the relative phase: what
+changes from tick to tick is the global phase", with Postulate 1's "The global phase of a state is
+hidden: no law depends on its value").  The free tick multiplies every state of a string by one
+factor, a phase (`Qubit.Tick.phase_unique`, `Qubit.Tick.norm_scalar`), so a law that does not
+depend on the global phase (`hhidden`) reads the same off a state after the tick as before it.
+Sources: Postulate 1's sentence on the global phase; Sec. II's sentence on the tick of a string of
+one sense (the structure `Tick`). -/
 theorem free_tick_hidden {α : Type*} (T : Qubit.Tick L) (law : Qubit.Vec → α)
     (hhidden : P1.phase_hidden law) (v : Qubit.Vec) : law (Matrix.mulVec T.U v) = law v := by
   obtain ⟨γ, hγ⟩ := (Complex.norm_eq_one_iff T.scalar).1 T.norm_scalar
